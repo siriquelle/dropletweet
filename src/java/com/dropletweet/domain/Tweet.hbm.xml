@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 18-Apr-2009 17:01:32 by Hibernate Tools 3.2.2.GA -->
+<hibernate-mapping>
+  <class name="com.dropletweet.domain.Tweet" schema="eyeonz0_dropletweet" table="tweet">
+    <id name="id" type="java.lang.Long">
+      <column name="id"/>
+    </id>
+    <property name="in_reply_to_id" type="java.lang.Long">
+      <column name="in_reply_to_id"/>
+    </property>
+    <property name="from_user" type="string">
+      <column length="20" name="from_user"/>
+    </property>
+    <property name="from_user_id" type="java.lang.Integer">
+      <column name="from_user_id"/>
+    </property>
+    <property name="to_user" type="string">
+      <column length="20" name="to_user"/>
+    </property>
+    <property name="to_user_id" type="java.lang.Integer">
+      <column name="to_user_id"/>
+    </property>
+    <property name="source" type="string">
+      <column length="200" name="source"/>
+    </property>
+    <property name="profile_image_url" type="string">
+      <column length="200" name="profile_image_url"/>
+    </property>
+    <property name="text" type="string">
+      <column length="200" name="text"/>
+    </property>
+    <property name="created_at" type="string">
+      <column length="200" name="created_at"/>
+    </property>
+    <property name="iso_language_code" type="string">
+      <column length="10" name="iso_language_code"/>
+    </property>
+    <property name="location" type="string">
+      <column length="200" name="location"/>
+    </property>
+    <property name="updated" type="java.util.Date">
+      <column name="updated"/>
+    </property>
+  </class>
+</hibernate-mapping>

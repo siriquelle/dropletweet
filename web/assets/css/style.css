@@ -1,0 +1,121 @@
+/* v1.0 | 20080212 */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+body {
+    line-height: 1;
+    background-color:#97EDFF;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+    text-decoration: none;
+}
+del {
+    text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/* finish page reset */
+
+
+#page{height:500px; }
+#background{height:317px; background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF; }
+#background_clouds{width:1080px; height:500px; background:url("../img/_clouds.png") repeat-x scroll 0 0 transparent; margin-left:auto;margin-right:auto; padding-top:30px;}
+#background_clouds_text{width:670px; margin:100px auto; text-align:center}
+#background_clouds_text_dropletweet, #background_clouds_text_coming{cursor:pointer; font-family: 'Reenie Beanie', arial, serif; font-weight:bold; color:#333; text-shadow:3px 3px 5px #EFEFED }
+#background_clouds_text_dropletweet{font-size: 10em;}
+#background_clouds_text_coming{font-size: 2em;}
+
+#signup_form_container {margin:0 auto;position:relative;text-align:center;top:-75px;width:299px;
+}
+.signup_form_element {
+    background:url("../img/bg_input_one-liner.png") no-repeat scroll 0 0 transparent;
+    border:medium none;
+    color:#888888;
+    font:12px/14px Tahoma,Arial,sans-serif;
+    height:29px;
+    margin:0;
+    padding:11px 0 0;
+    position:relative;
+    width:100%;
+}
+
+#txt_email {
+    background:none repeat scroll 0 0 transparent;
+    border:medium none;
+    color:#888888;
+    font:12px/14px Tahoma,Arial,sans-serif;
+    margin:0;
+    position:relative;
+    width:255px;
+}
+
+
+#btn_signup {
+    background:url("../img/email_signup_ok.jpg") no-repeat scroll 0 0 transparent;
+    border:medium none;
+    cursor:pointer;
+    height:0;
+    overflow:hidden;
+    padding-top:21px;
+    position:absolute;
+    right:9px;
+    top:9px;
+    width:49px;
+}
+#btn_signup:hover{
+
+    background-position:0 -21px;
+}
+
+#email_success{
+    color:#00c;
+}
+
+#email_fail{
+    color:#c00;
+}
+
+#email_fail, #email_success {
+    font:12px/14px Tahoma,Arial,sans-serif;
+    font-weight:normal;
+    line-height:20px;
+    text-align:center;
+    width:100%;
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <bean id="conversationService" class="com.dropletweet.service.impl.ConversationServiceImpl">
+        <property name="dropletService" ref="dropletService"/>
+    </bean>
+
+    <bean id="dropletService" class="com.dropletweet.service.impl.DropletServiceImpl">
+        <property name="tweetDao" ref="tweetDao"/>
+        <property name="userDao" ref="userDao"/>
+        <property name="conversationDao" ref="conversationDao"/>
+        <property name="signupDao" ref="signupDao"/>
+    </bean>
+
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="persist*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+<!--
+    <tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+-->
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:advisor
+            pointcut="execution(* com.dropletweet.service.*.*(..))"
+            advice-ref="txAdvice" />
+    </aop:config>
+
+
+    <!---->
+</beans>

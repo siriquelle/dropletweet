@@ -1,0 +1,111 @@
+/*START BROWSER RESET*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {margin: 0;padding: 0;border: 0;outline: 0;font-size: 100%;vertical-align: baseline;background: transparent;}
+body {line-height: 1;background-color:#97EDFF;}
+ol, ul {list-style: none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after,q:before, q:after {content: '';content: none;}
+:focus {outline: 0;}
+ins {text-decoration: none;}
+del {text-decoration: line-through;}
+table {border-collapse: collapse;border-spacing: 0;}
+/*END BROWSER RESET*/
+
+/* START INFOVIS TOOLKIT*/
+#container, #infovis {
+    clear:both;
+    width: 630px;
+    height: 630px;
+    margin:0 auto;
+    position:relative;
+    background-color:transparent;
+}
+.node{
+    width:200px;
+    padding:10px;
+    margin-top:-30px;
+    background-color : #333;
+    border : 1px solid #888;
+    text-align:left;
+    overflow:hidden;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+}
+#mycanvas-label, #mycanvas-canvas{
+    position:relative;
+    top:-130px !important;
+}
+/* END INFOVIS TOOLKIT*/
+
+/*START GLOBAL STYLE*/
+body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
+.body{background:url("../img/_clouds.png") no-repeat scroll top center transparent;  min-height:480px; font-family:Tahoma,Arial,sans-serif; }
+.page{width:960px; margin:0 auto;}
+b{font-weight:bold;}
+/*END BROWSER RESET*/
+
+/* START HEADER*/
+.header_text{font-family: 'Reenie Beanie', arial, serif; font-weight:bold; font-size:6em; padding:10px; color:#333; text-align:center; text-shadow:3px 3px 5px #EFEFED; }
+/* END HEADER*/
+
+/* START LEFT COLUMN*/
+#leftColumn{width:630px; float:left; z-index:100}
+/* END LEFT COLUMN*/
+
+/* START RIGHT COLUMN*/
+#rightColumn{z-index:200;width:275px; padding:15px; margin:0px auto; float:right; z-index:10000; background-color:#B1F3FF; border:10px solid #85B6BF; -moz-border-radius:10px; -webkit-border-radius:10px; opacity:.9; color: #333; }
+
+/* START USER INFO*/
+.user_info{}
+.user_info .name {font-size:1.6em; text-shadow:1px -1px 1px #333333; padding-bottom:3px; border-bottom:5px solid #85B6BF; font-weight:bold;}
+/* END USER INFO*/
+
+/* START ACTIONS */
+.actions{text-align:center;}
+/*START SIGNIN*/
+.link_twitter_sign_in{}
+.link_twitter_sign_in a{width:151px; height:24px;margin:0px auto; display:block; background:url("../img/twitter_sign_in.png") no-repeat scroll 0 -24px #9FF0FF;}
+.link_twitter_sign_in a:hover{background:url("../img/twitter_sign_in.png") no-repeat scroll 0 0 #9FF0FF;}
+.link_twitter_sign_in a:active{background:url("../img/twitter_sign_in.png") no-repeat scroll 0 0 #9FF0FF; opacity:1;}
+/*END SIGNIN*/
+
+/*START STREAM ACTIONS*/
+.action{display:inline-block; margin:0px auto; }
+.action a{display:block; width: 20px; height:20px; margin:5px;}
+.action a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
+.actions #home a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
+.actions #search a{background:url("../img/actions/action_search.png") no-repeat scroll 0 0 transparent;}
+.actions #replies a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
+.actions #dms a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
+.actions #search a{background:url("../img/actions/action_search.png") no-repeat scroll 0 0 transparent;}
+.actions #conversations a{background:url("../img/actions/action_conversations.png") no-repeat scroll 0 0 transparent;}
+.actions #retweets a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
+.actions #favourites a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
+/*END STREAM ACTIONS*/
+.tweet{ }
+.tweet .tweet_text{width:265px; height:35px; padding:2px; margin:3px 0px; }
+/* END ACTIONS */
+/*START STATUS STREAM*/
+.statusStream{clear:both;border-left: 1px solid #85B6BF; max-height:400px; overflow:auto;}
+
+.status{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
+.status_text{text-shadow:0px 0px 1px #85B6BF;}
+/*END STATUS STREAM*/
+
+/* END RIGHT COLUMN*/
+
+/* START FOOTER*/
+.footer{clear:both; font-size:.8em;}
+/* END FOOTER*/
+
+/* START BOX SHADOW*/
+#rightColumn, .node, .link_twitter_sign_in a:hover{-moz-box-shadow:0 0 3px #9DC5CC; -webkit-box-shadow:0 0 5px #333333; box-shadow:0 0 5px #333333;}
+.link_twitter_sign_in a:active{-moz-box-shadow:0 0 0px #000;}
+/* END BOX SHADOW*/

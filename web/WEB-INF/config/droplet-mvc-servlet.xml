@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:p="http://www.springframework.org/schema/p"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans 
+               http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    <!--Droplet Front Controller-->
+    <!---->
+    <bean id="DropletController" class="com.dropletweet.mvc.DropletController" >
+        <property name="dropletService" ref="dropletService" />
+        <property name="modelMap" ref="modelMap" />
+        <property name="dropletProperties" ref="dropletProperties" />
+    </bean>
+    <!---->
+    <!--Droplet API Controllers-->
+    <bean id="JsonConversationController" class="com.dropletweet.mvc.api.JsonConversationController" >
+        <property name="conversationService" ref="conversationService" />
+        <property name="modelMap" ref="modelMap" />
+    </bean>
+
+    <bean id="JitConversationController" class="com.dropletweet.mvc.api.JitConversationController" >
+        <property name="conversationService" ref="conversationService" />
+        <property name="modelMap" ref="modelMap" />
+    </bean>
+
+    <bean id="SignupController" class="com.dropletweet.mvc.api.SignupController" >
+        <property name="dropletService" ref="dropletService" />
+        <property name="modelMap" ref="modelMap" />
+    </bean>
+    <!---->
+    <!--Random Objects-->
+    <bean id="modelMap" class="java.util.HashMap" scope="prototype"/>
+    <bean id="dropletProperties" class="java.util.Properties" />
+    <!---->
+
+    <bean id="urlMapping"
+      class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/droplet.json" >JsonConversationController</prop>
+                <prop key="/jit.json" >JitConversationController</prop>
+                <prop key="/signup.json" >SignupController</prop>
+                <prop key="*.htm" >DropletController</prop>
+            </props>
+        </property>
+        <property name="alwaysUseFullPath">
+            <value>true</value>
+        </property>
+
+    </bean>
+   
+    <bean id="jspViewResolver"
+      class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+ 
+</beans>

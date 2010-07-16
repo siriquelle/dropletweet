@@ -1,0 +1,1 @@
+<div class="page footer"> &copy; Copyright 2010 James Hogan :)</div>
