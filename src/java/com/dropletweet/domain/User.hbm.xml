@@ -2,109 +2,109 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 18-Apr-2009 17:01:32 by Hibernate Tools 3.2.2.GA -->
 <hibernate-mapping>
-  <class name="com.dropletweet.domain.User" schema="eyeonz0_dropletweet" table="user">
-    <id name="id" type="java.lang.Integer">
-      <column name="id"/>
-    </id>
+    <class name="com.dropletweet.domain.User" schema="eyeonz0_dropletweet" table="user">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+        </id>
     <!-- -->
-    <property name="statuses_count" type="java.lang.Integer">
-      <column name="statuses_count"/>
-    </property>
-    <property name="favourites_count" type="java.lang.Integer">
-      <column name="favourites_count"/>
-    </property>
-    <property name="followers_count" type="java.lang.Integer">
-      <column name="followers_count"/>
-    </property>
-    <property name="utc_offset" type="java.lang.Integer">
-      <column name="utc_offset"/>
-    </property>
-    <property name="friends_count" type="java.lang.Integer">
-      <column name="friends_count"/>
-    </property>
+        <property name="statuses_count" type="java.lang.Integer">
+            <column name="statuses_count"/>
+        </property>
+        <property name="favourites_count" type="java.lang.Integer">
+            <column name="favourites_count"/>
+        </property>
+        <property name="followers_count" type="java.lang.Integer">
+            <column name="followers_count"/>
+        </property>
+        <property name="utc_offset" type="java.lang.Integer">
+            <column name="utc_offset"/>
+        </property>
+        <property name="friends_count" type="java.lang.Integer">
+            <column name="friends_count"/>
+        </property>
     <!-- -->
-    <property name="latest_tweet_id" type="java.lang.Long">
-      <column name="latest_tweet_id"/>
-    </property>
+        <property name="latest_tweet_id" type="java.lang.Long">
+            <column name="latest_tweet_id"/>
+        </property>
     <!-- -->
-    <property name="contributors_enabled" type="boolean">
-      <column name="contributors_enabled"/>
-    </property>
-    <property name="following" type="boolean">
-      <column name="following"/>
-    </property>
-    <property name="geo_enabled" type="boolean">
-      <column name="geo_enabled"/>
-    </property>
-    <property name="profile_background_tile" type="boolean">
-      <column name="profile_background_tile"/>
-    </property>
-    <property name="verified" type="boolean">
-      <column name="verified"/>
-    </property>
-    <property name="_protected" type="boolean">
-      <column name="_protected"/>
-    </property>
+        <property name="contributors_enabled" type="boolean">
+            <column name="contributors_enabled"/>
+        </property>
+        <property name="following" type="boolean">
+            <column name="following"/>
+        </property>
+        <property name="geo_enabled" type="boolean">
+            <column name="geo_enabled"/>
+        </property>
+        <property name="profile_background_tile" type="boolean">
+            <column name="profile_background_tile"/>
+        </property>
+        <property name="verified" type="boolean">
+            <column name="verified"/>
+        </property>
+        <property name="_protected" type="boolean">
+            <column name="_protected"/>
+        </property>
     <!---->
-    <property name="created_at" type="string">
-      <column name="created_at"/>
-    </property>
-    <property name="description" type="string">
-      <column name="description"/>
-    </property>
-    <property name="profile_background_image_url" type="string">
-      <column name="profile_background_image_url"/>
-    </property>
-    <property name="profile_link_color" type="string">
-      <column name="profile_link_color"/>
-    </property>
-    <property name="profile_sidebar_fill_color" type="string">
-      <column name="profile_sidebar_fill_color"/>
-    </property>
-    <property name="url" type="string">
-      <column name="url"/>
-    </property>
-    <property name="notifications" type="string">
-      <column name="notifications"/>
-    </property>
-    <property name="profile_image_url" type="string">
-      <column name="profile_image_url"/>
-    </property>
-    <property name="profile_sidebar_border_color" type="string">
-      <column name="profile_sidebar_border_color"/>
-    </property>
-    <property name="location" type="string">
-      <column name="location"/>
-    </property>
-    <property name="screen_name" type="string">
-      <column name="screen_name"/>
-    </property>
-    <property name="time_zone" type="string">
-      <column name="time_zone"/>
-    </property>
-    <property name="profile_background_color" type="string">
-      <column name="profile_background_color"/>
-    </property>
-    <property name="name" type="string">
-      <column name="name"/>
-    </property>
-    <property name="lang" type="string">
-      <column name="lang"/>
-    </property>
-    <property name="profile_text_color" type="string">
-      <column name="profile_text_color"/>
-    </property>
-    <property name="access_token" type="string">
-      <column name="access_token"/>
-    </property>
-    <property name="access_token_secret" type="string">
-      <column name="access_token_secret"/>
-    </property>
+        <property name="created_at" type="string">
+            <column name="created_at"/>
+        </property>
+        <property name="description" type="string">
+            <column name="description"/>
+        </property>
+        <property name="profile_background_image_url" type="string">
+            <column name="profile_background_image_url"/>
+        </property>
+        <property name="profile_link_color" type="string">
+            <column name="profile_link_color"/>
+        </property>
+        <property name="profile_sidebar_fill_color" type="string">
+            <column name="profile_sidebar_fill_color"/>
+        </property>
+        <property name="url" type="string">
+            <column name="url"/>
+        </property>
+        <property name="notifications" type="string">
+            <column name="notifications"/>
+        </property>
+        <property name="profile_image_url" type="string">
+            <column name="profile_image_url"/>
+        </property>
+        <property name="profile_sidebar_border_color" type="string">
+            <column name="profile_sidebar_border_color"/>
+        </property>
+        <property name="location" type="string">
+            <column name="location"/>
+        </property>
+        <property name="screen_name" type="string">
+            <column name="screen_name"/>
+        </property>
+        <property name="time_zone" type="string">
+            <column name="time_zone"/>
+        </property>
+        <property name="profile_background_color" type="string">
+            <column name="profile_background_color"/>
+        </property>
+        <property name="name" type="string">
+            <column name="name"/>
+        </property>
+        <property name="lang" type="string">
+            <column name="lang"/>
+        </property>
+        <property name="profile_text_color" type="string">
+            <column name="profile_text_color"/>
+        </property>
+        <property name="access_token" type="string">
+            <column name="access_token"/>
+        </property>
+        <property name="access_token_secret" type="string">
+            <column name="access_token_secret"/>
+        </property>
     <!---->
-    <list inverse="true" lazy="false" name="conversations">
-      <key column="id"/>
-      <index column="user_id"/>
-      <one-to-many class="com.dropletweet.domain.Conversation"/>
-    </list>
-  </class>
+        <list inverse="true" lazy="false" name="conversations" >
+            <key column="user_id" />
+            <index column="id" />
+            <one-to-many class="com.dropletweet.domain.Conversation"/>
+        </list>
+    </class>
 </hibernate-mapping>

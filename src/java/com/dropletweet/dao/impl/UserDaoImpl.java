@@ -6,6 +6,7 @@ package com.dropletweet.dao.impl;
 
 import com.dropletweet.dao.UserDao;
 import com.dropletweet.domain.User;
+import com.dropletweet.util.DLog;
 import java.util.List;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -18,7 +19,13 @@ public class UserDaoImpl extends HibernateDaoSupport implements UserDao {
     @Override
     public void save(User user)
     {
-        getHibernateTemplate().saveOrUpdate(user);
+        try
+        {
+            getHibernateTemplate().saveOrUpdate(user);
+        } catch (Exception e)
+        {
+            DLog.log(e.getCause().getMessage());
+        }
     }
 
     @Override

@@ -271,8 +271,6 @@ public class ConversationServiceImpl implements ConversationService {
             } catch (IOException ex)
             {
                 DLog.log(ex.getMessage());
-                dropletService.persistTweet(seedTweet);
-                dropletService.persistUser(seedUser);
             }
             seedTweet.setUpdated(Calendar.getInstance().getTime());
             dropletService.persistTweet(seedTweet);
