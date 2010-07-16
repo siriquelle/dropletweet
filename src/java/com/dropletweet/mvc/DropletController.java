@@ -11,8 +11,6 @@ import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetTextUtil;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,6 @@ public class DropletController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
-        modelMap.clear();
         String view = "redirect:/index.jsp";
         modelMap.put("view", view);
 
@@ -74,6 +71,12 @@ public class DropletController extends AbstractController {
         return modelMap;
     }
 
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private Map doSigninView(HttpServletRequest request) throws Exception
     {
         HttpSession session = request.getSession();
@@ -101,31 +104,20 @@ public class DropletController extends AbstractController {
         HttpSession session = request.getSession();
         String refresh = request.getParameter("refresh");
         Twitter twitter = null;
-        if (request.getSession().getAttribute("requestToken") == null)
+
+        if ((Map) session.getAttribute("modelMap") == null || ((Twitter) session.getAttribute("twitter") == null))
         {
-            twitter = (Twitter) session.getAttribute("twitter");
-        } else
-        {
+
             twitter = this.getAuthorizedTwitter(session);
-        }
-        if (refresh != null)
+            updateDropletModelMap(twitter, session);
+        } else if ((Map) session.getAttribute("modelMap") != null && ((Twitter) session.getAttribute("twitter") != null & refresh != null))
         {
-            User user = new User(twitter.verifyCredentials());
-            modelMap.put("user", user);
-            List<Tweet> statusList = new LinkedList();
-            for (Status status : twitter.getFriendsTimeline())
-            {
-                Tweet tweet = new Tweet(status);
-                tweet.setText(TweetTextUtil.swapAllForLinks(tweet.getText()));
-                statusList.add(tweet);
-            }
-            Collections.reverse(statusList);
-            modelMap.put("statusList", statusList);
+            updateDropletModelMap(twitter, session);
         } else
         {
-            modelMap.put("user", (User) session.getAttribute("user"));
-            modelMap.put("statusList", (List<Tweet>) session.getAttribute("statusList"));
+            modelMap.putAll((Map) session.getAttribute("modelMap"));
         }
+
         modelMap.put("view", "index");
         return modelMap;
     }
@@ -138,6 +130,8 @@ public class DropletController extends AbstractController {
      */
     private URL getAuthorizationURL(HttpSession session) throws Exception
     {
+        session.removeAttribute("twitter");
+        session.removeAttribute("requestToken");
         Twitter twitter = new TwitterFactory().getInstance();
         twitter.setOAuthConsumer(dropletProperties.getProperty("twitter.oauth.application.key"), dropletProperties.getProperty("twitter.oauth.application.secret"));
 
@@ -145,8 +139,6 @@ public class DropletController extends AbstractController {
         String authorizationURL = requestToken.getAuthorizationURL();
         session.setAttribute("twitter", twitter);
         session.setAttribute("requestToken", requestToken);
-
-        session.setAttribute("authorizationURL", authorizationURL);
         return new URL(authorizationURL);
     }
 
@@ -163,13 +155,9 @@ public class DropletController extends AbstractController {
         {
 
             twitter.getOAuthAccessToken(requestToken);
-            User twitterUser = new User(twitter.verifyCredentials());
-            dropletService.persistUser(twitterUser);
+            twitter.verifyCredentials();
 
-            session.setAttribute("user", twitterUser);
-            session.setAttribute("statusList", twitter.getFriendsTimeline());
             session.removeAttribute("requestToken");
-            session.removeAttribute("authorizationURL");
 
         } catch (TwitterException e)
         {
@@ -215,5 +203,34 @@ public class DropletController extends AbstractController {
     {
         dropletProperties.load(DropletController.class.getResourceAsStream("droplet.properties"));
         this.dropletProperties = dropletProperties;
+    }
+
+    /**
+     *
+     * @param twitter
+     * @param statusList
+     * @throws TwitterException
+     */
+    private List<Tweet> getFormattedTweetListFromStatusList(List<Status> statusList) throws TwitterException
+    {
+        List<Tweet> formattedTweetList = new LinkedList();
+        for (Status status : statusList)
+        {
+            Tweet tweet = new Tweet(status);
+            tweet.setText(TweetTextUtil.swapAllForLinks(tweet.getText()));
+            formattedTweetList.add(tweet);
+        }
+        return formattedTweetList;
+    }
+
+    private void updateDropletModelMap(Twitter twitter, HttpSession session) throws TwitterException
+    {
+        User user = new User(twitter.verifyCredentials());
+        dropletService.persistUser(user);
+        List<Status> statusList = twitter.getFriendsTimeline();
+        List<Tweet> tweetList = getFormattedTweetListFromStatusList(statusList);
+        modelMap.put("user", user);
+        modelMap.put("tweetList", tweetList);
+        session.setAttribute("modelMap", modelMap);
     }
 }

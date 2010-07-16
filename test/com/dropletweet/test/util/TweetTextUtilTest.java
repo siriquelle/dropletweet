@@ -26,10 +26,12 @@ public class TweetTextUtilTest {
     @Test
     public void swapLinksForAnchorsTest()
     {
+        String temp = random;
         DLog.log("BEGIN : swapLinksForAnchorsTest");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapLinksForAnchors(random));
+        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("http://", "", random));
         DLog.log("END : swapLinksForAnchorsTest");
+        random = temp;
     }
 
     /**
@@ -38,10 +40,12 @@ public class TweetTextUtilTest {
     @Test
     public void swapScreenNamesForLinks()
     {
+        String temp = random;
         DLog.log("BEGIN : swapScreenNamesForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapScreenNamesForLinks(random));
+        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("@", "http://twitter.com/", random));
         DLog.log("END : swapScreenNamesForLinks");
+        random = temp;
     }
 
     /**
@@ -50,10 +54,12 @@ public class TweetTextUtilTest {
     @Test
     public void swapHashTagsForLinks()
     {
-        DLog.log("BEGIN : swapHashTagsForLinks(");
+        String temp = random;
+        DLog.log("BEGIN : swapHashTagsForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapHashTagsForLinks(random));
-        DLog.log("END : swapHashTagsForLinks(");
+        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("#", "http://twitter.com/#search?q=", random));
+        DLog.log("END : swapHashTagsForLinks");
+        random = temp;
     }
 
     /**
@@ -62,9 +68,11 @@ public class TweetTextUtilTest {
     @Test
     public void swapAllForLinks()
     {
+        String temp = random;
         DLog.log("BEGIN : swapAllForLinks(");
         DLog.log("BEFORE : " + random);
         DLog.log("AFTER : " + TweetTextUtil.swapAllForLinks(random));
         DLog.log("END : swapAllForLinks(");
+        random = temp;
     }
 }

@@ -37,9 +37,9 @@
 
                 <div class="statusStream">
                     <div id="statusUpdatePanel">
-                        <c:forEach items="${statusList}" var="status">
+                        <c:forEach items="${modelMap.tweetList}" var="tweet" >
                             <div class="status">
-                                <div class="status_text"><c:out value="${status.id}" /><c:out value="${status.text}" /> </div>
+                                <div class="status_text"><c:out value="${tweet.id}" /><c:out value="${tweet.text}" escapeXml="false" /> </div>
                             </div>
                         </c:forEach>
                     </div>
