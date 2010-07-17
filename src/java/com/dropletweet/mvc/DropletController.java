@@ -9,12 +9,18 @@ import com.dropletweet.domain.User;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetTextUtil;
+import com.ocpsoft.pretty.time.PrettyTime;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -54,6 +60,7 @@ public class DropletController extends AbstractController {
         return new ModelAndView((String) modelMap.get("view"), "modelMap", modelMap);
     }
 
+    /*******************************************************************************************************************/
     /**
      *
      * @param request
@@ -122,6 +129,7 @@ public class DropletController extends AbstractController {
         return modelMap;
     }
 
+    /*******************************************************************************************************************/
     /**
      *
      * @param request
@@ -166,10 +174,56 @@ public class DropletController extends AbstractController {
 
         return twitter;
     }
+
+    /*******************************************************************************************************************/
+    /**
+     *
+     * @param twitter
+     * @param statusList
+     * @throws TwitterException
+     */
+    private List<Tweet> getFormattedTweetListFromStatusList(List<Status> statusList) throws TwitterException
+    {
+        List<Tweet> formattedTweetList = new LinkedList();
+        for (Status status : statusList)
+        {
+            Tweet tweet = new Tweet(status);
+            tweet.setText(TweetTextUtil.swapAllForLinks(tweet.getText()));
+            try
+            {
+                DateFormat df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.search.api"));
+                tweet.setCreated_at(prettyTime.format(df.parse(tweet.getCreated_at())));
+            } catch (ParseException ex)
+            {
+                Logger.getLogger(DropletController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            formattedTweetList.add(tweet);
+        }
+        return formattedTweetList;
+    }
+
+    /**
+     * 
+     * @param twitter
+     * @param session
+     * @throws TwitterException
+     */
+    private void updateDropletModelMap(Twitter twitter, HttpSession session) throws TwitterException
+    {
+        User user = new User(twitter.verifyCredentials());
+        dropletService.persistUser(user);
+        List<Status> statusList = twitter.getFriendsTimeline();
+        List<Tweet> tweetList = getFormattedTweetListFromStatusList(statusList);
+        modelMap.put("user", user);
+        modelMap.put("tweetList", tweetList);
+        session.setAttribute("modelMap", modelMap);
+    }
+    /*******************************************************************************************************************/
     /**
      * DEPENDANCY INJECTION OBJECTS
      */
     protected Map modelMap;
+    protected PrettyTime prettyTime;
     protected DropletService dropletService;
     protected Properties dropletProperties;
 
@@ -194,6 +248,15 @@ public class DropletController extends AbstractController {
     }
 
     /**
+     * 
+     * @param prettyTime
+     */
+    public void setPrettyTime(PrettyTime prettyTime)
+    {
+        this.prettyTime = prettyTime;
+    }
+
+    /**
      * Set the value of dropletProperties
      *
      * @param dropletProperties new value of dropletProperties
@@ -203,34 +266,5 @@ public class DropletController extends AbstractController {
     {
         dropletProperties.load(DropletController.class.getResourceAsStream("droplet.properties"));
         this.dropletProperties = dropletProperties;
-    }
-
-    /**
-     *
-     * @param twitter
-     * @param statusList
-     * @throws TwitterException
-     */
-    private List<Tweet> getFormattedTweetListFromStatusList(List<Status> statusList) throws TwitterException
-    {
-        List<Tweet> formattedTweetList = new LinkedList();
-        for (Status status : statusList)
-        {
-            Tweet tweet = new Tweet(status);
-            tweet.setText(TweetTextUtil.swapAllForLinks(tweet.getText()));
-            formattedTweetList.add(tweet);
-        }
-        return formattedTweetList;
-    }
-
-    private void updateDropletModelMap(Twitter twitter, HttpSession session) throws TwitterException
-    {
-        User user = new User(twitter.verifyCredentials());
-        dropletService.persistUser(user);
-        List<Status> statusList = twitter.getFriendsTimeline();
-        List<Tweet> tweetList = getFormattedTweetListFromStatusList(statusList);
-        modelMap.put("user", user);
-        modelMap.put("tweetList", tweetList);
-        session.setAttribute("modelMap", modelMap);
     }
 }
