@@ -4,6 +4,7 @@
 <%@include file="/WEB-INF/jsp/include/tiles/base_definitions.jsp" %>
 <div class="page">
     <div id="leftColumn">
+        <img id="img_loading" src="./assets/img/load.gif" alt="Loading Conversation"/>
         <div id="container">
             <div id="infovis"></div>
         </div>
@@ -56,8 +57,14 @@
                                     </c:if>
                                 </div>
                                 <div class="tweet_actions">
-                                    <div class="tweet_action" id="reply"><a href="#"></a></div>
-                                    <div class="tweet_action" id="track">track</div>
+                                    <div class="tweet_action reply" id="<c:out value="${tweet.created_at}" />_<c:out value="${tweet.created_at}" />"><a href="#"></a></div>
+                                    <div class="tweet_action retweet" id="retweet<c:out value="${tweet.id}" />"><a href="#"></a></div>
+                                    <div class="tweet_action favourite" id="favourite<c:out value="${tweet.id}" />"><a href="#"></a></div>
+
+                                    <div class="tweet_action delete" id="delete<c:out value="${tweet.id}" />"><a href="#"></a></div>
+                                    <div class="tweet_action spam" id="spam<c:out value="${tweet.id}" />"><a href="#"></a></div>
+
+                                    <div class="tweet_action track" id="track<c:out value="${tweet.id}" />_<c:out value="${tweet.from_user}" />"><a href="#"></a></div>
                                 </div>
                             </div>
                         </c:forEach>

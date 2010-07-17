@@ -28,11 +28,12 @@ table {border-collapse: collapse;border-spacing: 0;}
     background-color:transparent;
 }
 .node{
+    color:#444545 !important;
     width:200px;
     padding:10px;
     margin-top:-30px;
-    background-color : #333;
-    border : 1px solid #888;
+    background-color : #AEF2FF;
+    border : 5px solid #87BBC5;
     text-align:left;
     overflow:hidden;
     -moz-border-radius:10px;
@@ -40,7 +41,7 @@ table {border-collapse: collapse;border-spacing: 0;}
 }
 #mycanvas-label, #mycanvas-canvas{
     position:relative;
-    top:-130px !important;
+    top:-200px !important;
 }
 /* END INFOVIS TOOLKIT*/
 /* START FONTS */
@@ -65,6 +66,7 @@ b{font-weight:bold;}
 
 /* START LEFT COLUMN*/
 #leftColumn{width:630px; float:left; z-index:100}
+#img_loading{position:relative; top:30px; display: block; width:128px; height:15px; margin:0px auto;}
 /* END LEFT COLUMN*/
 
 /* START RIGHT COLUMN*/
@@ -109,9 +111,35 @@ b{font-weight:bold;}
 .tweet_info{padding-top: 3px; clear:both; font-size: .7em;}
 .tweet_actions{padding-top: 3px; text-align: left;}
 .tweet_action{font-size: .7em; width:16px; height:16px; display: inline-block; margin-right:5px;}
-.tweet_actions #reply a{  width:16px; height:16px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -32px -48px transparent}
-.tweet_actions #reply a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -16px -48px transparent}
-.tweet_actions #reply a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll 0px -48px transparent}
+/**/
+.tweet_actions .reply a{  width:16px; height:16px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -32px -48px transparent}
+.tweet_actions .reply a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -16px -48px transparent}
+.tweet_actions .reply a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll 0px -48px transparent}
+/**/
+/**/
+.tweet_actions .retweet a{  width:16px; height:16px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -128px -48px transparent}
+.tweet_actions .retweet a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -112px -48px transparent}
+.tweet_actions .retweet a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll -96px -48px transparent}
+/**/
+
+/**/
+.tweet_actions .favourite a{  width:15px; height:15px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -32px 0px transparent}
+.tweet_actions .favourite a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -48px 0px transparent}
+.tweet_actions .favourite a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll -64px 0px transparent}
+/**/
+/**/
+.tweet_actions .delete a{  width:15px; height:15px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -112px 0px transparent}
+.tweet_actions .delete a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -128px 0px transparent}
+/**/
+/**/
+.tweet_actions .spam a{  width:15px; height:13px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -256px -32px transparent}
+.tweet_actions .spam a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -272px -32px transparent}
+/**/
+/**/
+.tweet_actions .track a{  width:16px; height:16px; display: block; background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px -16px transparent}
+.tweet_actions .track a:hover {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent}
+/**/
+
 /*END TWEET STREAM*/
 
 /* END RIGHT COLUMN*/

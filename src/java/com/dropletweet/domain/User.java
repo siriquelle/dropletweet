@@ -57,11 +57,11 @@ public class User {
 
     public User(Tweet reply)
     {
-        this.setScreen_name(reply.getFrom_user());
-        this.setId(reply.getFrom_user_id());
-        this.setLocation(reply.getLocation());
-        this.setProfile_image_url(reply.getProfile_image_url());
-        this.setLatest_tweet_id(reply.getId());
+        screen_name = reply.getFrom_user();
+        id = reply.getFrom_user_id();
+        location = reply.getLocation();
+        profile_image_url = reply.getProfile_image_url();
+        latest_tweet_id = reply.getId();
     }
 
     public User(twitter4j.User user)

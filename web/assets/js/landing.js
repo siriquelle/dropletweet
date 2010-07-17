@@ -6,11 +6,32 @@ function addEvent(obj, type, fn) {
 $(document).ready(function() {
     var seedURL = "http://twitter.com/darraghdoyle/status/18115455813";
     update(seedURL);
+
+    $(".track").click(function(){
+
+        var id = $(this).attr("id").toString();
+        id = id.substr(5, id.length);
+        
+
+        var tweetId = id.substr(0, id.indexOf("_"));
+        
+
+        var userName = id.substr(id.indexOf("_")+1, id.length)
+        
+
+        seedURL = "http://twitter.com/"+userName +"/status/" + tweetId;
+        
+
+        update(seedURL);
+    });
+
 });
 
-function update(seedURL){
-    $("#mycanvas").append("<img id=\"img_loading\"src=\"./assets/img/load.gif\" />");
 
+function update(seedURL){
+    $("#mycanvas").empty();
+    $("#infovis").empty();
+    $("#img_loading").fadeIn("fast");
     $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
@@ -28,7 +49,7 @@ function update(seedURL){
 
 function initialp(json){
     //end
-    $("#img_loading").remove();
+
     var infovis = document.getElementById('infovis');
     var w = infovis.offsetWidth , h = infovis.offsetHeight;
 
@@ -63,7 +84,6 @@ function initialp(json){
         transition: Trans.Expo.easeInOut,
         levelDistance: 100,
         onBeforeCompute: function(node){
-            
         },
         //Attach event handlers and add text to the
         //labels. This method is only triggered on label
@@ -94,13 +114,11 @@ function initialp(json){
             } else if(node._depth == 1){
                 style.fontSize = "0.8em";
                 style.opacity = "0.8";
-                style.color = "#ddd";
                 style.zIndex = "2000";
                 style.marginTop = "-40px";
                 domElement.innerHTML = node.name + " :<br />  " + node.data.tweet;
             } else if(node._depth == 2){
                 style.fontSize = "0.2em";
-                style.color = "#ddd";
                 style.opacity = "0.6";
                 style.zIndex = "1000";
                 style.marginTop = "-20px";
@@ -108,7 +126,6 @@ function initialp(json){
             }
             else if(node._depth == 3){
                 style.fontSize = "0.2em";
-                style.color = "#ddd";
                 style.opacity = "0.4";
                 style.zIndex = "1000";
                 style.marginTop = "0";
@@ -124,7 +141,7 @@ function initialp(json){
         },
 
         onAfterCompute: function(){
-            
+            $("#img_loading").fadeOut("fast");
             $(".node").draggable();
         }
     });

@@ -51,13 +51,13 @@ public class ConversationServiceImpl implements ConversationService {
     public Droplet getDropletConversation(String url)
     // <editor-fold defaultstate="collapsed" desc="Returns a Droplet object containing all tweets in the queried conversation">
     {
-
+        DLog.log("START GET DROPLET CONVERSATION");
         Tweet seedTweet = this.getSeedTweet(url);
         Droplet droplet = new Droplet();
         droplet.setSeed(seedTweet);
         Search results = this.getSearchResults(seedTweet);
         droplet.setWave(this.getAllDropletReplies(seedTweet, results));
-
+        DLog.log("END GET DROPLET CONVERSATION");
         return droplet;
     }// </editor-fold>
 
@@ -86,8 +86,9 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public String getJITConversation(String url)
     {
+        DLog.log("START GET JIT");
         Droplet droplet = getDropletConversation(url);
-        StringBuffer jit = new StringBuffer();
+        StringBuilder jit = new StringBuilder();
 
         jit.append(this.fillJIT(droplet));
 
@@ -97,19 +98,20 @@ public class ConversationServiceImpl implements ConversationService {
         {
             jcon = jcon.replace("}{", "},{");
         }
-
+        DLog.log("END GET JIT");
         return jcon.trim();
 
     }
 
     private String fillJIT(Droplet droplet)
     {
-        StringBuffer jit = new StringBuffer();
+        DLog.log("START FILL JIT");
+        StringBuilder jit = new StringBuilder();
         jit.append("{");
-        jit.append("\"id\": \"" + droplet.getSeed().getId() + "\",");
-        jit.append("\"name\": \"" + droplet.getSeed().getFrom_user() + "\",");
+        jit.append("\"id\": \"").append(droplet.getSeed().getId()).append("\",");
+        jit.append("\"name\": \"").append(droplet.getSeed().getFrom_user()).append("\",");
         jit.append("\"data\": {");
-        jit.append("\"tweet\" : \"" + droplet.getSeed().getText().replace("\n", "") + "\"");
+        jit.append("\"tweet\" : \"").append(droplet.getSeed().getText().replace("\n", "")).append("\"");
         jit.append("},");
         jit.append("\"children\": [");
         if (!droplet.getWave().isEmpty())
@@ -121,7 +123,9 @@ public class ConversationServiceImpl implements ConversationService {
         }
         jit.append("]");
         jit.append("}");
+        DLog.log("END FILL JIT");
         return jit.toString();
+
     }
 
     /**
@@ -238,7 +242,6 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Searches local database for latest tweet recorded and queries twitter for any tweets after it.">
     {
         DLog.log("START GET SEARCH RESULTS FROM TWITTER");
-        DLog.log("TWEET UPDATE TIME : " + String.valueOf(seedTweet.getUpdated().getTime()));
         DLog.log("CURRENT TIME : " + String.valueOf(new Date().getTime() - NOW_MINUS_SIX_HOURS_IN_MILLISECONDS));
         Search search = null;
         if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (new Date().getTime() - NOW_MINUS_SIX_HOURS_IN_MILLISECONDS)))
@@ -275,6 +278,8 @@ public class ConversationServiceImpl implements ConversationService {
             seedTweet.setUpdated(Calendar.getInstance().getTime());
             dropletService.persistTweet(seedTweet);
             dropletService.persistUser(seedUser);
+            DLog.log("TWEET UPDATE TIME : " + String.valueOf(seedTweet.getUpdated().getTime()));
+
         }
 
         DLog.log("END GET SEARCH RESULTS FROM TWITTER");
