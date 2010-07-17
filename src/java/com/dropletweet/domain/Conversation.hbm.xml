@@ -8,10 +8,10 @@
       <generator class="native"/>
     </id>
     <!-- -->
-    <many-to-one cascade="persist" class="com.dropletweet.domain.User" fetch="select" name="user">
-      <column name="user_id"/>
+    <many-to-one cascade="none" class="com.dropletweet.domain.User" fetch="select" name="user">
+      <column name="user_id" />
     </many-to-one>
-    <many-to-one cascade="persist" class="com.dropletweet.domain.Tweet" fetch="select" name="tweet">
+    <many-to-one cascade="none" class="com.dropletweet.domain.Tweet" fetch="select" name="tweet">
       <column name="tweet_id"/>
     </many-to-one>
   </class>
