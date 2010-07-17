@@ -46,7 +46,7 @@ public class TweetTextUtil {
 
                         String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
 
-                        anchor = "<a href=\"" + link + "\" class=\"outlink\" >" + value + "</a>";
+                        anchor = "<a href=\"" + link + "\" class=\"outlink\" target=\"_blank\" >" + value + "</a>";
                         tweet = tweet.replace(value, anchor);
                         linkEnd = tweet.indexOf("</a>", linkEnd);
                     } else
