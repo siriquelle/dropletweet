@@ -11,6 +11,7 @@
         <property name="dropletService" ref="dropletService" />
         <property name="modelMap" ref="modelMap" />
         <property name="dropletProperties" ref="dropletProperties" />
+        <property name="prettyTime" ref="prettyTime" />
     </bean>
     <!---->
     <!--Droplet API Controllers-->
@@ -32,6 +33,7 @@
     <!--Random Objects-->
     <bean id="modelMap" class="java.util.HashMap" scope="prototype"/>
     <bean id="dropletProperties" class="java.util.Properties" />
+    <bean id="prettyTime" class="com.ocpsoft.pretty.time.PrettyTime" />
     <!---->
 
     <bean id="urlMapping"

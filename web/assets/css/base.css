@@ -97,15 +97,22 @@ b{font-weight:bold;}
 .actions #retweets a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
 .actions #favourites a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
 /*END STREAM ACTIONS*/
-.tweet{ }
-.tweet .tweet_text{width:265px; height:35px; padding:2px; margin:3px 0px; }
+.new_tweet_container{ }
+.new_tweet_container .new_tweet_text{width:265px; height:35px; padding:2px; margin:3px 0px; }
 /* END ACTIONS */
-/*START STATUS STREAM*/
-.statusStream{clear:both;border-left: 1px solid #85B6BF; max-height:400px; overflow:auto;}
 
-.status{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
-.status_text{text-shadow:0px 0px 1px #85B6BF;}
-/*END STATUS STREAM*/
+/*START TWEET STREAM*/
+.tweet_stream{border-left: 1px solid #85B6BF; max-height:400px; overflow:auto; width:287px;}
+.tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
+.tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
+.tweet_text{text-shadow:0px 0px 1px #85B6BF; font-size: .9em}
+.tweet_info{padding-top: 3px; clear:both; font-size: .7em;}
+.tweet_actions{padding-top: 3px; text-align: left;}
+.tweet_action{font-size: .7em; width:16px; height:16px; display: inline-block; margin-right:5px;}
+.tweet_actions #reply a{  width:16px; height:16px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -32px -48px transparent}
+.tweet_actions #reply a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -16px -48px transparent}
+.tweet_actions #reply a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll 0px -48px transparent}
+/*END TWEET STREAM*/
 
 /* END RIGHT COLUMN*/
 

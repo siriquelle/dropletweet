@@ -31,15 +31,34 @@
 
                 </div>
 
-                <div class="tweet">
-                    <textarea cols="1" rows="1" class="tweet_text"></textarea>
+                <div class="new_tweet_container">
+                    <textarea cols="1" rows="1" class="new_tweet_text"></textarea>
                 </div>
 
-                <div class="statusStream">
-                    <div id="statusUpdatePanel">
+                <div class="tweet_stream">
+                    <div id="tweetUpdatePanel">
                         <c:forEach items="${modelMap.tweetList}" var="tweet" >
-                            <div class="status">
-                                <div class="status_text"><c:out value="${tweet.id}" /><c:out value="${tweet.text}" escapeXml="false" /> </div>
+                            <div class="tweet_container">
+                                <div class="tweet_profile_image_container">
+                                    <img src="<c:out value="${tweet.profile_image_url}" />" alt="" height="48px" width="48px" />
+                                </div>
+                                <div class="tweet_text">
+                                    <c:out value="${tweet.text}" escapeXml="false" />
+                                </div>
+                                <div class="tweet_info">
+                                    <c:out value="${tweet.created_at}" />
+                                    via
+                                    <c:out value="${tweet.source}" escapeXml="false"/>
+                                    <c:if test="${tweet.in_reply_to_id > -1}">
+                                        <a href="http://twitter.com/<c:out value="${tweet.to_user}" />/status/<c:out value="${tweet.in_reply_to_id}" />" >in reply to
+                                            <c:out value="${tweet.to_user}" />
+                                        </a>
+                                    </c:if>
+                                </div>
+                                <div class="tweet_actions">
+                                    <div class="tweet_action" id="reply"><a href="#"></a></div>
+                                    <div class="tweet_action" id="track">track</div>
+                                </div>
                             </div>
                         </c:forEach>
                     </div>
