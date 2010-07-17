@@ -43,6 +43,14 @@ table {border-collapse: collapse;border-spacing: 0;}
     top:-130px !important;
 }
 /* END INFOVIS TOOLKIT*/
+/* START FONTS */
+@font-face {
+    font-family: 'Reenie Beanie';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Reenie Beanie'), url('../fnt/ReenieBeanie.ttf') format('truetype');
+}
+/*END FONTS*/
 
 /*START GLOBAL STYLE*/
 body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}

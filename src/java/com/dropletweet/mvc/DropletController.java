@@ -110,9 +110,9 @@ public class DropletController extends AbstractController {
 
             twitter = this.getAuthorizedTwitter(session);
             updateDropletModelMap(twitter, session);
-        } else if ((Map) session.getAttribute("modelMap") != null && ((Twitter) session.getAttribute("twitter") != null & refresh != null))
+        } else if ((Map) session.getAttribute("modelMap") != null && (Twitter) session.getAttribute("twitter") != null && refresh != null)
         {
-            updateDropletModelMap(twitter, session);
+            updateDropletModelMap((Twitter) session.getAttribute("twitter"), session);
         } else
         {
             modelMap.putAll((Map) session.getAttribute("modelMap"));
