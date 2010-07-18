@@ -101,10 +101,5 @@
             <column name="access_token_secret"/>
         </property>
     <!---->
-        <list inverse="true" lazy="false" name="conversations" fetch="select">
-            <key column="id" />
-            <index column="user_id" />
-            <one-to-many class="com.dropletweet.domain.Conversation" />
-        </list>
     </class>
 </hibernate-mapping>

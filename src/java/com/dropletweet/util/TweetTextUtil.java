@@ -4,6 +4,11 @@
  */
 package com.dropletweet.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Siriquelle
@@ -19,6 +24,8 @@ public class TweetTextUtil {
      */
     public static String swapForAnchors(String key, String href, String tweet)
     {
+        DLog.log("START SWAP FOR ANCHORS");
+        DLog.log(tweet);
         String value = "";
         String anchor = "";
 
@@ -29,9 +36,11 @@ public class TweetTextUtil {
 
         try
         {
-            while (linkStart != -1)
+            int count = 0;
+            while (linkStart != -1 && count++ < 15)
             {
                 linkStart = tweet.indexOf(key, linkEnd);
+
                 if (linkEnd > -1)
                 {
                     linkEnd = tweet.indexOf(" ", linkStart);
@@ -42,13 +51,20 @@ public class TweetTextUtil {
 
                     if (linkStart < linkEnd && linkStart >= 0)
                     {
-                        value = tweet.substring(linkStart, linkEnd);
+                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches(" "))
+                        {
+                            value = tweet.substring(linkStart, linkEnd);
 
-                        String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
+                            String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
 
-                        anchor = "<a href=\"" + link + "\" class=\"outlink\" target=\"_blank\" >" + value + "</a>";
-                        tweet = tweet.replace(value, anchor);
-                        linkEnd = tweet.indexOf("</a>", linkEnd);
+                            anchor = "<a href=\"" + link + "\" class=\"outlink\" target=\"_blank\" >" + value + "</a>";
+                            tweet = tweet.replace(value, anchor);
+                            linkEnd = tweet.indexOf("</a>", linkEnd);
+                        }
+                        if (count == 14)
+                        {
+                            DLog.log(anchor);
+                        }
                     } else
                     {
                         linkEnd = linkStart;
@@ -62,6 +78,8 @@ public class TweetTextUtil {
         {
             DLog.log(e.toString());
         }
+
+        DLog.log("END SWAP FOR ANCHORS");
         return tweet;
     }
 
@@ -72,12 +90,23 @@ public class TweetTextUtil {
      */
     public static String swapAllForLinks(String tweet)
     {
+        DLog.log("START SWAP ALL FOR LINKS");
         tweet = swapForAnchors("http://", "", tweet);
-        DLog.log("FIRST STEP");
-        tweet = swapForAnchors("@", "http://twitter.com/", tweet);
-        DLog.log("SECOND STEP");
-        tweet = swapForAnchors("#", "http://twitter.com/#search?q=", tweet);
 
+        tweet = swapForAnchors("@", "http://twitter.com/", tweet);
+
+        tweet = swapForAnchors("#", "http://twitter.com/#search?q=", tweet);
+        DLog.log(tweet);
+        DLog.log("END SWAP ALL FOR LINKS");
+        return tweet.replace("\n", "");
+    }
+
+    public static String encodeTweetTextQuotes(String tweet)
+    {
+
+        tweet = tweet.replaceAll("\"", "'");
+        tweet = tweet.replace("\n", "");
+        tweet = tweet.trim();
         return tweet;
     }
 }

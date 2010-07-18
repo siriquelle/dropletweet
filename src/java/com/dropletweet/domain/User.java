@@ -48,9 +48,7 @@ public class User {
     protected String profile_text_color;
     protected String access_token;
     protected String access_token_secret;
-    //
-    protected List<Conversation> conversations = new ArrayList<Conversation>(0);
-
+    
     public User()
     {
     }
@@ -658,21 +656,4 @@ public class User {
         this.access_token_secret = access_token_secret;
     }
 
-    /**
-     *
-     * @return
-     */
-    public List<Conversation> getConversations()
-    {
-        return conversations;
-    }
-
-    /**
-     * 
-     * @param conversations
-     */
-    public void setConversations(List<Conversation> conversations)
-    {
-        this.conversations = conversations;
-    }
 }

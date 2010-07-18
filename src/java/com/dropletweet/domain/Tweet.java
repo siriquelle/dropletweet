@@ -6,6 +6,7 @@ package com.dropletweet.domain;
 
 import com.dropletweet.model.Single;
 import java.util.Date;
+import twitter4j.DirectMessage;
 import twitter4j.Status;
 
 /**
@@ -69,6 +70,33 @@ public class Tweet {
         this.created_at = status.getCreatedAt().toString();
         this.iso_language_code = status.getUser().getLang();
         this.location = status.getUser().getLocation();
+    }
+
+    public Tweet(twitter4j.Tweet tweet)
+    {
+        this.id = tweet.getId();
+
+        this.from_user = tweet.getFromUser();
+        this.from_user_id = tweet.getFromUserId();
+        this.to_user = tweet.getToUser();
+        this.to_user_id = tweet.getToUserId();
+        this.source = tweet.getSource();
+        this.profile_image_url = tweet.getProfileImageUrl();
+        this.text = tweet.getText();
+        this.created_at = tweet.getCreatedAt().toString();
+        this.iso_language_code = tweet.getIsoLanguageCode();
+        this.location = tweet.getGeoLocation().toString();
+    }
+
+    public Tweet(DirectMessage directMessage)
+    {
+        this.id = new Long(directMessage.getId());
+        this.from_user = directMessage.getSenderScreenName();
+        this.from_user_id = directMessage.getSenderId();
+        this.to_user = directMessage.getRecipientScreenName();
+        this.to_user_id = directMessage.getRecipientId();
+        this.text = directMessage.getText();
+        this.created_at = directMessage.getCreatedAt().toString();
     }
 
     /**

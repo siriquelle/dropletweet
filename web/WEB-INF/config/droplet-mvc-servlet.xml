@@ -9,7 +9,6 @@
     <!---->
     <bean id="DropletController" class="com.dropletweet.mvc.DropletController" >
         <property name="dropletService" ref="dropletService" />
-        <property name="modelMap" ref="modelMap" />
         <property name="dropletProperties" ref="dropletProperties" />
         <property name="prettyTime" ref="prettyTime" />
     </bean>
@@ -17,21 +16,17 @@
     <!--Droplet API Controllers-->
     <bean id="JsonConversationController" class="com.dropletweet.mvc.api.JsonConversationController" >
         <property name="conversationService" ref="conversationService" />
-        <property name="modelMap" ref="modelMap" />
     </bean>
 
     <bean id="JitConversationController" class="com.dropletweet.mvc.api.JitConversationController" >
         <property name="conversationService" ref="conversationService" />
-        <property name="modelMap" ref="modelMap" />
     </bean>
 
     <bean id="SignupController" class="com.dropletweet.mvc.api.SignupController" >
         <property name="dropletService" ref="dropletService" />
-        <property name="modelMap" ref="modelMap" />
     </bean>
     <!---->
     <!--Random Objects-->
-    <bean id="modelMap" class="java.util.HashMap" scope="prototype"/>
     <bean id="dropletProperties" class="java.util.Properties" />
     <bean id="prettyTime" class="com.ocpsoft.pretty.time.PrettyTime" />
     <!---->
@@ -44,6 +39,7 @@
                 <prop key="/jit.json" >JitConversationController</prop>
                 <prop key="/signup.json" >SignupController</prop>
                 <prop key="*.htm" >DropletController</prop>
+                <prop key="*.ajax" >DropletController</prop>
             </props>
         </property>
         <property name="alwaysUseFullPath">

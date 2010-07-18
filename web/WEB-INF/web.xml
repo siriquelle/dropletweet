@@ -10,10 +10,11 @@
         <param-value>
             /WEB-INF/config/spring-hibernate.xml
             /WEB-INF/config/spring-services.xml
+            /WEB-INF/config/spring-security.xml
+            /WEB-INF/config/properties.xml
         </param-value>
     </context-param>
 <!---->
-
     <servlet>
         <description>Spring MVC Dispatcher Servlet</description>
         <servlet-name>DispatcherServlet</servlet-name>
@@ -24,16 +25,34 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!---->
+<!---->
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>*.htm</url-pattern>
     </servlet-mapping>
-    <!---->
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>*.ajax</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>*.json</url-pattern>
     </servlet-mapping>
+<!---->
+    <filter>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
+        <init-param>
+            <param-name>targetClass</param-name>
+            <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 <!---->
     <session-config>
         <session-timeout>
@@ -41,6 +60,6 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
 </web-app>

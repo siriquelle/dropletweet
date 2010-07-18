@@ -12,10 +12,12 @@ import com.dropletweet.model.Single;
 import com.dropletweet.model.Droplet;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
+import com.dropletweet.util.TweetTextUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -111,7 +113,9 @@ public class ConversationServiceImpl implements ConversationService {
         jit.append("\"id\": \"").append(droplet.getSeed().getId()).append("\",");
         jit.append("\"name\": \"").append(droplet.getSeed().getFrom_user()).append("\",");
         jit.append("\"data\": {");
-        jit.append("\"tweet\" : \"").append(droplet.getSeed().getText().replace("\n", "")).append("\"");
+        String formattedText = TweetTextUtil.swapAllForLinks(droplet.getSeed().getText());
+        formattedText = TweetTextUtil.encodeTweetTextQuotes(formattedText);
+        jit.append("\"tweet\" : \"").append(formattedText).append("\"");
         jit.append("},");
         jit.append("\"children\": [");
         if (!droplet.getWave().isEmpty())
@@ -271,9 +275,12 @@ public class ConversationServiceImpl implements ConversationService {
                         seedUser.setLatest_tweet_id(tweet.getId());
                     }
                 }
-            } catch (IOException ex)
+            } catch (FileNotFoundException ex)
             {
                 DLog.log(ex.getMessage());
+            } catch (IOException ioe)
+            {
+                seedUser.setLatest_tweet_id(null);
             }
             seedTweet.setUpdated(Calendar.getInstance().getTime());
             dropletService.persistTweet(seedTweet);

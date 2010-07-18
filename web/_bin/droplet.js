@@ -20,16 +20,16 @@ $(document).ready(function() {
         
         if(seedURL != url){           
             url = seedURL;
-            update(seedURL);
+            updateConversation(seedURL);
         }
     });
     $("#btn_UpdateConversation").click(function(){
-        update(seedURL);
+        updateConversation(seedURL);
     });
 
 });
 
-function update(seedURL){
+function updateConversation(seedURL){
     Log.write("<img src=\"./assets/img/load.gif\" />");
 
     document.getElementById('infovis').innerHTML = "";
@@ -128,7 +128,7 @@ function initialp(json){
                 style.marginTop = "-20px";
                 domElement.innerHTML = node.name;
             }
-             else if(node._depth == 3){
+            else if(node._depth == 3){
                 style.fontSize = "0.2em";
                 style.color = "#ddd";
                 style.opacity = "0.4";
