@@ -7,7 +7,7 @@
         <c:if test="${tweet.profile_image_url != null}">
             <div class="tweet_profile_image_container">
                 <a href="http://twitter.com/<c:out value="${tweet.from_user}" />" title="<c:out value="${tweet.from_user}" />" >
-                    <img src="<c:out value="${tweet.profile_image_url}" />" alt="" height="48px" width="48px" />
+                    <img src="<c:out value="${tweet.profile_image_url}" />" alt="<c:out value="${tweet.from_user}" />" height="48px" width="48px" />
                 </a>
             </div>
         </c:if>

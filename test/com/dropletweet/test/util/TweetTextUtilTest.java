@@ -5,7 +5,7 @@
 package com.dropletweet.test.util;
 
 import org.junit.Test;
-import com.dropletweet.util.TweetTextUtil;
+import com.dropletweet.util.TweetUtil;
 import com.dropletweet.util.DLog;
 
 /**
@@ -29,7 +29,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapLinksForAnchorsTest");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("http://", "", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("http://", "", random));
         DLog.log("END : swapLinksForAnchorsTest");
         random = temp;
     }
@@ -43,7 +43,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapScreenNamesForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("@", "http://twitter.com/", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("@", "http://twitter.com/", random));
         DLog.log("END : swapScreenNamesForLinks");
         random = temp;
     }
@@ -57,7 +57,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapHashTagsForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapForAnchors("#", "http://twitter.com/#search?q=", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("#", "http://twitter.com/#search?q=", random));
         DLog.log("END : swapHashTagsForLinks");
         random = temp;
     }
@@ -71,7 +71,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapAllForLinks(");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetTextUtil.swapAllForLinks(random));
+        DLog.log("AFTER : " + TweetUtil.swapAllForLinks(random));
         DLog.log("END : swapAllForLinks(");
         random = temp;
     }

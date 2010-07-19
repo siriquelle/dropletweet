@@ -4,8 +4,13 @@
  */
 package com.dropletweet.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.dropletweet.mvc.DropletController;
+import com.ocpsoft.pretty.time.PrettyTime;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Siriquelle
  */
-public class TweetTextUtil {
+public class TweetUtil {
 
     /**
      * 
@@ -108,5 +113,38 @@ public class TweetTextUtil {
         tweet = tweet.replace("\n", "");
         tweet = tweet.trim();
         return tweet;
+    }
+    protected static PrettyTime prettyTime = new PrettyTime();
+    protected static Properties dropletProperties = new Properties();
+
+    public static String getDateAsPrettyTime(String created_at)
+    {
+        try
+        {
+            dropletProperties.load(DropletController.class.getResourceAsStream("droplet.properties"));
+            DateFormat df = null;
+            if (created_at.charAt(3) == ',')
+            {
+                df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.rest.api"));
+
+            } else
+            {
+                df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.search.api"));
+            }
+            try
+            {
+                created_at = prettyTime.format(df.parse(created_at));
+            } catch (ParseException ex)
+            {
+
+                Logger.getLogger(TweetUtil.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+
+        } catch (IOException ex)
+        {
+            Logger.getLogger(TweetUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return created_at;
     }
 }

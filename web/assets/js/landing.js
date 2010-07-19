@@ -1,9 +1,10 @@
 /**********************************************************************/
 var loadingImage;
-
+var currentAction = "home";
+var intervalID = null;
+//
 $(document).ready(function() {
-    //var seedURL = "https://twitter.com/dropletweet/status/18859376985";
-    var seedURL = "http://twitter.com/ConanOBrien/status/18769159235";
+    var seedURL = "https://twitter.com/dropletweet/status/18859376985";
     createLoadingImage();
     updateConversation(seedURL);
     tweetStreamHooks();
@@ -22,25 +23,25 @@ function createLoadingImage(){
 
 }
 
-function updateHooks(){    
+
+function updateHooks(){
+
+    if(intervalID != null){
+        clearInterval(intervalID);
+    }
+
     tweetHooks();
+    
+    intervalID = setInterval("ajaxAction('"+ currentAction +"')", 180000);
 }
 
 /******************************************************************************/
 
 function tweetStreamHooks(){
     $(".action").click(function(){
-        $("#message_out").append(loadingImage);
         var action = $(this).attr("id").toString();
-        $.ajax({
-            url: "./statuslist.ajax?action=" + action,
-            success: function(data) {
-                $("#tweetUpdatePanel").empty();
-                $("#tweetUpdatePanel").append(data);              
-                updateHooks();
-                $("#message_out").empty();
-            }
-        });
+        currentAction = action;
+        ajaxAction(action);
     });
 
     $("#new_tweet_submit_btn").click(function(){
@@ -58,6 +59,21 @@ function tweetStreamHooks(){
             }
         });
 
+    });
+    
+}
+
+function ajaxAction(action){
+
+    $("#message_out").append(loadingImage);
+    $.ajax({
+        url: "./statuslist.ajax?action=" + action,
+        success: function(data) {
+            $("#tweetUpdatePanel").empty();
+            $("#tweetUpdatePanel").append(data);
+            updateHooks();
+            $("#message_out").empty();
+        }
     });
 }
 /******************************************************************************/
@@ -237,7 +253,6 @@ function initialp(json){
         //labels. This method is only triggered on label
         //creation
         onCreateLabel: function(domElement, node){
-            domElement.innerHTML = node.name + " " + node.data.tweet;
             addEvent(domElement, 'click', function () {
                 ht.onClick(node.id);
             });
@@ -256,14 +271,14 @@ function initialp(json){
                 style.marginLeft = "0px";
                 style.marginTop = "-60px";
 
-                domElement.innerHTML = node.name + " :<br /> " + node.data.tweet;
+                domElement.innerHTML = getDomElement(node);
 
             } else if(node._depth == 1){
                 style.fontSize = "0.8em";
                 style.opacity = "0.8";
                 style.zIndex = "2000";
                 style.marginTop = "-40px";
-                domElement.innerHTML = node.name + " :<br />  " + node.data.tweet;
+                domElement.innerHTML = getDomElement(node);
             } else if(node._depth == 2){
                 style.fontSize = "0.2em";
                 style.opacity = "0.6";
@@ -280,7 +295,7 @@ function initialp(json){
             }
             else {
                 style.fontSize = "0.2em";
-                style.opacity = "0.2";
+                style.opacity = "1";
                 style.zIndex = "500";
                 style.marginTop = "0";
                 domElement.innerHTML = node.name;
@@ -305,4 +320,30 @@ function initialp(json){
     //end
     ht.controller.onAfterCompute();
 
+}
+
+function getDomElement(node){
+    var domElement = "\
+                            <div class=\"node_tweet_container\">\
+                                <div class=\"tweet_profile_image_container\">\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" >\
+                                        <img src=\""+ node.data.profile_image_url +"\" alt=\""+ node.data.from_user +"\" height=\"48px\" width=\"48px\" />\
+                                    </a>\
+                                </div>\
+\
+                                <div class=\"tweet_text\">\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\">"+ node.data.from_user +"</a> "+ node.data.text +"\
+                                </div>\
+                                <div class=\"tweet_info\">\
+                                    "+ node.data.created_at +"\
+                                    via\
+                                    "+ node.data.source +"\
+                                </div>\
+                                <div class=\"tweet_actions\">\
+                                    <div class=\"tweet_action reply\" id=\"reply"+ node.data.id +"_"+ node.data.from_user +"\"><a href=\"#\"></a></div>\
+                                    <div class=\"tweet_action retweet\" id=\"retweet"+ node.data.id +"\"><a href=\"#\"></a></div>\
+                                    <div class=\"tweet_action favourite\" id=\"favourite"+ node.data.id +"\"><a href=\"#\"></a></div>\
+                                </div>\
+                            </div>";
+    return domElement;
 }

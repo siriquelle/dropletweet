@@ -119,6 +119,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /*START TWEET STREAM*/
 .tweet_stream{border-left: 1px solid #85B6BF; max-height:400px; overflow:auto; width:289px; clear:both; margin-top:3px; }
 .tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
+.node_tweet_container{background-color:#C6F6FF; padding:2px; -moz-border-radius:5px; -webkit-border-radius:5px; }
 .tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
 /**/
 .tweet_text{text-shadow:0px 0px 1px #85B6BF; font-size: .9em}

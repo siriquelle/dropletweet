@@ -9,8 +9,6 @@
     <!---->
     <bean id="DropletController" class="com.dropletweet.mvc.DropletController" >
         <property name="dropletService" ref="dropletService" />
-        <property name="dropletProperties" ref="dropletProperties" />
-        <property name="prettyTime" ref="prettyTime" />
     </bean>
     <!---->
     <!--Droplet API Controllers-->
@@ -25,10 +23,6 @@
     <bean id="SignupController" class="com.dropletweet.mvc.api.SignupController" >
         <property name="dropletService" ref="dropletService" />
     </bean>
-    <!---->
-    <!--Random Objects-->
-    <bean id="dropletProperties" class="java.util.Properties" />
-    <bean id="prettyTime" class="com.ocpsoft.pretty.time.PrettyTime" />
     <!---->
 
     <bean id="urlMapping"
