@@ -359,31 +359,37 @@ public class DropletController extends AbstractController {
      * @param session
      * @throws TwitterException
      */
-    private Map updateModelMap(Twitter twitter, HttpServletRequest request) throws TwitterException
+    private Map updateModelMap(Twitter twitter, HttpServletRequest request)
     {
         Map modelMap = getModelMap(request);
+        try
+        {
 
-        List<Status> statusListFriends = twitter.getFriendsTimeline(new Paging(Long.valueOf("15000000000")));
-        List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
-        DLog.sleep();
-        List<Status> statusListReplies = twitter.getMentions(new Paging(Long.valueOf("15000000000")));
-        List<Tweet> replyList = getFormattedTweetListFromStatusList(statusListReplies);
-        DLog.sleep();
-        List<Tweet> dmList = getFormattedTweetListFromTweetList(this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(Long.valueOf("15000000000")))));
-        DLog.sleep();
-        List<Status> statusListSent = twitter.getUserTimeline(new Paging(Long.valueOf("15000000000")));
-        List<Tweet> sentList = getFormattedTweetListFromStatusList(statusListSent);
+            User user = new User(twitter.verifyCredentials());
+            List<Status> statusListFriends = twitter.getFriendsTimeline(new Paging(Long.valueOf("15000000000")));
+            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
+            DLog.sleep();
+            List<Status> statusListReplies = twitter.getMentions(new Paging(Long.valueOf("15000000000")));
+            List<Tweet> replyList = getFormattedTweetListFromStatusList(statusListReplies);
+            DLog.sleep();
+            List<Tweet> dmList = getFormattedTweetListFromTweetList(this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(Long.valueOf("15000000000")))));
+            DLog.sleep();
+            List<Status> statusListSent = twitter.getUserTimeline(new Paging(Long.valueOf("15000000000")));
+            List<Tweet> sentList = getFormattedTweetListFromStatusList(statusListSent);
+            modelMap.put("tweetList", friendsList);
+            modelMap.put("friendsList", friendsList);
+            modelMap.put("replyList", replyList);
+            modelMap.put("dmList", dmList);
+            modelMap.put("sentList", sentList);
+            user.setLatest_tweet_id(friendsList.get(0).getId());
+            dropletService.persistUser(user);
+            modelMap.put("user", user);
 
-        modelMap.put("tweetList", friendsList);
-        modelMap.put("friendsList", friendsList);
-        modelMap.put("replyList", replyList);
-        modelMap.put("dmList", dmList);
-        modelMap.put("sentList", sentList);
-
-        User user = new User(twitter.verifyCredentials());
-        user.setLatest_tweet_id(friendsList.get(0).getId());
-        dropletService.persistUser(user);
-        modelMap.put("user", user);
+        } catch (TwitterException ex)
+        {
+            request.getSession().invalidate();
+            DLog.log(ex.getMessage());
+        }
         return modelMap;
     }
 
