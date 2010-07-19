@@ -9,6 +9,7 @@
     <!---->
     <bean id="DropletController" class="com.dropletweet.mvc.DropletController" >
         <property name="dropletService" ref="dropletService" />
+        <property name="dropletProperties" ref="dropletProperties" />
     </bean>
     <!---->
     <!--Droplet API Controllers-->
@@ -24,7 +25,8 @@
         <property name="dropletService" ref="dropletService" />
     </bean>
     <!---->
-
+    <bean id="dropletProperties" class="com.dropletweet.props.DropletProperties" />
+    <!---->
     <bean id="urlMapping"
       class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">

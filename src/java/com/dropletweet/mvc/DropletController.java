@@ -7,20 +7,15 @@ package com.dropletweet.mvc;
 import com.dropletweet.domain.Conversation;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
+import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetUtil;
-import com.ocpsoft.pretty.time.PrettyTime;
-import java.io.IOException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -140,9 +135,8 @@ public class DropletController extends AbstractController {
     private Map doDropletView(HttpServletRequest request) throws TwitterException
     {
         Map modelMap = getModelMap(request);
-        modelMap.put("view", "index");
+        modelMap.put("view", "droplet");
         HttpSession session = request.getSession();
-        String refresh = request.getParameter("refresh");
         if ((Map) session.getAttribute("modelMap") == null || ((Twitter) session.getAttribute("twitter") == null))
         {
             request.getSession().invalidate();
@@ -151,8 +145,6 @@ public class DropletController extends AbstractController {
         {
             modelMap.putAll((Map) session.getAttribute("modelMap"));
         }
-
-
         return modelMap;
     }
 
@@ -462,14 +454,9 @@ public class DropletController extends AbstractController {
         for (Tweet tweet : tweetList)
         {
             tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
-            try
-            {
-                DateFormat df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.search.api"));
-                tweet.setCreated_at(prettyTime.format(df.parse(tweet.getCreated_at())));
-            } catch (ParseException ex)
-            {
-                Logger.getLogger(DropletController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
+            TweetUtil.getDateAsPrettyTime(tweet.getCreated_at());
+
             formattedTweetList.add(tweet);
         }
         return formattedTweetList;
@@ -507,9 +494,8 @@ public class DropletController extends AbstractController {
     /*******************************************************************************/
     /*START DEPENDANCY INJECTION OBJECTS*/
     /*******************************************************************************/
-    protected PrettyTime prettyTime;
     protected DropletService dropletService;
-    protected Properties dropletProperties;
+    protected DropletProperties dropletProperties;
 
     /**
      * Set the value of rssService
@@ -519,5 +505,10 @@ public class DropletController extends AbstractController {
     public void setDropletService(DropletService dropletService)
     {
         this.dropletService = dropletService;
+    }
+
+    public void setDropletProperties(DropletProperties dropletProperties)
+    {
+        this.dropletProperties = dropletProperties;
     }
 }

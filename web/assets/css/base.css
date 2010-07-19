@@ -27,9 +27,8 @@ table {border-collapse: collapse;border-spacing: 0;}
     position:relative;
     background-color:transparent;
 }
-.node{
-    color:#0F4853 !important;
-    width:200px;
+.node{    color:#0F4853 !important;
+    width:240px;
     padding:10px;
     margin-top:-30px;
     background-color : #AEF2FF;
@@ -39,6 +38,9 @@ table {border-collapse: collapse;border-spacing: 0;}
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
 }
+
+.node_tweet_container{background-color:#C6F6FF; padding:5px; -moz-border-radius:5px; -webkit-border-radius:5px; }
+
 #mycanvas-label, #mycanvas-canvas{
     top:-139px !important;
     left:-20px !important;
