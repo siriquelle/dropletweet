@@ -15,6 +15,7 @@ import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetTextUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+import com.ocpsoft.pretty.time.PrettyTime;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -109,13 +110,19 @@ public class ConversationServiceImpl implements ConversationService {
     {
         DLog.log("START FILL JIT");
         StringBuilder jit = new StringBuilder();
+        Tweet tweet = droplet.getSeed();
         jit.append("{");
-        jit.append("\"id\": \"").append(droplet.getSeed().getId()).append("\",");
-        jit.append("\"name\": \"").append(droplet.getSeed().getFrom_user()).append("\",");
+        jit.append("\"id\": \"").append(tweet.getId()).append("\",");
+        jit.append("\"name\": \"").append(tweet.getFrom_user()).append("\",");
         jit.append("\"data\": {");
         String formattedText = TweetTextUtil.swapAllForLinks(droplet.getSeed().getText());
         formattedText = TweetTextUtil.encodeTweetTextQuotes(formattedText);
-        jit.append("\"tweet\" : \"").append(formattedText).append("\"");
+        jit.append("\"tweet\" : \"").append(formattedText).append("\",");
+        jit.append("\"id\" : \"").append(tweet.getId()).append("\",");
+        jit.append("\"from_user\" : \"").append(tweet.getFrom_user()).append("\",");
+        jit.append("\"created_at\" : \"").append(tweet.getCreated_at()).append("\",");
+        jit.append("\"profile_image_url\" : \"").append(tweet.getProfile_image_url()).append("\",");
+        jit.append("\"source\" : \"").append(TweetTextUtil.encodeTweetTextQuotes(tweet.getSource())).append("\"");
         jit.append("},");
         jit.append("\"children\": [");
         if (!droplet.getWave().isEmpty())

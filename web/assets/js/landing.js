@@ -2,8 +2,8 @@
 var loadingImage;
 
 $(document).ready(function() {
-    var seedURL = "https://twitter.com/dropletweet/status/18859376985";
-
+    //var seedURL = "https://twitter.com/dropletweet/status/18859376985";
+    var seedURL = "http://twitter.com/ConanOBrien/status/18769159235";
     createLoadingImage();
     updateConversation(seedURL);
     tweetStreamHooks();
@@ -279,7 +279,11 @@ function initialp(json){
                 domElement.innerHTML = node.name;
             }
             else {
-                style.display = 'none';
+                style.fontSize = "0.2em";
+                style.opacity = "0.2";
+                style.zIndex = "500";
+                style.marginTop = "0";
+                domElement.innerHTML = node.name;
             }
 
             var left = parseInt(style.left);

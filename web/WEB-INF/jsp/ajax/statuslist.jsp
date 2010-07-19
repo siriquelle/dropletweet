@@ -26,7 +26,7 @@
             </c:if>
         </div>
         <div class="tweet_actions">
-            <div class="tweet_action reply" id="<c:out value="${tweet.created_at}" />_<c:out value="${tweet.created_at}" />"><a href="#"></a></div>
+            <div class="tweet_action reply" id="reply<c:out value="${tweet.id}" />_<c:out value="${tweet.from_user}" />"><a href="#"></a></div>
             <div class="tweet_action retweet" id="retweet<c:out value="${tweet.id}" />"><a href="#"></a></div>
             <div class="tweet_action favourite" id="favourite<c:out value="${tweet.id}" />"><a href="#"></a></div>
 

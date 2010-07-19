@@ -11,7 +11,6 @@
             /WEB-INF/config/spring-hibernate.xml
             /WEB-INF/config/spring-services.xml
             /WEB-INF/config/spring-security.xml
-            /WEB-INF/config/properties.xml
         </param-value>
     </context-param>
 <!---->

@@ -4,6 +4,7 @@
  */
 package com.dropletweet.domain;
 
+import com.dropletweet.util.DLog;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class User {
     protected String profile_text_color;
     protected String access_token;
     protected String access_token_secret;
-    
+
     public User()
     {
     }
@@ -80,7 +81,10 @@ public class User {
         this.profile_background_image_url = user.getProfileBackgroundImageUrl();
         this.profile_link_color = user.getProfileLinkColor();
         this.profile_sidebar_fill_color = user.getProfileSidebarFillColor();
-        this.url = user.getURL().toString();
+        if (user.getURL() != null)
+        {
+            this.url = user.getURL().toString();
+        }
         this.profile_image_url = user.getProfileImageURL().toString();
         this.profile_sidebar_border_color = user.getProfileSidebarBorderColor();
         this.location = user.getLocation();
@@ -655,5 +659,4 @@ public class User {
     {
         this.access_token_secret = access_token_secret;
     }
-
 }
