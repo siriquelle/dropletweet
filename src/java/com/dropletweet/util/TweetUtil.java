@@ -4,11 +4,13 @@
  */
 package com.dropletweet.util;
 
+import com.dropletweet.domain.Tweet;
 import com.dropletweet.props.DropletProperties;
 import com.ocpsoft.pretty.time.PrettyTime;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +19,6 @@ import java.util.logging.Logger;
  * @author Siriquelle
  */
 public class TweetUtil {
-
 
     /**
      * 
@@ -48,7 +49,7 @@ public class TweetUtil {
                 if (linkEnd > -1)
                 {
                     linkEnd = tweet.indexOf(" ", linkStart);
-                    if (!(String.valueOf(tweet.charAt(linkEnd - 1)).matches("[a-zA-Z0-9_]")))
+                    while (!(String.valueOf(tweet.charAt(linkEnd - 1)).matches("[a-zA-Z0-9_/]")))
                     {
                         linkEnd--;
                     }
@@ -116,7 +117,6 @@ public class TweetUtil {
     protected static PrettyTime prettyTime = new PrettyTime();
     protected static DropletProperties dropletProperties = new DropletProperties();
 
-
     public static String getDateAsPrettyTime(String created_at)
     {
 
@@ -124,11 +124,11 @@ public class TweetUtil {
         if (created_at.charAt(3) != ',')
         {
             df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.search.api"));
-            
+
 
         } else
         {
-           df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.rest.api"));
+            df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.rest.api"));
         }
         try
         {
@@ -142,5 +142,41 @@ public class TweetUtil {
 
 
         return created_at;
+    }
+
+    public static Tweet clean(Tweet tweet)
+    {
+        tweet.setCreated_at(null);
+        tweet.setFrom_user(null);
+        tweet.setFrom_user_id(null);
+        tweet.setIso_language_code(null);
+        tweet.setLocation(null);
+        tweet.setProfile_image_url(null);
+        tweet.setSource(null);
+        tweet.setText(null);
+        tweet.setTo_user(null);
+        tweet.setTo_user_id(null);
+        return tweet;
+    }
+
+    public static List<Tweet> removeTweetFromListByValue(List<Tweet> tweetList, Tweet tweet)
+    {
+        if (tweetList != null)
+        {
+            for (Tweet t : tweetList)
+            {
+                if (t != null)
+                {
+                    DLog.log(String.valueOf(t.getId()));
+                    DLog.log(String.valueOf(tweet.getId()));
+                    if (t.getId().equals(tweet.getId()))
+                    {
+                        tweetList.remove(t);
+                        return tweetList;
+                    }
+                }
+            }
+        }
+        return tweetList;
     }
 }

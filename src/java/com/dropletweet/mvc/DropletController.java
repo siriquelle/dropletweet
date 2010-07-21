@@ -68,7 +68,7 @@ public class DropletController extends AbstractController {
             modelMap.putAll(doAjaxStatusList(request));
         } else if (uri.contains("tweet.ajax"))
         {
-            modelMap.putAll(doAjaxPostTweet(request));
+            modelMap.putAll(doTweetAjaxAction(request));
         }
 //
         modelMap.putAll(saveModelMap(request, modelMap));
@@ -135,7 +135,7 @@ public class DropletController extends AbstractController {
     private Map doDropletView(HttpServletRequest request) throws TwitterException
     {
         Map modelMap = getModelMap(request);
-        modelMap.put("view", "droplet");
+
         HttpSession session = request.getSession();
         if ((Map) session.getAttribute("modelMap") == null || ((Twitter) session.getAttribute("twitter") == null))
         {
@@ -143,8 +143,9 @@ public class DropletController extends AbstractController {
             modelMap.put("view", "redirect:index.htm");
         } else
         {
-            modelMap.putAll((Map) session.getAttribute("modelMap"));
+            modelMap.put("view", "droplet");
         }
+
         return modelMap;
     }
 
@@ -247,7 +248,7 @@ public class DropletController extends AbstractController {
     /**
      *
      */
-    public Map doAjaxPostTweet(HttpServletRequest request)
+    public Map doTweetAjaxAction(HttpServletRequest request)
     {
         Map modelMap = getModelMap(request);
         String action = request.getParameter("action");
@@ -264,30 +265,47 @@ public class DropletController extends AbstractController {
             {
                 String tweet_text = request.getParameter("tweet_text");
                 String in_reply_to_id = request.getParameter("in_reply_to_id");
-                Status status = null;
                 if (in_reply_to_id.length() > 0)
                 {
-                    status = twitter.updateStatus(tweet_text, Long.valueOf(in_reply_to_id));
+                    dropletService.persistTweet(new Tweet(twitter.updateStatus(tweet_text, Long.valueOf(in_reply_to_id))));
                 } else
                 {
-                    status = twitter.updateStatus(tweet_text);
+                    tweet = new Tweet(twitter.updateStatus(tweet_text));
                 }
 
-                tweet = new Tweet(status);
-                dropletService.persistTweet(tweet);
+            } else if (action.equals("delete"))
+            {
+                String tweetId = request.getParameter("tweetId");
+                Status status = null;
+                if (tweetId.length() > 0)
+                {
+                    status = twitter.destroyStatus(Long.valueOf(tweetId));
+                    tweet = new Tweet(status);
 
+                    modelMap.put("tweetList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("tweetList"), tweet));
+                    modelMap.put("friendsList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("friendsList"), tweet));
+                    modelMap.put("sentList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("sentList"), tweet));
+                    tweet = TweetUtil.clean(tweet);
+                    if (dropletService.getTweetById(tweet.getId()) != null)
+                    {
+                        dropletService.persistTweet(tweet);
+                    }
+                    tweet.setText("delete complete.");
+                }
             }
         } catch (TwitterException ex)
         {
             Logger.getLogger(DropletController.class.getName()).log(Level.SEVERE, null, ex);
+            tweet = null;
         }
 
-        if (tweet != null)
+        if (tweet != null && tweet.getCreated_at() != null)
         {
             tweet.setCreated_at(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
             tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
-            modelMap.put("tweet", tweet);
         }
+
+        modelMap.put("latestTweet", tweet);
         modelMap.put("view", "ajax/actions");
         return modelMap;
     }
