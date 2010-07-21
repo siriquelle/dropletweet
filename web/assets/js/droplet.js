@@ -2,9 +2,12 @@
 var currentAction = "home";
 var intervalID = null;
 var isLoggedIn = false;
+var screen_name = "";
 //
 $(document).ready(function() {
-    var seedURL = "https://twitter.com/dropletweet/status/18859376985";
+    var seedURL = "http://twitter.com/leolaporte/status/19034374335";
+    //"http://twitter.com/dropletweet/status/18859376985";
+
     createLoadingImage();
     updateConversation(seedURL);
     tweetStreamHooks();
@@ -20,7 +23,6 @@ function updateHooks(){
     }
 
     tweetHooks();
-    
     intervalID = setInterval("ajaxAction('"+ currentAction +"')", 180000);
 }
 
@@ -31,10 +33,11 @@ function tweetStreamHooks(){
         var action = $(this).attr("id").toString();
         currentAction = action;
         ajaxAction(action);
+        resetTweetInput();
     });
 
     $("#new_tweet_submit_btn").click(function(){
-        $("#new_tweet_submit_btn").addClass("new_tweet_submit_active");
+        $("#message_out").append(loadingImage);
         var tweet_text = $("#new_tweet_text_txt").val();
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
 
@@ -42,18 +45,28 @@ function tweetStreamHooks(){
             url: "./tweet.ajax?action=post&tweet_text="+tweet_text+"&in_reply_to_id=" + in_reply_to_id,
             success: function(data) {
                 $("#message_out").empty().append(data);
-                $("#new_tweet_in_reply_to_id").val("");
-                $("#new_tweet_text_txt").val("");
-                $("#new_tweet_submit_btn").removeClass("new_tweet_submit_active");
+                resetTweetInput();
             }
         });
 
     });
+
+    $("#new_tweet_submit_btn").mousedown(function(){
+        $(this).addClass("new_tweet_submit_active");
+    });
+    
+    $("#new_tweet_submit_btn").mouseup(function(){
+        $(this).removeClass("new_tweet_submit_active");
+    });
     
 }
 
-function ajaxAction(action){
+function resetTweetInput(){
+    $("#new_tweet_in_reply_to_id").val("");
+    $("#new_tweet_text_txt").val("");
+}
 
+function ajaxAction(action){
     $("#message_out").append(loadingImage);
     $.ajax({
         url: "./statuslist.ajax?action=" + action,
@@ -91,8 +104,9 @@ function replyHook(){
 }
 
 function retweetHook(){
-    $("#message_out").append(loadingImage);
+    
     $(".retweet").click(function(){
+        $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("retweet".length, id.length);
         retweetTweet(tweetId);
@@ -100,8 +114,9 @@ function retweetHook(){
 }
 
 function favouriteHook(){
-    $("#message_out").append(loadingImage);
+    
     $(".favourite").click(function(){
+        $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("favourite".length, id.length);
         favouriteTweet(tweetId);
@@ -109,8 +124,9 @@ function favouriteHook(){
 }
 
 function deleteHook(){
-    $("#message_out").append(loadingImage);
+    
     $(".delete").click(function(){
+        $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("delete".length, id.length);
         deleteTweet(tweetId);
@@ -118,8 +134,9 @@ function deleteHook(){
 }
 
 function spamHook(){
-    $("#message_out").append(loadingImage);
+    
     $(".spam").click(function(){
+        $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("spam".length, id.length);
         spamTweet(tweetId);
@@ -127,8 +144,8 @@ function spamHook(){
 }
 
 function trackHook(){
-    $("#message_out").append(loadingImage);
     $(".track").click(function(){
+        $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         id = id.substr("track".length, id.length);
         //
@@ -161,8 +178,15 @@ function favouriteTweet(tweetId){
 }
 
 function deleteTweet(tweetId){
-    alert("delete : " + tweetId);
-    $("#message_out").empty();
+    $.ajax({
+        url: "./tweet.ajax?action=delete&tweetId=" + tweetId,
+        success: function(data) {
+            if(!data.toString().match("Error")){
+                $("#dt"+tweetId).fadeOut("slow");
+            }
+            $("#message_out").empty().append(data);
+        }
+    });
 }
 
 function spamTweet(tweetId){
@@ -177,16 +201,11 @@ function trackTweet(tweetId, from_user){
 /******************************************************************************/
 
 function updateConversation(seedURL){
-    $("#mycanvas").fadeOut("fast").empty().fadeIn("fast");
-
-    $("#message_out").append(loadingImage);
- 
+    $("#infovis").empty();
     $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
-
-            var json = $.parseJSON(data);
-            initialp(json);
+            initialp($.parseJSON(data));
         }
     });
 
@@ -297,6 +316,7 @@ function initialp(json){
         onAfterCompute: function(){
             $("#message_out").empty();         
             $(".node").draggable();
+            updateHooks();
         }
     });
 
@@ -312,32 +332,32 @@ function initialp(json){
 
 function getDomElement(node){
     var source = node.data.source;
-    while(source.match("&lt;") ||source.match("&rt;") || source.match("&quot") ){
-        source= source.replace("&lt;", "<");
-        source= source.replace("&gt;", ">");
-        source= source.replace("&quot;", "\"");
+    while(source.match("&lt;") || source.match("&gt;") || source.match("&quote;")){
+        source = source.replace("&lt;", "<");
+        source = source.replace("&gt;", ">");
+        source = source.replace("&quote;", "\"");
     }
 
     var domElement = "\
-                            <div class=\"node_tweet_container\">\
+                        <div class=\"node_tweet_container\">\
                                 <div class=\"tweet_profile_image_container\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" >\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" target=\"_blank\">\
                                         <img src=\""+ node.data.profile_image_url +"\" alt=\""+ node.data.from_user +"\" height=\"48px\" width=\"48px\" />\
                                     </a>\
                                 </div>\
                                 \
                                 <div class=\"tweet_text\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\">"+ node.data.from_user +"</a> "+ node.data.text +"\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\" target=\"_blank\">"+ node.data.from_user +"</a> "+ node.data.text +"\
                                 </div>\
                                 <div class=\"tweet_info\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" />"+ node.data.created_at +" </a>\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" target=\"_blank\"/>"+ node.data.created_at +" </a>\
                                     via\
                                     "+ source +"\
                                 </div>\
                                     <div class=\"tweet_actions\">\
-                                    <div class=\"tweet_action reply\" id=\"reply"+ node.data.id +"_"+ node.data.from_user +"\"><a href=\"#\"></a></div>\
-                                    <div class=\"tweet_action retweet\" id=\"retweet"+ node.data.id +"\"><a href=\"#\"></a></div>\
-                                    <div class=\"tweet_action favourite\" id=\"favourite"+ node.data.id +"\"><a href=\"#\"></a></div>\
+                                    <div class=\"tweet_action reply\" id=\"reply"+ node.data.id +"_"+ node.data.from_user +"\"><a href=\"##\" ></a></div>\
+                                    <div class=\"tweet_action retweet\" id=\"retweet"+ node.data.id +"\"><a href=\"##\"></a></div>\
+                                    <div class=\"tweet_action favourite\" id=\"favourite"+ node.data.id +"\"><a href=\"##\"></a></div>\
                                 </div>\
                             </div>";
 
