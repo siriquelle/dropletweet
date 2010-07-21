@@ -32,7 +32,7 @@
     <bean id="httpSessionContextIntegrationFilter" class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
 
     <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-        <constructor-arg value="/index.jsp"/> <!-- URL redirected to after logout -->
+        <constructor-arg value="/index.htm"/> <!-- URL redirected to after logout -->
         <constructor-arg>
             <list>
                 <ref bean="rememberMeServices"/>
@@ -43,7 +43,7 @@
 
     <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
-        <property name="authenticationFailureUrl" value="/signin.htm"/>
+        <property name="authenticationFailureUrl" value="/index.htm"/>
         <property name="defaultTargetUrl" value="/droplet.htm"/>
         <property name="filterProcessesUrl" value="/j_acegi_security_check"/>
         <property name="rememberMeServices" ref="rememberMeServices"/>
@@ -96,6 +96,7 @@
                                 /signin.htm=IS_AUTHENTICATED_ANONYMOUSLY
                                 /**.json=IS_AUTHENTICATED_ANONYMOUSLY
                                 /assets/**=IS_AUTHENTICATED_ANONYMOUSLY
+                                /assets/js/droplet.js=IS_AUTHENTICATED_REMEMBERED
                                 /**=IS_AUTHENTICATED_REMEMBERED
 			]]>
             </value>
