@@ -28,15 +28,15 @@ table {border-collapse: collapse;border-spacing: 0;}
     background-color:transparent;
 }
 .node{    color:#0F4853 !important;
-    width:240px;
-    padding:10px;
-    margin-top:-30px;
-    background-color : #AEF2FF;
-    border : 5px solid #87BBC5;
-    text-align:left;
-    overflow:hidden;
-    -moz-border-radius:10px;
-    -webkit-border-radius:10px;
+          width:240px;
+          padding:10px;
+          margin-top:-30px;
+          background-color : #AEF2FF;
+          border : 5px solid #87BBC5;
+          text-align:left;
+          overflow:hidden;
+          -moz-border-radius:10px;
+          -webkit-border-radius:10px;
 }
 
 .node_tweet_container{background-color:#C6F6FF; padding:3px; -moz-border-radius:5px; -webkit-border-radius:5px; }
@@ -47,11 +47,13 @@ table {border-collapse: collapse;border-spacing: 0;}
 }
 /* END INFOVIS TOOLKIT*/
 /* START FONTS */
+
 @font-face {
-    font-family: 'Reenie Beanie';
-    font-style: normal;
-    font-weight: normal;
-    src: local('Reenie Beanie'), url('../fnt/ReenieBeanie.ttf') format('truetype');
+	font-family: 'Reenie Beanie';
+	src: url('../fnt/reeniebeanie-webfont.eot');
+	src: local('☺'), url('../fnt/reeniebeanie-webfont.woff') format('woff'), url('../fnt/reeniebeanie-webfont.ttf') format('truetype'), url('../fnt/reeniebeanie-webfont.svg#webfont5H5VaBq7') format('svg');
+	font-weight: normal;
+	font-style: normal;
 }
 /*END FONTS*/
 
@@ -92,15 +94,27 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /*END SIGNIN*/
 
 /*START STREAM ACTIONS*/
-.action{display:inline-block; margin:0px auto; }
-.action a{display:block; width: 20px; height:20px; margin:5px;}
-.action a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
+.action, .action_search, .action_conversations{display:inline-block; margin:0px auto; }
+.action a, .action_search a, .action_conversations a{display:block; width: 20px; height:20px; margin:5px;}
+.action a:hover, .action_search a:hover, .action_conversations a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
 .actions #home a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
-.actions #search a{background:url("../img/actions/action_search.png") no-repeat scroll 0 0 transparent;}
 .actions #replies a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
 .actions #dms a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
-.actions #search a{background:url("../img/actions/action_search.png") no-repeat scroll 0 0 transparent;}
+.actions #search a{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0 0 transparent;}
+.search_a_toggle{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0px -23px transparent !important;}
+/**/
+#action_search_container_outer{display: none; position:absolute; width:274px; }
+.action_search_container_inner{width:258px; margin:0px auto; border: 6px solid #85BBC5; -moz-border-radius:0px 0px 15px 15px; border-top-width: 0px; background-color: #fff; padding:2px; position: relative; top: 4px;}
+.action_search_container_inner input{ display:inline-block; width:223px; height: 20px; vertical-align: middle; margin:0px; position: relative; right:-1px; border:0px; border-bottom:2px #e0e0e0 solid; background-color: #fff; }
+.action_search_container_inner a{display:inline-block; width: 20px; height: 20px; margin:0px; vertical-align: middle;background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0 0 transparent; position:relative; left:-1px;}
+
+
+/**/
 .actions #conversations a{background:url("../img/actions/action_conversations.png") no-repeat scroll 0 0 transparent;}
+/**/
+.actions #logout a{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -20px transparent;}
+.actions #logout a:active{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -40px transparent;}
+/**/
 .actions #retweets a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
 .actions #favourites a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
 /*END STREAM ACTIONS*/
@@ -142,12 +156,14 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .tweet_actions .retweet a{  width:16px; height:16px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -128px -48px transparent}
 .tweet_actions .retweet a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -112px -48px transparent}
 .tweet_actions .retweet a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll -96px -48px transparent}
+.isRetweet{background:url("../img/actions/sprite-icons.png") no-repeat scroll -96px -48px transparent !important}
 /**/
 
 /**/
 .tweet_actions .favourite a{  width:15px; height:15px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -32px 0px transparent}
 .tweet_actions .favourite a:hover {background:url("../img/actions/sprite-icons.png") no-repeat scroll -48px 0px transparent}
 .tweet_actions .favourite a:active{background:url("../img/actions/sprite-icons.png") no-repeat scroll -64px 0px transparent}
+.isFavourite{background:url("../img/actions/sprite-icons.png") no-repeat scroll -64px 0px transparent !important}
 /**/
 /**/
 .tweet_actions .delete a{  width:15px; height:15px; display: block; background:url("../img/actions/sprite-icons.png") no-repeat scroll -112px 0px transparent}
@@ -160,6 +176,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /**/
 .tweet_actions .track a{  width:16px; height:16px; display: block; background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px -16px transparent}
 .tweet_actions .track a:hover {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent}
+.isTracked {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent !important}
 /**/
 
 /*END TWEET STREAM*/

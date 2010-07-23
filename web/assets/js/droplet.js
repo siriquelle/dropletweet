@@ -1,39 +1,59 @@
 /**********************************************************************/
 var currentAction = "home";
 var intervalID = null;
-var isLoggedIn = false;
-var screen_name = "";
+
 //
 $(document).ready(function() {
-    var seedURL = "http://twitter.com/leolaporte/status/19034374335";
-    //"http://twitter.com/dropletweet/status/18859376985";
-
     createLoadingImage();
     updateConversation(seedURL);
     tweetStreamHooks();
+    startAutoUpdate();
     updateHooks();
 });
 
 /**********************************************************************/
 
 function updateHooks(){
+    tweetHooks();
+}
 
+function stopAutoUpdate(){
+    if(intervalID != null){
+        clearInterval(intervalID);
+    }    
+}
+function startAutoUpdate(){
     if(intervalID != null){
         clearInterval(intervalID);
     }
-
-    tweetHooks();
     intervalID = setInterval("ajaxAction('"+ currentAction +"')", 180000);
 }
-
 /******************************************************************************/
 
 function tweetStreamHooks(){
     $(".action").click(function(){
+        stopAutoUpdate();
         var action = $(this).attr("id").toString();
         currentAction = action;
         ajaxAction(action);
         resetTweetInput();
+    });
+    
+    $("#search").click(function(){
+        stopAutoUpdate();
+        $("#search_a").toggleClass("search_a_toggle");
+        $("#action_search_container_outer").toggle();
+        $("#search_txt").val("");
+        $("#search_txt").focus();
+        $("#search_btn").click(function(){
+            searchAjaxAction($("#search_txt").val());
+        });
+    });
+
+    $("#conversations").click(function(){
+        stopAutoUpdate();
+        currentAction = "conversations";
+        ajaxAction(currentAction);
     });
 
     $("#new_tweet_submit_btn").click(function(){
@@ -46,6 +66,9 @@ function tweetStreamHooks(){
             success: function(data) {
                 $("#message_out").empty().append(data);
                 resetTweetInput();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                $("#message_out").empty().append(dropletCommonError);
             }
         });
 
@@ -71,13 +94,33 @@ function ajaxAction(action){
     $.ajax({
         url: "./statuslist.ajax?action=" + action,
         success: function(data) {
-            $("#tweetUpdatePanel").empty();
-            $("#tweetUpdatePanel").append(data);
-            updateHooks();
+            $("#tweetUpdatePanel").empty().append(data);
             $("#message_out").empty();
+            updateHooks();
+            startAutoUpdate();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
         }
     });
 }
+
+function searchAjaxAction(query){
+
+    $("#message_out").append(loadingImage);
+    $.ajax({
+        url: "./statuslist.ajax?action=search&q=" + query,
+        success: function(data) {
+            $("#tweetUpdatePanel").empty().append(data);
+            updateHooks();
+            $("#message_out").empty();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+}
+
 /******************************************************************************/
 
 function tweetHooks(){
@@ -107,6 +150,7 @@ function retweetHook(){
     
     $(".retweet").click(function(){
         $("#message_out").append(loadingImage);
+        $(this).children("a").toggleClass("isRetweet");
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("retweet".length, id.length);
         retweetTweet(tweetId);
@@ -117,6 +161,7 @@ function favouriteHook(){
     
     $(".favourite").click(function(){
         $("#message_out").append(loadingImage);
+        $(this).children("a").toggleClass("isFavourite");
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("favourite".length, id.length);
         favouriteTweet(tweetId);
@@ -145,6 +190,9 @@ function spamHook(){
 
 function trackHook(){
     $(".track").click(function(){
+        stopAutoUpdate();
+
+        $(this).children("a").toggleClass("isTracked");
         $("#message_out").append(loadingImage);
         var id = $(this).attr("id").toString();
         id = id.substr("track".length, id.length);
@@ -152,7 +200,19 @@ function trackHook(){
         var tweetId = id.substr(0, id.indexOf("_", 0));
         var from_user = id.substr(id.indexOf("_", 0)+1, id.length);
         //
-        trackTweet(tweetId, from_user);
+        seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
+        $("#infovis").empty();
+        updateConversation(seedURL);
+        //
+        $.ajax({
+            url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&currentAction=" +currentAction,
+            success: function(data) {
+                $("#message_out").empty().append(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                $("#message_out").empty().append(dropletCommonError);
+            }
+        });
     });
 }
 
@@ -169,12 +229,22 @@ function retweetTweet(tweetId){
         url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
         success: function(data) {
             $("#message_out").empty().append(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
         }
     });
 }
 function favouriteTweet(tweetId){
-    alert("favourite : " + tweetId);
-    $("#message_out").empty();
+    $.ajax({
+        url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
+        success: function(data) {
+            $("#message_out").empty().append(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
 }
 
 function deleteTweet(tweetId){
@@ -185,37 +255,63 @@ function deleteTweet(tweetId){
                 $("#dt"+tweetId).fadeOut("slow");
             }
             $("#message_out").empty().append(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
         }
     });
 }
 
-function spamTweet(tweetId){
-    alert("spam : " + tweetId);
-    $("#message_out").empty();
-}
-function trackTweet(tweetId, from_user){
-    seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
-    updateConversation(seedURL);
-}
-
-/******************************************************************************/
-
-function updateConversation(seedURL){
-    $("#infovis").empty();
+function spamTweet(userId){
     $.ajax({
-        url: "./jit.json?q=" + seedURL,
+        url: "./tweet.ajax?action=spam&userId=" + userId,
         success: function(data) {
-            initialp($.parseJSON(data));
+            $("#message_out").empty().append(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
         }
     });
-
 }
+var count = 0;
+
 
 /******************************************************************************/
 
-function addEvent(obj, type, fn) {
-    if (obj.addEventListener) obj.addEventListener(type, fn, false);
-    else obj.attachEvent('on' + type, fn);
+
+
+function getDomElement(node){
+    var source = node.data.source;
+    while(source.match("&lt;") || source.match("&gt;") || source.match("&quote;")){
+        source = source.replace("&lt;", "<");
+        source = source.replace("&gt;", ">");
+        source = source.replace("&quote;", "\"");
+    }
+
+    var domElement = "\
+                        <div class=\"node_tweet_container\">\
+                                <div class=\"tweet_profile_image_container\">\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" target=\"_blank\">\
+                                        <img src=\""+ node.data.profile_image_url +"\" alt=\""+ node.data.from_user +"\" height=\"48px\" width=\"48px\" />\
+                                    </a>\
+                                </div>\
+                                \
+                                <div class=\"tweet_text\">\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\" target=\"_blank\">"+ node.data.from_user +"</a> "+ node.data.text +"\
+                                </div>\
+                                <div class=\"tweet_info\">\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" target=\"_blank\"/>"+ node.data.created_at +" </a>\
+                                    via\
+                                    "+ source +"\
+                                </div>\
+                                    <div class=\"tweet_actions\">\
+                                    <div class=\"tweet_action reply\" id=\"reply"+ node.data.id +"_"+ node.data.from_user +"\"><a href=\"##\" ></a></div>\
+                                    <div class=\"tweet_action retweet\" id=\"retweet"+ node.data.id +"\"><a href=\"##\"></a></div>\
+                                    <div class=\"tweet_action favourite\" id=\"favourite"+ node.data.id +"\"><a href=\"##\"></a></div>\
+                                </div>\
+                            </div>";
+
+    return domElement;
 }
 
 function initialp(json){
@@ -314,7 +410,8 @@ function initialp(json){
         },
 
         onAfterCompute: function(){
-            $("#message_out").empty();         
+            $("#infovis").fadeIn(300);
+            $("#message_out").empty();
             $(".node").draggable();
             updateHooks();
         }
@@ -330,36 +427,3 @@ function initialp(json){
 
 }
 
-function getDomElement(node){
-    var source = node.data.source;
-    while(source.match("&lt;") || source.match("&gt;") || source.match("&quote;")){
-        source = source.replace("&lt;", "<");
-        source = source.replace("&gt;", ">");
-        source = source.replace("&quote;", "\"");
-    }
-
-    var domElement = "\
-                        <div class=\"node_tweet_container\">\
-                                <div class=\"tweet_profile_image_container\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" target=\"_blank\">\
-                                        <img src=\""+ node.data.profile_image_url +"\" alt=\""+ node.data.from_user +"\" height=\"48px\" width=\"48px\" />\
-                                    </a>\
-                                </div>\
-                                \
-                                <div class=\"tweet_text\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\" target=\"_blank\">"+ node.data.from_user +"</a> "+ node.data.text +"\
-                                </div>\
-                                <div class=\"tweet_info\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" target=\"_blank\"/>"+ node.data.created_at +" </a>\
-                                    via\
-                                    "+ source +"\
-                                </div>\
-                                    <div class=\"tweet_actions\">\
-                                    <div class=\"tweet_action reply\" id=\"reply"+ node.data.id +"_"+ node.data.from_user +"\"><a href=\"##\" ></a></div>\
-                                    <div class=\"tweet_action retweet\" id=\"retweet"+ node.data.id +"\"><a href=\"##\"></a></div>\
-                                    <div class=\"tweet_action favourite\" id=\"favourite"+ node.data.id +"\"><a href=\"##\"></a></div>\
-                                </div>\
-                            </div>";
-
-    return domElement;
-}

@@ -41,7 +41,8 @@ public class ConversationServiceImpl implements ConversationService {
 
     private Gson gson = new Gson();
     private HtmlCleaner cleaner = new HtmlCleaner();
-    private final int NOW_MINUS_SIX_HOURS_IN_MILLISECONDS = 64800000;
+    private final Integer TWENTY_MINUTES_IN_MILLISECONDS = 1200000;
+    private final Integer SIX_HOURS_IN_MILLISECONDS = 64800000;
     DropletService dropletService;
 
     /**
@@ -253,9 +254,9 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Searches local database for latest tweet recorded and queries twitter for any tweets after it.">
     {
         DLog.log("START GET SEARCH RESULTS FROM TWITTER");
-        DLog.log("CURRENT TIME : " + String.valueOf(new Date().getTime() - NOW_MINUS_SIX_HOURS_IN_MILLISECONDS));
+        DLog.log("CURRENT TIME : " + String.valueOf(new Date().getTime() - TWENTY_MINUTES_IN_MILLISECONDS));
         Search search = null;
-        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (new Date().getTime() - NOW_MINUS_SIX_HOURS_IN_MILLISECONDS)))
+        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (new Date().getTime() - TWENTY_MINUTES_IN_MILLISECONDS)))
         {
             Long since_id = null;
             User seedUser = dropletService.getUserByScreen_Name(seedTweet.getFrom_user());

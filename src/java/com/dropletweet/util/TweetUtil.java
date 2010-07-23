@@ -124,8 +124,6 @@ public class TweetUtil {
         if (created_at.charAt(3) != ',')
         {
             df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.search.api"));
-
-
         } else
         {
             df = new SimpleDateFormat(dropletProperties.getProperty("twitter.dateformat.rest.api"));

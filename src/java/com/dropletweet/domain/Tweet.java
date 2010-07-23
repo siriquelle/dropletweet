@@ -13,7 +13,7 @@ import twitter4j.Status;
  * This class represents a single tweet
  * @author Siriquelle
  */
-public class Tweet {
+public class Tweet implements Comparable<Tweet> {
 
     protected Long id;
     protected Long in_reply_to_id;
@@ -28,6 +28,9 @@ public class Tweet {
     protected String iso_language_code;
     protected String location;
     protected Date updated;
+    protected Boolean favourite = false;
+    protected Boolean retweet = false;
+    protected Boolean tracked = false;
 
     /**
      * The default constructor can be used to create a tweet without any default values.
@@ -70,6 +73,8 @@ public class Tweet {
         this.created_at = status.getCreatedAt().toString();
         this.iso_language_code = status.getUser().getLang();
         this.location = status.getUser().getLocation();
+        this.favourite = status.isFavorited();
+        this.retweet = status.isRetweet();
     }
 
     public Tweet(twitter4j.Tweet tweet)
@@ -85,7 +90,10 @@ public class Tweet {
         this.text = tweet.getText();
         this.created_at = tweet.getCreatedAt().toString();
         this.iso_language_code = tweet.getIsoLanguageCode();
-        this.location = tweet.getGeoLocation().toString();
+        if (tweet.getGeoLocation() != null)
+        {
+            this.location = tweet.getGeoLocation().toString();
+        }
     }
 
     public Tweet(DirectMessage directMessage)
@@ -357,5 +365,72 @@ public class Tweet {
     public void setUpdated(Date updated)
     {
         this.updated = updated;
+    }
+
+    /**
+     * Get the value of retweet
+     *
+     * @return the value of retweet
+     */
+    public Boolean getRetweet()
+    {
+        return retweet;
+    }
+
+    /**
+     * Set the value of retweet
+     *
+     * @param retweet new value of retweet
+     */
+    public void setRetweet(Boolean retweet)
+    {
+        this.retweet = retweet;
+    }
+
+    /**
+     * Get the value of favourite
+     *
+     * @return the value of favourite
+     */
+    public Boolean getFavourite()
+    {
+        return favourite;
+    }
+
+    /**
+     * Set the value of favourite
+     *
+     * @param favourite new value of favourite
+     */
+    public void setFavourite(Boolean favourite)
+    {
+        this.favourite = favourite;
+    }
+
+    /**
+     * Get the value of tracked
+     *
+     * @return the value of tracked
+     */
+    public Boolean getTracked()
+    {
+        return tracked;
+    }
+
+    /**
+     * Set the value of tracked
+     *
+     * @param tracked new value of tracked
+     */
+    public void setTracked(Boolean tracked)
+    {
+        this.tracked = tracked;
+    }
+
+    @Override
+    public int compareTo(Tweet tweet)
+    {
+        int result = id.compareTo(tweet.getId());
+        return (result == 0) ? result : id.compareTo(((Tweet) tweet).id);
     }
 }
