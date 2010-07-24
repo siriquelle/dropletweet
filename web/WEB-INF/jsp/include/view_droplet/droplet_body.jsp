@@ -1,7 +1,6 @@
 <%@ page contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <div class="user_info">
     <div class="name">
         <c:out value="${modelMap.user.name}" />
@@ -33,7 +32,7 @@
     <input type="hidden" value="" id="new_tweet_in_reply_to_id"/>
 
     <button class="new_tweet_submit"id="new_tweet_submit_btn" >Tweet</button>
-    <div class="message" id="message_out"><c:out value="${fn:length(modelMap.tweetList)}"/></div>
+    <div class="message" id="message_out"></div>
 </div>
 
 <div class="tweet_stream">
@@ -42,7 +41,5 @@
             <tiles:put name="modelMap" value="${modelMap.tweetList}" />
         </tiles:insert>
     </div>
-    <c:if test="${fn:length(modelMap.tweetList) >= 100}" >
-        <button id="more_tweet_submit_btn" class="more_tweet_submit">more</button>
-    </c:if>
+
 </div>

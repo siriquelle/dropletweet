@@ -123,6 +123,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .new_tweet_container .new_tweet_text{width:268px; height:48px; padding:2px; margin:3px 0px; font-family: Tahoma,Arial,sans-serif; font-size:.8em;}
 .new_tweet_container .new_tweet_submit { height: 23px; width:120px; background: url("../img/actions/btn_bg.png") repeat-x scroll 0px -24px #e7e7e7; border:1px solid #87BBC5; cursor:pointer; float:right;  margin:0px; padding: 7px 20px 23px 20px; -moz-border-radius:3px; -webkit-border-radius:3px; text-shadow:0px 0px 1px #999; margin-bottom: 5px;}
 .new_tweet_container .new_tweet_submit_active{background-image: none !important}
+#char_count{text-align:center; font-size:1.6em; font-weight: bold; color:#8FBBC4; padding:4px 0px 4px 0px;}
 .new_tweet_container .message{-moz-border-radius: 3px; -webkit-border-radius: 3px; border-bottom:3px solid #85B6BF; border-top:3px solid #85B6BF; width:148px; margin: 0px 3px; float:left; font-size:.8em}
 .new_tweet_container .message a{color:#32585F; text-decoration: none; font-weight: bold; font-size: smaller;}
 .new_tweet_container .message a:hover{text-decoration: underline;}
@@ -136,10 +137,12 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /*START TWEET STREAM*/
 .tweet_stream{max-height:400px; overflow:auto; overflow-x: hidden; width:289px; clear:both; margin-top:3px; }
 .tweet_stream #tweetUpdatePanel{border-left: 1px solid #85B6BF;}
-.tweet_stream .more_tweet_submit{height: 23px; width:273px; background: url("../img/actions/btn_bg.png") repeat-x scroll 0px -24px #e7e7e7; border:1px solid #87BBC5; cursor:pointer; margin:-2px auto; padding: 1px 0px 15px; -moz-border-radius:3px; -webkit-border-radius:3px; text-shadow:0px 0px 1px #999; margin-bottom: 5px;}
+.tweet_stream .more_tweet_submit{height: 23px; width:100%; background: url("../img/actions/btn_bg.png") repeat-x scroll 0px -24px #e7e7e7; border:1px solid #87BBC5; cursor:pointer; margin:-2px auto; padding: 1px 0px 15px; -moz-border-radius:3px; -webkit-border-radius:3px; text-shadow:0px 0px 1px #999; margin: 5px auto;}
 .tweet_stream .more_tweet_submit_active{background-image: none !important}
+
+.tweet_stream .page_break{border-top: 1px dashed #85B6BF; margin: 0px auto; border-bottom:0px; border-left:0px; border-right: 0px;}
 /**/
-.tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
+.tweet_container{background-color:#C6F6FF; margin:3px; padding:2px;}
 .tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
 /**/
 .tweet_text{text-shadow:0px 0px 1px #85B6BF; font-size: .9em}

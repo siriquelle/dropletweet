@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" %>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="modelMap" value="${modelMap}"/>
 
@@ -73,6 +74,10 @@
                 </div>
             </div>
         </div>
+        <c:set var="lastId" value="${tweet.id}"/>
     </c:forEach>
+    <c:if test="${fn:length(modelMap.tweetList) > 50}" >
+        <button id="more_tweet_submit_btn" name="ldt<c:out value="${lastId}" />"class="more_tweet_submit">more</button>
+    </c:if>
 </c:if>
 

@@ -244,10 +244,9 @@ public class DropletController extends AbstractController {
             } else if (action.equals("conversationList"))
             {
                 conversationList = dropletService.getAllConversationsByUserId(user.getId());
-
+                tweetList = new LinkedList<Tweet>();
                 if (conversationList != null && conversationList.size() > 0)
                 {
-                    tweetList = new LinkedList<Tweet>();
                     for (Conversation con : conversationList)
                     {
                         tweetList.add(con.getTweet());
@@ -264,7 +263,6 @@ public class DropletController extends AbstractController {
                     if (oldList != null)
                     {
                         tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
-                        oldList = null;
                     }
                 }
             }
@@ -411,12 +409,15 @@ public class DropletController extends AbstractController {
                         if (tweet.getTracked() == true)
                         {
                             List<Conversation> conversationList = dropletService.getAllConversationsByUserId(((User) modelMap.get("user")).getId());
-                            for (Conversation con : conversationList)
+                            if (conversationList != null)
                             {
-                                if (con.getTweet().getId().equals(tweet.getId()))
+                                for (Conversation con : conversationList)
                                 {
-                                    dropletService.deleteConversation(con);
-                                    ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.track.deleted"));
+                                    if (con.getTweet().getId().equals(tweet.getId()))
+                                    {
+                                        dropletService.deleteConversation(con);
+                                        ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.track.deleted"));
+                                    }
                                 }
                             }
                         } else
@@ -709,17 +710,14 @@ public class DropletController extends AbstractController {
             }
         } else
         {
-
-            if ((List<Tweet>) modelMap.get(listType) != null)
+            List<Tweet> tweetList = (List<Tweet>) modelMap.get(listType);
+            if (tweetList != null)
             {
-                List<Tweet> tweetList = (List<Tweet>) modelMap.get(listType);
-
                 for (Tweet tweet : tweetList)
                 {
                     if (tweet.getId().equals(tweetId))
                     {
                         trackTweet = tweet;
-                        trackTweet.setTracked(Boolean.TRUE);
                         break;
                     }
                 }
