@@ -20,7 +20,7 @@
                 <a href="http://twitter.com/<c:out value="${tweet.from_user}" />" class="outlink b" target="_blank"><c:out value="${tweet.from_user}" escapeXml="false" /></a> <c:out value="${tweet.text}" escapeXml="false"/>
             </div>
             <div class="tweet_info">
-                <a href="http://twitter.com/<c:out value="${tweet.from_user}" />/status/<c:out value="${tweet.id}" />" target="_blank"><c:out value="${tweet.created_at}" /></a>
+                <a href="http://twitter.com/<c:out value="${tweet.from_user}" />/status/<c:out value="${tweet.id}" />" target="_blank"><c:out value="${tweet.prettyTime}" /></a>
                 via
                 <c:out value="${tweet.source}" escapeXml="false"/>
                 <c:if test="${tweet.in_reply_to_id > -1}">

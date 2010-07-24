@@ -13,6 +13,7 @@
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jquery.js"></script>
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jquery-ui.js"></script>
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jit.js"></script>
+        <meta name="description" content="Track exciting twitter conversations in a single observable interactive format." />
         <link rel="shortcut icon" href="./assets/img/logo.png" />
         <link href='http://fonts.googleapis.com/css?family=Reenie+Beanie' rel='stylesheet' type='text/css'>
         <tiles:insert attribute="meta" ignore="true" />

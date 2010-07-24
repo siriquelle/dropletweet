@@ -61,6 +61,7 @@ table {border-collapse: collapse;border-spacing: 0;}
 body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .body{background:url("../img/_clouds.png") no-repeat scroll top center transparent;  min-height:480px; font-family:Tahoma,Arial,sans-serif; }
 .header_text{background:url("../img/beta_icon.png") no-repeat scroll left center transparent;}
+.header_text a{color:inherit;text-decoration:none;}
 .page{width:960px; margin:0 auto;}
 .b{font-weight:bold; text-decoration: none}
 .b:hover {text-decoration: underline}
@@ -97,9 +98,9 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .action, .action_search, .action_conversations{display:inline-block; margin:0px auto; }
 .action a, .action_search a, .action_conversations a{display:block; width: 20px; height:20px; margin:5px;}
 .action a:hover, .action_search a:hover, .action_conversations a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
-.actions #home a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
-.actions #replies a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
-.actions #dms a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
+.actions #friendsList a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
+.actions #replyList a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
+.actions #dmList a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
 .actions #search a{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0 0 transparent;}
 .search_a_toggle{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0px -23px transparent !important;}
 /**/
@@ -110,13 +111,13 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 
 
 /**/
-.actions #conversations a{background:url("../img/actions/action_conversations.png") no-repeat scroll 0 0 transparent;}
+.actions #conversationList a{background:url("../img/actions/action_conversations.png") no-repeat scroll 0 0 transparent;}
 /**/
 .actions #logout a{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -20px transparent;}
 .actions #logout a:active{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -40px transparent;}
 /**/
-.actions #retweets a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
-.actions #favourites a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
+.actions #sentList a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
+.actions #favouritesList a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
 /*END STREAM ACTIONS*/
 .new_tweet_container{clear:both; }
 .new_tweet_container .new_tweet_text{width:268px; height:48px; padding:2px; margin:3px 0px; font-family: Tahoma,Arial,sans-serif; font-size:.8em;}
@@ -133,7 +134,11 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .outlink:visited{color:#32585F}
 /*START GLOBAL TWEET FORMATTING*/
 /*START TWEET STREAM*/
-.tweet_stream{border-left: 1px solid #85B6BF; max-height:400px; overflow:auto; overflow-x: hidden; width:289px; clear:both; margin-top:3px; }
+.tweet_stream{max-height:400px; overflow:auto; overflow-x: hidden; width:289px; clear:both; margin-top:3px; }
+.tweet_stream #tweetUpdatePanel{border-left: 1px solid #85B6BF;}
+.tweet_stream .more_tweet_submit{height: 23px; width:273px; background: url("../img/actions/btn_bg.png") repeat-x scroll 0px -24px #e7e7e7; border:1px solid #87BBC5; cursor:pointer; margin:-2px auto; padding: 1px 0px 15px; -moz-border-radius:3px; -webkit-border-radius:3px; text-shadow:0px 0px 1px #999; margin-bottom: 5px;}
+.tweet_stream .more_tweet_submit_active{background-image: none !important}
+/**/
 .tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top: 1px solid #85B6BF}
 .tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
 /**/

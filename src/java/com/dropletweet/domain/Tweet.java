@@ -25,6 +25,7 @@ public class Tweet implements Comparable<Tweet> {
     protected String profile_image_url;
     protected String text;
     protected String created_at;
+    protected String prettyTime = "";
     protected String iso_language_code;
     protected String location;
     protected Date updated;
@@ -365,6 +366,26 @@ public class Tweet implements Comparable<Tweet> {
     public void setUpdated(Date updated)
     {
         this.updated = updated;
+    }
+
+    /**
+     * Get the value of prettyTime
+     *
+     * @return the value of prettyTime
+     */
+    public String getPrettyTime()
+    {
+        return prettyTime;
+    }
+
+    /**
+     * Set the value of prettyTime
+     *
+     * @param prettyTime new value of prettyTime
+     */
+    public void setPrettyTime(String prettyTime)
+    {
+        this.prettyTime = prettyTime;
     }
 
     /**

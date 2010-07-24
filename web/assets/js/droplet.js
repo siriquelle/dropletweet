@@ -1,5 +1,5 @@
 /**********************************************************************/
-var currentAction = "home";
+var listType = "friendsList";
 var intervalID = null;
 
 //
@@ -26,7 +26,7 @@ function startAutoUpdate(){
     if(intervalID != null){
         clearInterval(intervalID);
     }
-    intervalID = setInterval("ajaxAction('"+ currentAction +"')", 180000);
+    intervalID = setInterval("ajaxAction('"+ listType +"')", 180000);
 }
 /******************************************************************************/
 
@@ -34,11 +34,12 @@ function tweetStreamHooks(){
     $(".action").click(function(){
         stopAutoUpdate();
         var action = $(this).attr("id").toString();
-        currentAction = action;
+        listType = action;
         ajaxAction(action);
         resetTweetInput();
     });
-    
+    /**************************************************************************/
+    /**************************************************************************/
     $("#search").click(function(){
         stopAutoUpdate();
         $("#search_a").toggleClass("search_a_toggle");
@@ -49,14 +50,51 @@ function tweetStreamHooks(){
             searchAjaxAction($("#search_txt").val());
         });
     });
-
-    $("#conversations").click(function(){
+    /**************************************************************************/
+    /**************************************************************************/
+    $("#conversationList").click(function(){
         stopAutoUpdate();
-        currentAction = "conversations";
-        ajaxAction(currentAction);
+        listType = "conversationList";
+        ajaxAction(listType);
+    });
+    /**************************************************************************/
+    /**************************************************************************/
+    $("#more_tweet_submit_btn").mousedown(function(){
+        $(this).addClass("more_tweet_submit_active");
+    });
+    $("#more_tweet_submit_btn").blur(function(){
+        $(this).removeClass("more_tweet_submit_active");
+    });
+    $("#more_tweet_submit_btn").mouseup(function(){
+        stopAutoUpdate();
+        $(this).removeClass("more_tweet_submit_active");
+        $("#message_out").append(loadingImage);
+
+        $.ajax({
+            url: ".statuslist.ajax?action=more&listType="+listType,
+            success: function(data) {
+                $("#tweetUpdatePanel").append("<hr />");
+                $("#tweetUpdatePanel").append(data);
+                $("#message_out").empty();
+                startAutoUpdate();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                $("#message_out").empty().append(dropletCommonError);
+            }
+        });
+    });
+    /**************************************************************************/
+    /**************************************************************************/
+    $("#new_tweet_submit_btn").mousedown(function(){
+        $(this).addClass("new_tweet_submit_active");
+    });
+    
+    $("#new_tweet_submit_btn").blur(function(){
+        $(this).removeClass("new_tweet_submit_active");
     });
 
-    $("#new_tweet_submit_btn").click(function(){
+    $("#new_tweet_submit_btn").mouseup(function(){
+        $(this).removeClass("new_tweet_submit_active");
         $("#message_out").append(loadingImage);
         var tweet_text = $("#new_tweet_text_txt").val();
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
@@ -71,24 +109,15 @@ function tweetStreamHooks(){
                 $("#message_out").empty().append(dropletCommonError);
             }
         });
-
-    });
-
-    $("#new_tweet_submit_btn").mousedown(function(){
-        $(this).addClass("new_tweet_submit_active");
-    });
-    
-    $("#new_tweet_submit_btn").mouseup(function(){
-        $(this).removeClass("new_tweet_submit_active");
     });
     
 }
-
+/**************************************************************************/
 function resetTweetInput(){
     $("#new_tweet_in_reply_to_id").val("");
     $("#new_tweet_text_txt").val("");
 }
-
+/**************************************************************************/
 function ajaxAction(action){
     $("#message_out").append(loadingImage);
     $.ajax({
@@ -104,7 +133,7 @@ function ajaxAction(action){
         }
     });
 }
-
+/**************************************************************************/
 function searchAjaxAction(query){
 
     $("#message_out").append(loadingImage);
@@ -191,9 +220,9 @@ function spamHook(){
 function trackHook(){
     $(".track").click(function(){
         stopAutoUpdate();
-
-        $(this).children("a").toggleClass("isTracked");
         $("#message_out").append(loadingImage);
+        $(this).children("a").toggleClass("isTracked");
+        
         var id = $(this).attr("id").toString();
         id = id.substr("track".length, id.length);
         //
@@ -202,12 +231,13 @@ function trackHook(){
         //
         seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
         $("#infovis").empty();
-        updateConversation(seedURL);
+
         //
         $.ajax({
-            url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&currentAction=" +currentAction,
+            url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&listType=" +listType,
             success: function(data) {
-                $("#message_out").empty().append(data);
+                $("#message_out").empty().append(data).append(loadingImage);
+                updateConversation(seedURL);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 $("#message_out").empty().append(dropletCommonError);

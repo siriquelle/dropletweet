@@ -191,7 +191,7 @@ public class DropletController extends AbstractController {
 
             action = request.getParameter("action");
 
-            if (action.equals("home"))
+            if (action.equals("friendsList"))
             {
                 listType = "friendsList";
                 oldList = (List<Tweet>) modelMap.get(listType);
@@ -199,7 +199,7 @@ public class DropletController extends AbstractController {
                         ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()))
                         : twitter.getFriendsTimeline();
 
-            } else if (action.equals("replies"))
+            } else if (action.equals("replyList"))
             {
                 listType = "replyList";
                 oldList = (List<Tweet>) modelMap.get(listType);
@@ -221,11 +221,11 @@ public class DropletController extends AbstractController {
 
                 modelMap.put("dmSentList", dmSentList);
                 tweetList.addAll(dmSentList);
-            } else if (action.equals("favourites"))
+            } else if (action.equals("favouritesList"))
             {
                 listType = "favouritesList";
-                statusList = twitter.getFavorites();
-            } else if (action.equals("retweets"))
+                tweetList = (List<Tweet>) modelMap.get(listType);
+            } else if (action.equals("sentList"))
             {
                 listType = "sentList";
                 oldList = (List<Tweet>) modelMap.get(listType);
@@ -241,7 +241,7 @@ public class DropletController extends AbstractController {
                 {
                     tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
                 }
-            } else if (action.equals("conversations"))
+            } else if (action.equals("conversationList"))
             {
                 conversationList = dropletService.getAllConversationsByUserId(user.getId());
 
@@ -253,17 +253,32 @@ public class DropletController extends AbstractController {
                         tweetList.add(con.getTweet());
                     }
                 }
+            } else if (action.equals("more"))
+            {
+                listType = request.getParameter("listType");
+
+                if (listType != null)
+                {
+
+                    oldList = (List<Tweet>) modelMap.get(listType);
+                    if (oldList != null)
+                    {
+                        tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                        oldList = null;
+                    }
+                }
             }
+
+
             if (statusList != null)
             {
                 tweetList = getFormattedTweetListFromStatusList(statusList);
             } else if (tweetList != null)
             {
-                if (action != null && !action.equals("conversations"))
+                if (action != null)
                 {
                     tweetList = getFormattedTweetListFromTweetList(tweetList);
                 }
-
             }
             if (oldList != null)
             {
@@ -272,7 +287,8 @@ public class DropletController extends AbstractController {
 
             if (tweetList != null)
             {
-                tweetList = setTrackedTweets(tweetList, (User) modelMap.get("user"));
+                tweetList = setTrackedTweets(tweetList, modelMap);
+                tweetList = setFavouriteTweets(tweetList, modelMap);
                 Collections.sort(tweetList);
                 Collections.reverse(tweetList);
             }
@@ -348,14 +364,30 @@ public class DropletController extends AbstractController {
                 Status status = null;
                 if (tweetId.length() > 0)
                 {
+                    List<Tweet> favouritesList = (List<Tweet>) modelMap.get("favouritesList");
                     try
                     {
                         status = twitter.createFavorite(Long.valueOf(tweetId));
+                        tweet = new Tweet(status);
+                        favouritesList.add(tweet);
+
                     } catch (TwitterException twitterException)
                     {
                         status = twitter.destroyFavorite(Long.valueOf(tweetId));
+                        tweet = new Tweet(status);
+                        if (favouritesList != null)
+                        {
+                            for (Tweet t : favouritesList)
+                            {
+                                if (t.getId().equals(tweet.getId()))
+                                {
+                                    favouritesList.remove(t);
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    tweet = new Tweet(status);
+                    modelMap.put("favouritesList", favouritesList);
                 }
 
                 ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.favourite.complete"));
@@ -370,10 +402,10 @@ public class DropletController extends AbstractController {
             } else if (action.equals("track"))
             {
                 String tweetId = request.getParameter("tweetId");
-                String currentAction = request.getParameter("currentAction");
+                String listType = request.getParameter("listType");
                 if (tweetId.length() > 0)
                 {
-                    tweet = getTweetFromSession(Long.valueOf(tweetId), currentAction, modelMap);
+                    tweet = getTweetFromSession(Long.valueOf(tweetId), listType, modelMap);
                     if (tweet != null)
                     {
                         if (tweet.getTracked() == true)
@@ -389,6 +421,7 @@ public class DropletController extends AbstractController {
                             }
                         } else
                         {
+                            dropletService.persistTweet(tweet);
                             dropletService.persistConversation(new Conversation((User) modelMap.get("user"), tweet));
                             ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.track.complete"));
                         }
@@ -406,7 +439,13 @@ public class DropletController extends AbstractController {
         {
             ajaxTweetActionBean.setLink(tweet.getSource());
             ajaxTweetActionBean.setText(TweetUtil.swapAllForLinks(tweet.getText()));
-            ajaxTweetActionBean.setTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+            try
+            {
+                ajaxTweetActionBean.setTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+            } catch (Exception e)
+            {
+                DLog.log(e.toString());
+            }
         }
         modelMap.put("ajaxTweetActionBean", ajaxTweetActionBean);
         modelMap.put("view", "ajax/actions");
@@ -484,30 +523,34 @@ public class DropletController extends AbstractController {
     private Map updateModelMap(Twitter twitter, HttpServletRequest request)
     {
         Map modelMap = getModelMap(request);
+
         try
         {
-
+            Paging paging = new Paging().count(100);
             User user = new User(twitter.verifyCredentials());
-            List<Status> statusListFriends = twitter.getFriendsTimeline();
+            List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
             List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
             DLog.sleep();
-            List<Status> statusListReplies = twitter.getMentions();
+            List<Status> statusListReplies = twitter.getMentions(paging);
             List<Tweet> replyList = getFormattedTweetListFromStatusList(statusListReplies);
             DLog.sleep();
-            List<Tweet> dmList = getFormattedTweetListFromTweetList(this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages()));
+            List<Tweet> dmList = getFormattedTweetListFromTweetList(this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging)));
             DLog.sleep();
-            List<Tweet> dmSentList = this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages());
+            List<Tweet> dmSentList = this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
             DLog.sleep();
-            List<Status> statusListSent = twitter.getUserTimeline();
+            List<Status> statusListSent = twitter.getUserTimeline(paging);
             List<Tweet> sentList = getFormattedTweetListFromStatusList(statusListSent);
             DLog.sleep();
- 
+            List<Status> statusFavouritesList = twitter.getFavorites();
+            List<Tweet> favouritesList = getFormattedTweetListFromStatusList(statusFavouritesList);
+
             modelMap.put("tweetList", friendsList);
             modelMap.put("friendsList", friendsList);
             modelMap.put("replyList", replyList);
             modelMap.put("dmList", dmList);
             modelMap.put("dmSentList", dmSentList);
             modelMap.put("sentList", sentList);
+            modelMap.put("favouritesList", favouritesList);
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);
             modelMap.put("user", user);
@@ -569,7 +612,7 @@ public class DropletController extends AbstractController {
         {
             Tweet tweet = new Tweet(status);
             tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
-            tweet.setCreated_at(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+            tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
             formattedTweetList.add(tweet);
         }
         return formattedTweetList;
@@ -583,14 +626,16 @@ public class DropletController extends AbstractController {
      */
     private List<Tweet> getFormattedTweetListFromTweetList(List<Tweet> tweetList) throws TwitterException
     {
-        List<Tweet> formattedTweetList = new LinkedList();
+
         for (Tweet tweet : tweetList)
         {
             tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
-            tweet.setCreated_at(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
-            formattedTweetList.add(tweet);
+            if (!tweet.getTracked())
+            {
+                tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+            }
         }
-        return formattedTweetList;
+        return tweetList;
     }
 
     private List<Tweet> getDropletTweetListFromTwitter4jListOfTweets(List tweets)
@@ -643,14 +688,12 @@ public class DropletController extends AbstractController {
         this.dropletProperties = dropletProperties;
     }
 
-    private Tweet getTweetFromSession(Long tweetId, String currentAction, Map modelMap)
+    private Tweet getTweetFromSession(Long tweetId, String listType, Map modelMap)
     {
-        String fromList = "friendsList";
         Tweet trackTweet = null;
 
-        if (currentAction.equals("conversations"))
+        if (listType.equals("conversationList"))
         {
-            fromList = "conversationList";
             List<Conversation> conversationList = dropletService.getAllConversationsByUserId(((User) modelMap.get("user")).getId());
             if (conversationList != null)
             {
@@ -666,27 +709,17 @@ public class DropletController extends AbstractController {
             }
         } else
         {
-            if (currentAction.equals("replies"))
-            {
-                fromList = "replyList";
-            } else if (currentAction.equals("favourites"))
-            {
-                fromList = "favouritesList";
-            } else if (currentAction.equals("sent"))
-            {
-                fromList = "sentList";
-            }
 
-            if ((List<Tweet>) modelMap.get(fromList) != null)
+            if ((List<Tweet>) modelMap.get(listType) != null)
             {
-                List<Tweet> tweetList = (List<Tweet>) modelMap.get(fromList);
-                tweetList = setTrackedTweets(tweetList, (User) modelMap.get("user"));
+                List<Tweet> tweetList = (List<Tweet>) modelMap.get(listType);
 
                 for (Tweet tweet : tweetList)
                 {
                     if (tweet.getId().equals(tweetId))
                     {
                         trackTweet = tweet;
+                        trackTweet.setTracked(Boolean.TRUE);
                         break;
                     }
                 }
@@ -695,16 +728,39 @@ public class DropletController extends AbstractController {
         return trackTweet;
     }
 
-    private List<Tweet> setTrackedTweets(List<Tweet> tweetList, User user)
+    private List<Tweet> setTrackedTweets(List<Tweet> tweetList, Map modelMap)
     {
+        User user = (User) modelMap.get("user");
         List<Conversation> conversationList = dropletService.getAllConversationsByUserId(user.getId());
-        for (Tweet tweet : tweetList)
+        if (conversationList != null)
         {
-            for (Conversation con : conversationList)
+            for (Tweet tweet : tweetList)
             {
-                if (con.getTweet().getId().equals(tweet.getId()))
+                for (Conversation con : conversationList)
                 {
-                    tweet.setTracked(Boolean.TRUE);
+                    if (con.getTweet().getId().equals(tweet.getId()))
+                    {
+                        tweet.setTracked(Boolean.TRUE);
+                    }
+                }
+            }
+        }
+        return tweetList;
+    }
+
+    private List<Tweet> setFavouriteTweets(List<Tweet> tweetList, Map modelMap)
+    {
+        List<Tweet> favouritesList = (List<Tweet>) modelMap.get("favouritesList");
+        if (favouritesList != null)
+        {
+            for (Tweet tweet : tweetList)
+            {
+                for (Tweet fav : favouritesList)
+                {
+                    if (fav.getId().equals(tweet.getId()))
+                    {
+                        tweet.setFavourite(Boolean.TRUE);
+                    }
                 }
             }
         }
