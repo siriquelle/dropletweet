@@ -233,10 +233,11 @@ public class DropletController extends AbstractController {
                         ? twitter.getUserTimeline(new Paging(oldList.get(0).getId()))
                         : twitter.getUserTimeline();
 
-            } else if (action.equals("search"))
+            } else if (action.contains("search"))
             {
+                listType = "search";
                 String query = request.getParameter("q");
-                List<twitter4j.Tweet> tl = twitter.search(new Query(query)).getTweets();
+                List<twitter4j.Tweet> tl = twitter.search(new Query(query).rpp(100)).getTweets();
                 if (tl != null)
                 {
                     tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
@@ -258,11 +259,34 @@ public class DropletController extends AbstractController {
 
                 if (listType != null)
                 {
+                    if (listType.contains("search"))
+                    {
+                        oldList = (List<Tweet>) modelMap.get("search");
+                    } else
+                    {
+                        oldList = (List<Tweet>) modelMap.get(listType);
+                    }
 
-                    oldList = (List<Tweet>) modelMap.get(listType);
                     if (oldList != null)
                     {
-                        tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                        if (listType.equals("friendsList"))
+                        {
+                            tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                        } else if (listType.equals("sentList"))
+                        {
+                            tweetList = getFormattedTweetListFromStatusList(twitter.getUserTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                        } else if (listType.contains("search"))
+                        {
+                            String q = listType.substring("search_".length());
+                            if (q != null)
+                            {
+                                List<twitter4j.Tweet> tl = twitter.search(new Query(q).rpp(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)).getTweets();
+                                if (tl != null)
+                                {
+                                    tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -287,6 +311,7 @@ public class DropletController extends AbstractController {
             {
                 tweetList = setTrackedTweets(tweetList, modelMap);
                 tweetList = setFavouriteTweets(tweetList, modelMap);
+                tweetList = setRetweetTweets(tweetList, modelMap);
                 Collections.sort(tweetList);
                 Collections.reverse(tweetList);
             }
@@ -321,6 +346,11 @@ public class DropletController extends AbstractController {
             {
                 String tweetId = request.getParameter("tweetId");
                 tweet = new Tweet(twitter.retweetStatus(Long.valueOf(tweetId)));
+
+                List<Tweet> retweetList = (List<Tweet>) modelMap.get("retweetList");
+                retweetList.add(tweet);
+                modelMap.put("retweetList", retweetList);
+
             } else if (action.equals("post"))
             {
                 String tweet_text = request.getParameter("tweet_text");
@@ -527,7 +557,7 @@ public class DropletController extends AbstractController {
 
         try
         {
-            Paging paging = new Paging().count(100);
+            Paging paging = new Paging().count(45);
             User user = new User(twitter.verifyCredentials());
             List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
             List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
@@ -544,6 +574,9 @@ public class DropletController extends AbstractController {
             DLog.sleep();
             List<Status> statusFavouritesList = twitter.getFavorites();
             List<Tweet> favouritesList = getFormattedTweetListFromStatusList(statusFavouritesList);
+            List<Status> statusRetweetsByMe = twitter.getRetweetedByMe();
+            List<Tweet> retweetsList = getFormattedTweetListFromStatusList(statusRetweetsByMe);
+            DLog.sleep();
 
             modelMap.put("tweetList", friendsList);
             modelMap.put("friendsList", friendsList);
@@ -552,6 +585,7 @@ public class DropletController extends AbstractController {
             modelMap.put("dmSentList", dmSentList);
             modelMap.put("sentList", sentList);
             modelMap.put("favouritesList", favouritesList);
+            modelMap.put("retweetsList", retweetsList);
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);
             modelMap.put("user", user);
@@ -612,7 +646,7 @@ public class DropletController extends AbstractController {
         for (Status status : statusList)
         {
             Tweet tweet = new Tweet(status);
-            tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
+            tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
             tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
             formattedTweetList.add(tweet);
         }
@@ -630,7 +664,7 @@ public class DropletController extends AbstractController {
 
         for (Tweet tweet : tweetList)
         {
-            tweet.setText(TweetUtil.swapAllForLinks(tweet.getText()));
+            tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
             if (!tweet.getTracked())
             {
                 tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
@@ -758,6 +792,25 @@ public class DropletController extends AbstractController {
                     if (fav.getId().equals(tweet.getId()))
                     {
                         tweet.setFavourite(Boolean.TRUE);
+                    }
+                }
+            }
+        }
+        return tweetList;
+    }
+
+    private List<Tweet> setRetweetTweets(List<Tweet> tweetList, Map modelMap)
+    {
+        List<Tweet> retweetList = (List<Tweet>) modelMap.get("retweetList");
+        if (retweetList != null)
+        {
+            for (Tweet tweet : tweetList)
+            {
+                for (Tweet ret : retweetList)
+                {
+                    if (ret.getId().equals(tweet.getId()))
+                    {
+                        tweet.setRetweet(Boolean.TRUE);
                     }
                 }
             }

@@ -130,6 +130,7 @@ function searchAjaxAction(query){
     $.ajax({
         url: "./statuslist.ajax?action=search&q=" + query,
         success: function(data) {
+            listType = "search_" + query;
             $("#tweetUpdatePanel").empty().append(data);
             updateHooks();
             $("#message_out").empty();

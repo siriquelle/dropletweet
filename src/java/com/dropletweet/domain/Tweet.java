@@ -24,6 +24,7 @@ public class Tweet implements Comparable<Tweet> {
     protected String source;
     protected String profile_image_url;
     protected String text;
+    protected String prettyText;
     protected String created_at;
     protected String prettyTime = "";
     protected String iso_language_code;
@@ -286,6 +287,26 @@ public class Tweet implements Comparable<Tweet> {
     public void setText(String text)
     {
         this.text = text;
+    }
+
+    /**
+     * Get the value of prettyText
+     *
+     * @return the value of prettyText
+     */
+    public String getPrettyText()
+    {
+        return prettyText;
+    }
+
+    /**
+     * Set the value of prettyText
+     *
+     * @param prettyText new value of prettyText
+     */
+    public void setPrettyText(String prettyText)
+    {
+        this.prettyText = prettyText;
     }
 
     /**

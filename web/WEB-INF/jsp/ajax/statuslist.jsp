@@ -18,7 +18,7 @@
             </c:if>
 
             <div class="tweet_text">
-                <a href="http://twitter.com/<c:out value="${tweet.from_user}" />" class="outlink b" target="_blank"><c:out value="${tweet.from_user}" escapeXml="false" /></a> <c:out value="${tweet.text}" escapeXml="false"/>
+                <a href="http://twitter.com/<c:out value="${tweet.from_user}" />" class="outlink b" target="_blank"><c:out value="${tweet.from_user}" escapeXml="false" /></a> <c:out value="${tweet.prettyText}" escapeXml="false"/>
             </div>
             <div class="tweet_info">
                 <a href="http://twitter.com/<c:out value="${tweet.from_user}" />/status/<c:out value="${tweet.id}" />" target="_blank"><c:out value="${tweet.prettyTime}" /></a>
@@ -76,7 +76,7 @@
         </div>
         <c:set var="lastId" value="${tweet.id}"/>
     </c:forEach>
-    <c:if test="${fn:length(modelMap.tweetList) > 50}" >
+    <c:if test="${fn:length(modelMap.tweetList) > 40}" >
         <button id="more_tweet_submit_btn" name="ldt<c:out value="${lastId}" />"class="more_tweet_submit">more</button>
     </c:if>
 </c:if>
