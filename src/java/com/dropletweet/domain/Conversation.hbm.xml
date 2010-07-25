@@ -8,10 +8,10 @@
             <generator class="native"/>
         </id>
     <!-- -->
-        <many-to-one cascade="merge" class="com.dropletweet.domain.User" fetch="select" lazy="false" name="user" unique-key="ConversationUserTweet">
+        <many-to-one cascade="none" class="com.dropletweet.domain.User" fetch="select" lazy="false" name="user" unique-key="ConversationUserTweet">
             <column name="user_id"/>
         </many-to-one>
-        <many-to-one cascade="merge" class="com.dropletweet.domain.Tweet" fetch="select" lazy="false" name="tweet" unique-key="ConversationUserTweet">
+        <many-to-one cascade="none" class="com.dropletweet.domain.Tweet" fetch="select" lazy="false" name="tweet" unique-key="ConversationUserTweet">
             <column name="tweet_id"/>
         </many-to-one>
     </class>
