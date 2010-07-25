@@ -585,7 +585,7 @@ public class DropletController extends AbstractController {
             modelMap.put("dmSentList", dmSentList);
             modelMap.put("sentList", sentList);
             modelMap.put("favouritesList", favouritesList);
-            modelMap.put("retweetsList", retweetsList);
+            modelMap.put("retweetList", retweetsList);
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);
             modelMap.put("user", user);

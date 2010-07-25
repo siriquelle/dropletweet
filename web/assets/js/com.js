@@ -12,7 +12,8 @@ function createLoadingImage(){
 
 var dropletCommonError = "dropletweet is error, boo!";
 
-var seedURL = "http://twitter.com/PhillyD/status/19382288629";//Philly D/
+var seedURL = "http://twitter.com/DerrenBrown/status/19483147595";//Don't sit down
+    //http://twitter.com/PhillyD/status/19382288629";//Philly D/
     //"http://twitter.com/reimarie/status/19373181518";//Playing Games
     //"http://twitter.com/markrock/status/19087326268";//Its wet in dublin
 //Laporte Doesn't Know Google Docs Works "http://twitter.com/leolaporte/status/19034374335";
