@@ -14,7 +14,6 @@ import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -178,10 +176,9 @@ public class ConversationServiceImpl implements ConversationService {
             {
                 Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
 
-        DLog.log("SEED: " + seedTweet.getUpdated());
+        DLog.log("SEED UPDATED: " + seedTweet.getUpdated());
         DLog.log("END GET SEED TWEET");
         return seedTweet;
     }// </editor-fold>
@@ -200,21 +197,37 @@ public class ConversationServiceImpl implements ConversationService {
 
         String name = new File(seedURL).getName();
         Long id = Long.valueOf(name);
-
+        Tweet tweet = dropletService.getTweetById(id);
+        Tweet tweetReply = null;
         //Checks the local database for any tweets and returns the seed if found
-        if (dropletService.getTweetById(id) != null)
+        if (tweet != null)
         {
             DLog.log("START CHECK LOCAL DATABASE FOR SEED TWEET");
-            Tweet tweet = dropletService.getTweetById(id);
-            while (tweet != null && tweet.getIn_reply_to_id() != null && dropletService.getTweetById(tweet.getIn_reply_to_id()) != null)
+            do
             {
-                tweet = dropletService.getTweetById(tweet.getIn_reply_to_id());
-                if (tweet != null && tweet.getIn_reply_to_id() == null)
+                if (tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0)
                 {
-                    return tweet.getId();
+                    tweetReply = dropletService.getTweetById(tweet.getIn_reply_to_id());
+
+                    if (tweetReply != null)
+                    {
+                        tweet = tweetReply;
+                        if (tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0)
+                        {
+                            tweetReply = dropletService.getTweetById(tweet.getIn_reply_to_id());
+                        }
+                    } else
+                    {
+                        id = getSeedIDFromURL("http://twitter.com/" + tweet.getFrom_user() + "/status/" + tweet.getId());
+                        return id;
+                    }
+                } else
+                {
+                    id = tweet.getId();
+                    return id;
                 }
 
-            }
+            } while (tweetReply != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0);
             DLog.log("END CHECK LOCAL DATABASE FOR SEED TWEET");
         } else
         {
@@ -230,6 +243,7 @@ public class ConversationServiceImpl implements ConversationService {
                     if (tag.getText().toString().contains("in reply to"))
                     {
                         id = this.getSeedIDFromURL(tag.getAttributeByName("href"));
+                        return id;
                     }
                 }
                 DLog.log("END CHECK TWITTER FOR SEED TWEET");

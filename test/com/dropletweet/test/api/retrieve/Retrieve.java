@@ -51,7 +51,7 @@ public class Retrieve {
     public void Test_Toyota()
     {
         DLog.log("START Toyota Ireland TEST-");
-        String seedURL = "http://twitter.com/toyotaireland/status/17400712655";
+        String seedURL = "http://twitter.com/patphelan/status/19519742138";
         Retrieve retrieve = new Retrieve();
         retrieve.Setup();
         String json = retrieve.getJSONConversation(seedURL);
@@ -134,7 +134,7 @@ public class Retrieve {
     // <editor-fold defaultstate="collapsed" desc="Returns a JSON Formatted twitter conversation including local and remote tweets">
     {
         DLog.log("START GET JSON CONVERSATION");
-        StringBuffer json = new StringBuffer();
+        StringBuilder json = new StringBuilder();
         try
         {
 
@@ -226,6 +226,9 @@ public class Retrieve {
                 if (tweet != null && tweet.getIn_reply_to_id() == null)
                 {
                     return tweet.getId();
+                } else if (tweet == null)
+                {
+                    id = getSeedIDFromURL("http://twitter.com/" + tweet.getTo_user() + "/status/" + tweet.getIn_reply_to_id());
                 }
             }
             DLog.log("END CHECK LOCAL DATABASE FOR SEED TWEET");
@@ -434,6 +437,4 @@ public class Retrieve {
         }
         return id;
     }// </editor-fold>
-
-  
 }

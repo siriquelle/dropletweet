@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,6 +34,7 @@ import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 import twitter4j.TwitterFactory;
 import twitter4j.http.AccessToken;
 import twitter4j.http.RequestToken;
@@ -64,7 +66,7 @@ public class DropletController extends AbstractController {
             modelMap.putAll(doDropletView(request));
         } else if (uri.contains("signin.htm"))
         {
-            modelMap.putAll(doSigninView(request));
+            modelMap.putAll(doSigninView(request, response));
         } else if (uri.contains("statuslist.ajax"))
         {
             modelMap.putAll(doAjaxStatusList(request));
@@ -106,14 +108,32 @@ public class DropletController extends AbstractController {
      * @return
      * @throws Exception
      */
-    private Map doSigninView(HttpServletRequest request) throws Exception
+    private Map doSigninView(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         Map modelMap = getModelMap(request);
         modelMap.put("view", "redirect:index.htm");
         HttpSession session = request.getSession();
+        Cookie[] cookies = request.getCookies();
+        String accessToken = "accessToken";
         if (request.getParameter("logout") == null)
         {
-            if ((RequestToken) session.getAttribute("requestToken") == null)
+
+            for (Cookie cookie : cookies)
+            {
+                if (cookie.getName().equals(accessToken))
+                {
+                    accessToken = cookie.getValue();
+                    break;
+                }
+            }
+
+            if (!accessToken.equals("accessToken"))
+            {
+                String tokenKey = accessToken.substring(0, accessToken.indexOf("_"));
+                String tokenSecret = accessToken.substring(accessToken.indexOf("_") + 1, accessToken.length());
+                modelMap.putAll(updateModelMap(this.getAuthorizedTwitter(tokenKey, tokenSecret), request));
+                modelMap.put("view", "redirect:droplet.htm");
+            } else if ((RequestToken) session.getAttribute("requestToken") == null)
             {
                 String authorizationURL = this.getAuthorizationURL(session).toExternalForm();
                 if (authorizationURL != null)
@@ -122,12 +142,22 @@ public class DropletController extends AbstractController {
                 }
             } else
             {
-                modelMap.putAll(updateModelMap(this.getAuthorizedTwitter(session), request));
+                modelMap.putAll(updateModelMap(this.getAuthorizedTwitter(request, response), request));
                 modelMap.put("view", "redirect:droplet.htm");
             }
 
         } else
         {
+            for (Cookie cookie : cookies)
+            {
+                if (cookie.getName().equals(accessToken))
+                {
+                    cookie.setMaxAge(-1);
+                    response.addCookie(cookie);
+                    break;
+                }
+            }
+            SecurityContextHolder.getContext().getAuthentication().setAuthenticated(Boolean.FALSE);
             session.invalidate();
             modelMap.put("view", "redirect:index.htm");
         }
@@ -452,8 +482,14 @@ public class DropletController extends AbstractController {
                             }
                         } else
                         {
-                            dropletService.persistTweet(tweet);
-                            dropletService.persistConversation(new Conversation((User) modelMap.get("user"), tweet));
+                            try
+                            {
+                                dropletService.persistTweet(tweet);
+                                dropletService.persistConversation(new Conversation((User) modelMap.get("user"), tweet));
+                            } catch (Exception e)
+                            {
+                                DLog.log(e.getMessage());
+                            }
                             ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.track.complete"));
                         }
                     }
@@ -517,17 +553,20 @@ public class DropletController extends AbstractController {
      * @param request
      * @return
      */
-    private Twitter getAuthorizedTwitter(HttpSession session)
+    private Twitter getAuthorizedTwitter(HttpServletRequest request, HttpServletResponse response)
     {
+        HttpSession session = request.getSession();
         Twitter twitter = (Twitter) session.getAttribute("twitter");
         RequestToken requestToken = (RequestToken) session.getAttribute("requestToken");
         try
         {
 
             AccessToken accessToken = twitter.getOAuthAccessToken(requestToken);
+            Cookie cookie = new Cookie("accessToken", accessToken.getToken() + "_" + accessToken.getTokenSecret());
+            cookie.setMaxAge(SEVEN_DAYS_IN_SECONDS);
+            cookie.setComment("This cookie enables you to login automatically, for one week, to dropletweet. This means you do not have to negotiate with twitter for authorization every time you visit, :)");
+            response.addCookie(cookie);
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accessToken.getToken(), accessToken.getTokenSecret(), null));
-
-            twitter.verifyCredentials();
             session.removeAttribute("requestToken");
 
         } catch (TwitterException e)
@@ -535,6 +574,22 @@ public class DropletController extends AbstractController {
             DLog.log(e.getMessage());
         }
 
+        return twitter;
+    }
+
+    /**
+     * 
+     * @param request
+     * @return
+     */
+    private Twitter getAuthorizedTwitter(String tokenKey, String tokenSecret)
+    {
+        AccessToken accessToken = new AccessToken(tokenKey, tokenSecret);
+        Twitter twitter = new TwitterFactory().getOAuthAuthorizedInstance(
+                dropletProperties.getProperty("twitter.oauth.application.key"),
+                dropletProperties.getProperty("twitter.oauth.application.secret"),
+                accessToken);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accessToken.getToken(), accessToken.getTokenSecret(), null));
         return twitter;
     }
 
@@ -817,4 +872,5 @@ public class DropletController extends AbstractController {
         }
         return tweetList;
     }
+    private static final Integer SEVEN_DAYS_IN_SECONDS = 604800;
 }
