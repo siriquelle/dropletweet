@@ -34,6 +34,13 @@ public class ConversationDaoImpl extends HibernateDaoSupport implements Conversa
     }
 
     @Override
+    public Conversation getByUserTweetID(Integer userId, Long tweetId){
+        List<Conversation> conversationList = (List<Conversation>) getHibernateTemplate().find("from Conversation where user_id = ? and tweet_id = ?", new Object[]{userId, tweetId});
+
+        return (conversationList.isEmpty()) ? null : conversationList.get(0);
+    }
+
+    @Override
     public List<Conversation> getAllByUserId(Integer userId)
     {
         List<Conversation> conversationList = (List<Conversation>) getHibernateTemplate().find("from Conversation where user_id = ?", userId);

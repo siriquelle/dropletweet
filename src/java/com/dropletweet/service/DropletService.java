@@ -37,6 +37,8 @@ public interface DropletService {
 
     public Conversation getConversationById(Integer id);
 
+    public Conversation getConversationByUserIdTweetIdCombination(Integer userId, Long tweetId);
+
     public List<Conversation> getAllConversationsByUserId(Integer userId);
 
     public void persistConversation(Conversation conversation);

@@ -16,4 +16,6 @@ public interface ConversationDao extends AbstractDao<Conversation> {
     public Conversation getByID(Integer id);
 
     public List<Conversation> getAllByUserId(Integer userId);
+
+    public Conversation getByUserTweetID(Integer userId, Long tweetId);
 }

@@ -215,11 +215,15 @@ public class ConversationServiceImpl implements ConversationService {
                         if (tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0)
                         {
                             tweetReply = dropletService.getTweetById(tweet.getIn_reply_to_id());
+                            if (tweetReply == null)
+                            {
+                                id = getSeedIDFromURL("http://twitter.com/" + tweet.getFrom_user() + "/status/" + tweet.getId());
+                                return id;
+                            }
                         }
                     } else
                     {
-                        id = getSeedIDFromURL("http://twitter.com/" + tweet.getFrom_user() + "/status/" + tweet.getId());
-                        return id;
+                        return tweet.getId();
                     }
                 } else
                 {
@@ -297,18 +301,22 @@ public class ConversationServiceImpl implements ConversationService {
                         seedUser.setLatest_tweet_id(tweet.getId());
                     }
                 }
+                seedTweet.setUpdated(Calendar.getInstance().getTime());
+                dropletService.persistTweet(seedTweet);
+                dropletService.persistUser(seedUser);
+                DLog.log("TWEET UPDATE TIME : " + String.valueOf(seedTweet.getUpdated().getTime()));
             } catch (FileNotFoundException ex)
             {
+                if (seedUser.getLatest_tweet_id() != null)
+                {
+                    seedUser.setLatest_tweet_id(null);
+                    getSearchResults(seedTweet);
+                }
                 DLog.log(ex.getMessage());
             } catch (IOException ioe)
             {
-                seedUser.setLatest_tweet_id(null);
+                DLog.log(ioe.getMessage());
             }
-            seedTweet.setUpdated(Calendar.getInstance().getTime());
-            dropletService.persistTweet(seedTweet);
-            dropletService.persistUser(seedUser);
-            DLog.log("TWEET UPDATE TIME : " + String.valueOf(seedTweet.getUpdated().getTime()));
-
         }
 
         DLog.log("END GET SEARCH RESULTS FROM TWITTER");
@@ -392,7 +400,7 @@ public class ConversationServiceImpl implements ConversationService {
             {
                 Long in_reply_to_id = getIn_reply_to_id(reply);
 
-                if (in_reply_to_id != null && in_reply_to_id.equals(seed.getId()))
+                if (in_reply_to_id != null &&  in_reply_to_id.equals(seed.getId()))
                 {
 
                     Search checkReplyResults = this.getSearchResults(reply);

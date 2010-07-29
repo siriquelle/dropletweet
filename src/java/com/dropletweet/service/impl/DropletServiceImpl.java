@@ -109,6 +109,13 @@ public class DropletServiceImpl implements DropletService {
     }
 
     @Override
+    public Conversation getConversationByUserIdTweetIdCombination(Integer userId, Long tweetId)
+    {
+
+        return conversationDao.getByUserTweetID(userId, tweetId);
+    }
+
+    @Override
     public List<Conversation> getAllConversationsByUserId(Integer userId)
     {
         return conversationDao.getAllByUserId(userId);

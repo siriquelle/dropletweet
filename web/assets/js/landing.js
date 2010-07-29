@@ -121,7 +121,7 @@ function initialp(json){
             }
             else {
                 style.fontSize = "0.2em";
-                style.opacity = "1";
+                style.opacity = ".2";
                 style.zIndex = "500";
                 style.marginTop = "0";
                 domElement.innerHTML = node.name;

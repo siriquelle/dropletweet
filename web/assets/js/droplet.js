@@ -150,6 +150,7 @@ function tweetHooks(){
     deleteHook();
     spamHook();
     trackHook();
+    reloadHook();
     moreTweetsHook();
 }
 
@@ -235,6 +236,26 @@ function trackHook(){
                 $("#message_out").empty().append(dropletCommonError);
             }
         });
+    });
+}
+
+function reloadHook(){
+    $(".reload").click(function(){
+        stopAutoUpdate();
+        $("#message_out").empty().append(loadingImage);
+        $(this).children("a").toggleClass("isTracked");
+        var id = $(this).attr("id").toString();
+        id = id.substr("reload".length, id.length);
+        //
+        var tweetId = id.substr(0, id.indexOf("_", 0));
+        var from_user = id.substr(id.indexOf("_", 0)+1, id.length);
+        //
+        seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
+        //
+        $("#infovis").empty();
+        updateConversation(seedURL);
+        //
+        $(this).children("a").toggleClass("isTracked");
     });
 }
 /**************************************************************************/
@@ -450,7 +471,7 @@ function initialp(json){
             }
             else {
                 style.fontSize = "0.2em";
-                style.opacity = "1";
+                style.opacity = ".2";
                 style.zIndex = "500";
                 style.marginTop = "0";
                 domElement.innerHTML = node.name;

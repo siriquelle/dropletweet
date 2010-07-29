@@ -186,7 +186,9 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .tweet_actions .track a:hover {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent}
 .isTracked {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent !important}
 /**/
-
+.tweet_actions .reload a{  width:16px; height:16px; display: block; background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px -16px transparent}
+.tweet_actions .reload a:hover {background:url("../img/actions/tweet_action_track.png") no-repeat scroll 0px 0px transparent}
+/**/
 /*END TWEET STREAM*/
 
 /* END RIGHT COLUMN*/

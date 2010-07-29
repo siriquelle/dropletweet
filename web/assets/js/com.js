@@ -12,7 +12,7 @@ function createLoadingImage(){
 
 var dropletCommonError = "dropletweet is error, boo!";
 
-var seedURL = "http://twitter.com/arseblog/status/19565166016";
+var seedURL = "http://twitter.com/damienmulley/status/19605819998";
 ////http://twitter.com/DerrenBrown/status/19483147595";//Don't sit down
 //http://twitter.com/PhillyD/status/19382288629";//Philly D/
 //"http://twitter.com/reimarie/status/19373181518";//Playing Games

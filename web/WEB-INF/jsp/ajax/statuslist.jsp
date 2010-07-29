@@ -31,32 +31,32 @@
                 </c:if>
             </div>
             <div class="tweet_actions">
-                <div class="tweet_action reply" id="reply<c:out value="${tweet.id}" />_<c:out value="${tweet.from_user}" />"><a href="##"></a></div>
+                <div class="tweet_action reply" id="reply<c:out value="${tweet.id}" />_<c:out value="${tweet.from_user}" />"><a href="##" title="Reply to this tweet"></a></div>
 
                 <div class="tweet_action retweet" id="retweet<c:out value="${tweet.id}" />">
                     <c:if test="${tweet.retweet == true}" >
-                        <a href="##" class="isRetweet" ></a>
+                        <a href="##" class="isRetweet" title="Retweet this tweet"></a>
                     </c:if>
                     <c:if test="${tweet.retweet == false }" >
-                        <a href="##" ></a>
+                        <a href="##" title="Retweet by you" ></a>
                     </c:if>
                 </div>
 
                 <div class="tweet_action favourite" id="favourite<c:out value="${tweet.id}" />">
                     <c:if test="${tweet.favourite == true}" >
-                        <a href="##" class="isFavourite" ></a>
+                        <a href="##" class="isFavourite" title="Favourite this tweet"></a>
                     </c:if>
                     <c:if test="${tweet.favourite == false}" >
-                        <a href="##" ></a>
+                        <a href="##" title="Your favoured tweet" ></a>
                     </c:if>
                 </div>
 
                 <c:if test="${modelMap.user.screen_name == tweet.from_user}" >
-                    <div class="tweet_action delete" id="delete<c:out value="${tweet.id}" />"><a href="##"></a></div>
+                    <div class="tweet_action delete" id="delete<c:out value="${tweet.id}" />"><a href="##" title="Delete this tweet"></a></div>
                 </c:if>
 
                 <c:if test="${modelMap.user.screen_name != tweet.from_user}">
-                    <div class="tweet_action spam" id="spam<c:out value="${tweet.id}" />"><a href="##"></a></div>
+                    <div class="tweet_action spam" id="spam<c:out value="${tweet.id}" />"><a href="##" title="Report this tweet for spam"></a></div>
                 </c:if>
 
 
@@ -64,14 +64,20 @@
 
                     <c:if test="${tweet.tracked == true}" >
 
-                        <a href="##" class="isTracked"></a>
+                        <a href="##" class="isTracked" title="This tweet is being tracked by you"></a>
+
                     </c:if>
 
                     <c:if test="${tweet.tracked == false}" >
 
-                        <a href="##"></a>
+                        <a href="##" title="Track and map this tweet" ></a>
                     </c:if>
                 </div>
+                <c:if test="${tweet.tracked == true}" >
+                    <div class="tweet_action reload" id="reload<c:out value="${tweet.id}" />_<c:out value="${tweet.from_user}" />">
+                        <a href="##" title="Map this tweet" ></a>
+                    </div>
+                </c:if>
             </div>
         </div>
         <c:set var="lastId" value="${tweet.id}"/>
