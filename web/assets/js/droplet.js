@@ -1,7 +1,7 @@
 /**********************************************************************/
 var listType = "friendsList";
 var intervalID = null;
-
+var infoVisCount = 0;
 //
 $(document).ready(function() {
     createLoadingImage();
@@ -71,6 +71,7 @@ function tweetStreamHooks(){
         var charCount = getCharCountElement();
         charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
         $("#message_out").empty().append(charCount);
+
     });
     
     $("#new_tweet_text_txt").blur(function(){
@@ -78,6 +79,7 @@ function tweetStreamHooks(){
     });
 
     $("#new_tweet_text_txt").keyup(function(){
+        $("#message_out").empty().append(charCount);
         $("#char_count").text((140 - $("#new_tweet_text_txt").val().length));
     });
     $("#new_tweet_submit_btn").mouseup(function(){
@@ -223,8 +225,7 @@ function trackHook(){
         var from_user = id.substr(id.indexOf("_", 0)+1, id.length);
         //
         seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
-        $("#infovis").empty();
-
+        $("#container").empty().append(getInfoVisElement());
         //
         $.ajax({
             url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&listType=" +listType,
@@ -252,7 +253,7 @@ function reloadHook(){
         //
         seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
         //
-        $("#infovis").empty();
+        $("#container").empty().append(getInfoVisElement());
         updateConversation(seedURL);
         //
         $(this).children("a").toggleClass("isTracked");
@@ -389,14 +390,14 @@ function getDomElement(node){
 
 function initialp(json){
     //end
-
-    var infovis = document.getElementById('infovis');
+    var current = "infovis"+infoVisCount;
+    var infovis = document.getElementById(current);
     var w = infovis.offsetWidth , h = infovis.offsetHeight;
 
     //init canvas
     //Create a new canvas instance.
     var canvas = new Canvas('mycanvas', {
-        'injectInto': 'infovis',
+        'injectInto': current,
         'width': w,
         'height': h
     });
@@ -409,8 +410,8 @@ function initialp(json){
         Node: {
             dim: 12,
             type: "circle",
-            width: 400,
-            height: 400,
+            width: 300,
+            height: 120,
             color: "#0F4853"
         },
 
@@ -503,5 +504,14 @@ function initialp(json){
 function getCharCountElement(){
     var charCount = document.createElement("div");
     charCount.setAttribute('id', 'char_count');
+    charCount.setAttribute('class', 'simple_message');
     return charCount;
+}
+
+function getInfoVisElement(){
+    infoVisCount++;
+    var infoVis = document.createElement("div");
+    infoVis.setAttribute('id', 'infovis'+infoVisCount);
+    infoVis.setAttribute('class', 'infovis');
+    return infoVis;
 }

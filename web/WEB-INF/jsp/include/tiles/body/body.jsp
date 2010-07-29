@@ -5,7 +5,7 @@
     <div id="leftColumn">
 
         <div id="container">
-            <div id="infovis"></div>
+            <div id="infovis0" class="infovis" ></div>
         </div>
     </div>
     <div id="rightColumn">

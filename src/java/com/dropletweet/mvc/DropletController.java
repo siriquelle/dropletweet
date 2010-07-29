@@ -237,7 +237,7 @@ public class DropletController extends AbstractController {
                 statusList = (oldList.size() > 0)
                         ? twitter.getMentions(new Paging(oldList.get(0).getId()))
                         : twitter.getMentions();
-            } else if (action.equals("dms"))
+            } else if (action.equals("dmList"))
             {
                 listType = "dmList";
                 oldList = (List<Tweet>) modelMap.get(listType);
@@ -302,10 +302,10 @@ public class DropletController extends AbstractController {
                     {
                         if (listType.equals("friendsList"))
                         {
-                            tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                            tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
                         } else if (listType.equals("sentList"))
                         {
-                            tweetList = getFormattedTweetListFromStatusList(twitter.getUserTimeline(new Paging().count(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                            tweetList = getFormattedTweetListFromStatusList(twitter.getUserTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
                         } else if (listType.contains("search"))
                         {
                             String q = listType.substring("search_".length());
@@ -633,7 +633,7 @@ public class DropletController extends AbstractController {
 
         try
         {
-            Paging paging = new Paging().count(45);
+            Paging paging = new Paging().count(65);
             User user = new User(twitter.verifyCredentials());
             List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
             List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);

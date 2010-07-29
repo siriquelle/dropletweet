@@ -39,14 +39,14 @@ function getDomElement(node){
 }
 function initialp(json){
     //end
-
-    var infovis = document.getElementById('infovis');
+    var current = "infovis0";
+    var infovis = document.getElementById(current);
     var w = infovis.offsetWidth , h = infovis.offsetHeight;
 
     //init canvas
     //Create a new canvas instance.
     var canvas = new Canvas('mycanvas', {
-        'injectInto': 'infovis',
+        'injectInto': current,
         'width': w,
         'height': h
     });
