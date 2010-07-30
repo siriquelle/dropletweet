@@ -151,7 +151,7 @@ public class TweetUtil {
         tweet.setLocation(null);
         tweet.setProfile_image_url(null);
         tweet.setSource(null);
-        tweet.setText(null);
+        tweet.setText("This tweet has been deleted by the owner.");
         tweet.setTo_user(null);
         tweet.setTo_user_id(null);
         return tweet;

@@ -7,6 +7,4 @@
     <tiles:put name="title" type="string" value="Dropletweet - A conversation tracking tool for twitter" beanScope="request"/>
     <tiles:put name="meta" value="/WEB-INF/jsp/include/view_landing/landing_meta.jsp" beanScope="request"/>
     <tiles:put name="body" beanName="body.landing" beanScope="request"/>
-
-
 </tiles:insert>
