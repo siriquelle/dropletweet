@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 
-<script language="javascript" type="text/javascript" src="./assets/js/droplet.js"></script>
+<script language="javascript" type="text/javascript" src="./assets/js/droplet.js?1"></script>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];

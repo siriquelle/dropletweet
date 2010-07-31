@@ -42,7 +42,7 @@ table {border-collapse: collapse;border-spacing: 0;}
 .node_tweet_container{background-color:#C6F6FF; padding:3px; -moz-border-radius:5px; -webkit-border-radius:5px; }
 
 #mycanvas-label, #mycanvas-canvas{
-    top:-139px !important;
+    top:-24px !important;
     left:-20px !important;
 }
 /* END INFOVIS TOOLKIT*/

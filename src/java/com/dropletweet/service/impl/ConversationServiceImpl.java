@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.htmlcleaner.HtmlCleaner;
@@ -149,7 +150,8 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Gets the seed tweet in this conversation">
     {
         DLog.log("START GET SEED TWEET");
-        Tweet seedTweet = dropletService.getTweetById(this.getSeedIDFromURL(seedURL));
+        Long id = this.getSeedIDFromURL(seedURL);
+        Tweet seedTweet = dropletService.getTweetById(id);
         User seedUser = null;
         Single seed = null;
 
@@ -157,7 +159,7 @@ public class ConversationServiceImpl implements ConversationService {
         {
             try
             {
-                String testCase = "http://api.twitter.com/1/statuses/show/" + this.getSeedIDFromURL(seedURL) + ".json";
+                String testCase = "http://api.twitter.com/1/statuses/show/" + id + ".json";
                 seed = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL(testCase).openStream())), Single.class);
                 seedTweet = new Tweet(seed);
                 seedUser = seed.getUser();
@@ -167,10 +169,6 @@ public class ConversationServiceImpl implements ConversationService {
                     dropletService.deleteUser(dropletService.getUserByScreen_Name(seed.getUser().getScreen_name()));
                 }
 
-                if (seedUser.getLatest_tweet_id() == null || seedUser.getLatest_tweet_id() < seedTweet.getId())
-                {
-                    seedUser.setLatest_tweet_id(seedTweet.getId());
-                }
                 dropletService.persistUser(seedUser);
             } catch (IOException ex)
             {
@@ -223,7 +221,8 @@ public class ConversationServiceImpl implements ConversationService {
                         }
                     } else
                     {
-                        return tweet.getId();
+                        id = getSeedIDFromURL("http://twitter.com/" + tweet.getTo_user() + "/status/" + tweet.getIn_reply_to_id());
+                        return id;
                     }
                 } else
                 {
@@ -272,9 +271,9 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Searches local database for latest tweet recorded and queries twitter for any tweets after it.">
     {
         DLog.log("START GET SEARCH RESULTS FROM TWITTER");
-        DLog.log("CURRENT TIME : " + String.valueOf(new Date().getTime() - TWENTY_MINUTES_IN_MILLISECONDS));
+        DLog.log("CURRENT TIME : " + String.valueOf(Calendar.getInstance().getTimeInMillis() - TWENTY_MINUTES_IN_MILLISECONDS));
         Search search = null;
-        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (new Date().getTime() - TWENTY_MINUTES_IN_MILLISECONDS)))
+        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (Calendar.getInstance().getTimeInMillis() - TWENTY_MINUTES_IN_MILLISECONDS)))
         {
             Long since_id = null;
             User seedUser = dropletService.getUserByScreen_Name(seedTweet.getFrom_user());
@@ -289,7 +288,7 @@ public class ConversationServiceImpl implements ConversationService {
 
             try
             {
-                search = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&since_id=" + since_id + "&rpp=10000").openStream())), Search.class);
+                search = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&since_id=" + since_id + "&rpp=350").openStream())), Search.class);
 
                 if (search != null)
                 {
@@ -400,7 +399,7 @@ public class ConversationServiceImpl implements ConversationService {
             {
                 Long in_reply_to_id = getIn_reply_to_id(reply);
 
-                if (in_reply_to_id != null &&  in_reply_to_id.equals(seed.getId()))
+                if (in_reply_to_id != null && in_reply_to_id.equals(seed.getId()))
                 {
 
                     Search checkReplyResults = this.getSearchResults(reply);
@@ -435,7 +434,11 @@ public class ConversationServiceImpl implements ConversationService {
         TagNode node = null;
         try
         {
+            Thread.sleep(Long.valueOf((new Random().nextInt(500))));
             node = cleaner.clean(new URL("http://twitter.com/" + reply.getFrom_user() + "/status/" + reply.getId()));
+        } catch (InterruptedException ex)
+        {
+            Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex)
         {
             Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);

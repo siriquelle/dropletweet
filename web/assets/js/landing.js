@@ -4,6 +4,7 @@
 $(document).ready(function() {
     createLoadingImage();
     $("#message_out").append(loadingImage);
+    setup();
     updateConversation(seedURL);
 });
 
@@ -37,114 +38,9 @@ function getDomElement(node){
 
     return domElement;
 }
-function initialp(json){
-    //end
-    var current = "infovis0";
-    var infovis = document.getElementById(current);
-    var w = infovis.offsetWidth , h = infovis.offsetHeight;
 
-    //init canvas
-    //Create a new canvas instance.
-    var canvas = new Canvas('mycanvas', {
-        'injectInto': current,
-        'width': w,
-        'height': h
-    });
-    //end
-
-    //init Hypertree
-    var ht = new Hypertree(canvas, {
-        //Change node and edge styles such as
-        //color, width and dimensions.
-        Node: {
-            dim: 12,
-            type: "circle",
-            width: 400,
-            height: 400,
-            color: "#0F4853"
-        },
-
-        Edge: {
-            lineWidth: 3,
-            color: "#088"
-        },
-        duration: 600,
-        fps: 50,
-        clearCanvas: true,
-        transition: Trans.Expo.easeInOut,
-        levelDistance: 100,
-        onBeforeCompute: function(node){
-        },
-        //Attach event handlers and add text to the
-        //labels. This method is only triggered on label
-        //creation
-        onCreateLabel: function(domElement, node){
-            addEvent(domElement, 'click', function () {
-                ht.onClick(node.id);
-            });
-        },
-        //Change node styles when labels are placed
-        //or moved.
-        onPlaceLabel: function(domElement, node){
-            var style = domElement.style;
-            style.display = '';
-            style.cursor = 'pointer';
-            if (node._depth == 0) {
-                style.fontSize = "1em";
-                style.opacity = "1";
-                style.zIndex = "3000";
-                style.textAlign = "left";
-                style.marginLeft = "0px";
-                style.marginTop = "-60px";
-
-                domElement.innerHTML = getDomElement(node);
-
-            } else if(node._depth == 1){
-                style.fontSize = "0.8em";
-                style.opacity = "0.8";
-                style.zIndex = "2000";
-                style.marginTop = "-40px";
-                domElement.innerHTML = getDomElement(node);
-            } else if(node._depth == 2){
-                style.fontSize = "0.2em";
-                style.opacity = "0.6";
-                style.zIndex = "1000";
-                style.marginTop = "-20px";
-                domElement.innerHTML = node.name;
-            }
-            else if(node._depth == 3){
-                style.fontSize = "0.2em";
-                style.opacity = "0.4";
-                style.zIndex = "1000";
-                style.marginTop = "0";
-                domElement.innerHTML = node.name;
-            }
-            else {
-                style.fontSize = "0.2em";
-                style.opacity = ".2";
-                style.zIndex = "500";
-                style.marginTop = "0";
-                domElement.innerHTML = node.name;
-            }
-
-            var left = parseInt(style.left);
-            var w = domElement.offsetWidth;
-            style.left = (left - w / 2) + 'px';
-        },
-
-        onAfterCompute: function(){
-            $("#infovis").fadeIn(300);
-            $("#message_out").empty();
-            $(".node").draggable();
-        }
-    });
-
-
-    //load JSON data.
-    ht.loadJSON(json);
-    //compute positions and plot.
-    ht.refresh();
-    //end
-    ht.controller.onAfterCompute();
-
+function afterCompute(){
+    $("#message_out").empty();
+    $(".node").draggable();
+ 
 }

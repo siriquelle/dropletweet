@@ -1,10 +1,11 @@
 /**********************************************************************/
 var listType = "friendsList";
 var intervalID = null;
-var infoVisCount = 0;
+var charCount = 0;
 //
 $(document).ready(function() {
     createLoadingImage();
+    setup();
     updateConversation(seedURL);
     tweetStreamHooks();
     startAutoUpdate();
@@ -14,6 +15,7 @@ $(document).ready(function() {
 /**********************************************************************/
 
 function updateHooks(){
+
     tweetHooks();
 }
 
@@ -58,14 +60,8 @@ function tweetStreamHooks(){
 
     /**************************************************************************/
     /**************************************************************************/
-    $("#new_tweet_submit_btn").mousedown(function(){
-        $(this).addClass("new_tweet_submit_active");
-    });
-    
-    $("#new_tweet_submit_btn").blur(function(){
-        $(this).removeClass("new_tweet_submit_active");
-    });
 
+    /**************************************************************************/
     $("#new_tweet_text_txt").focus(function(){
         stopAutoUpdate();
         var charCount = getCharCountElement();
@@ -79,8 +75,18 @@ function tweetStreamHooks(){
     });
 
     $("#new_tweet_text_txt").keyup(function(){
+        stopAutoUpdate();
+        var charCount = getCharCountElement();
+        charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
         $("#message_out").empty().append(charCount);
-        $("#char_count").text((140 - $("#new_tweet_text_txt").val().length));
+    });
+    /**************************************************************************/
+    $("#new_tweet_submit_btn").mousedown(function(){
+        $(this).addClass("new_tweet_submit_active");
+    });
+
+    $("#new_tweet_submit_btn").blur(function(){
+        $(this).removeClass("new_tweet_submit_active");
     });
     $("#new_tweet_submit_btn").mouseup(function(){
         stopAutoUpdate();
@@ -159,6 +165,7 @@ function tweetHooks(){
 /******************************************************************************/
 
 function replyHook(){
+    $(".reply").unbind();
     $(".reply").click(function(){
         $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
@@ -169,9 +176,9 @@ function replyHook(){
         replyTweet(tweetId, from_user);
     });
 }
-
+/**************************************************************************/
 function retweetHook(){
-    
+    $(".retweet").unbind();
     $(".retweet").click(function(){
         $("#message_out").empty().append(loadingImage);
         $(this).children("a").toggleClass("isRetweet");
@@ -180,9 +187,9 @@ function retweetHook(){
         retweetTweet(tweetId);
     });
 }
-
+/**************************************************************************/
 function favouriteHook(){
-    
+    $(".favourite").unbind();
     $(".favourite").click(function(){
         $("#message_out").empty().append(loadingImage);
         $(this).children("a").toggleClass("isFavourite");
@@ -191,9 +198,9 @@ function favouriteHook(){
         favouriteTweet(tweetId);
     });
 }
-
+/**************************************************************************/
 function deleteHook(){
-    
+    $(".delete").unbind();
     $(".delete").click(function(){
         $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
@@ -201,9 +208,9 @@ function deleteHook(){
         deleteTweet(tweetId);
     });
 }
-
+/**************************************************************************/
 function spamHook(){
-    
+    $(".spam").unbind();
     $(".spam").click(function(){
         $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
@@ -211,8 +218,9 @@ function spamHook(){
         spamTweet(tweetId);
     });
 }
-
+/**************************************************************************/
 function trackHook(){
+    $(".track").unbind();
     $(".track").click(function(){
         stopAutoUpdate();
         $("#message_out").empty().append(loadingImage);
@@ -224,14 +232,13 @@ function trackHook(){
         var tweetId = id.substr(0, id.indexOf("_", 0));
         var from_user = id.substr(id.indexOf("_", 0)+1, id.length);
         //
-        seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
-        $("#container").empty().append(getInfoVisElement());
+        seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;        
         //
         $.ajax({
             url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&listType=" +listType,
             success: function(data) {
                 $("#message_out").empty().append(data).append(loadingImage);
-                updateConversation(seedURL);
+                reloadConversation(seedURL);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 $("#message_out").empty().append(dropletCommonError);
@@ -239,8 +246,9 @@ function trackHook(){
         });
     });
 }
-
+/**************************************************************************/
 function reloadHook(){
+    $(".reload").unbind();
     $(".reload").click(function(){
         stopAutoUpdate();
         $("#message_out").empty().append(loadingImage);
@@ -253,8 +261,8 @@ function reloadHook(){
         //
         seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;
         //
-        $("#container").empty().append(getInfoVisElement());
-        updateConversation(seedURL);
+   
+        reloadConversation(seedURL);
         //
         $(this).children("a").toggleClass("isTracked");
     });
@@ -262,6 +270,7 @@ function reloadHook(){
 /**************************************************************************/
 /**************************************************************************/
 function moreTweetsHook(){
+    $("#more_tweet_submit_btn").unbind();
     $("#more_tweet_submit_btn").mousedown(function(){
         $(this).addClass("more_tweet_submit_active");
     });
@@ -298,6 +307,7 @@ function replyTweet(tweetId, from_user){
     $("#new_tweet_text_txt").focus();
     $("#message_out").empty();
 }
+/**************************************************************************/
 function retweetTweet(tweetId){
     $.ajax({
         url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
@@ -309,6 +319,7 @@ function retweetTweet(tweetId){
         }
     });
 }
+/**************************************************************************/
 function favouriteTweet(tweetId){
     $.ajax({
         url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
@@ -320,7 +331,7 @@ function favouriteTweet(tweetId){
         }
     });
 }
-
+/**************************************************************************/
 function deleteTweet(tweetId){
     $.ajax({
         url: "./tweet.ajax?action=delete&tweetId=" + tweetId,
@@ -335,7 +346,7 @@ function deleteTweet(tweetId){
         }
     });
 }
-
+/**************************************************************************/
 function spamTweet(userId){
     $.ajax({
         url: "./tweet.ajax?action=spam&userId=" + userId,
@@ -347,8 +358,6 @@ function spamTweet(userId){
         }
     });
 }
-var count = 0;
-
 
 /******************************************************************************/
 
@@ -388,119 +397,7 @@ function getDomElement(node){
     return domElement;
 }
 
-function initialp(json){
-    //end
-    var current = "infovis"+infoVisCount;
-    var infovis = document.getElementById(current);
-    var w = infovis.offsetWidth , h = infovis.offsetHeight;
-
-    //init canvas
-    //Create a new canvas instance.
-    var canvas = new Canvas('mycanvas', {
-        'injectInto': current,
-        'width': w,
-        'height': h
-    });
-    //end
-
-    //init Hypertree
-    var ht = new Hypertree(canvas, {
-        //Change node and edge styles such as
-        //color, width and dimensions.
-        Node: {
-            dim: 12,
-            type: "circle",
-            width: 300,
-            height: 120,
-            color: "#0F4853"
-        },
-
-        Edge: {
-            lineWidth: 3,
-            color: "#088"
-        },
-        duration: 600,
-        fps: 50,
-        clearCanvas: true,
-        transition: Trans.Expo.easeInOut,
-        levelDistance: 100,
-        onBeforeCompute: function(node){
-        },
-        //Attach event handlers and add text to the
-        //labels. This method is only triggered on label
-        //creation
-        onCreateLabel: function(domElement, node){
-            addEvent(domElement, 'click', function () {
-                ht.onClick(node.id);
-            });
-        },
-        //Change node styles when labels are placed
-        //or moved.
-        onPlaceLabel: function(domElement, node){
-            var style = domElement.style;
-            style.display = '';
-            style.cursor = 'pointer';
-            if (node._depth == 0) {
-                style.fontSize = "1em";
-                style.opacity = "1";
-                style.zIndex = "3000";
-                style.textAlign = "left";
-                style.marginLeft = "0px";
-                style.marginTop = "-60px";
-
-                domElement.innerHTML = getDomElement(node);
-
-            } else if(node._depth == 1){
-                style.fontSize = "0.8em";
-                style.opacity = "0.8";
-                style.zIndex = "2000";
-                style.marginTop = "-40px";
-                domElement.innerHTML = getDomElement(node);
-            } else if(node._depth == 2){
-                style.fontSize = "0.2em";
-                style.opacity = "0.6";
-                style.zIndex = "1000";
-                style.marginTop = "-20px";
-                domElement.innerHTML = node.name;
-            }
-            else if(node._depth == 3){
-                style.fontSize = "0.2em";
-                style.opacity = "0.4";
-                style.zIndex = "1000";
-                style.marginTop = "0";
-                domElement.innerHTML = node.name;
-            }
-            else {
-                style.fontSize = "0.2em";
-                style.opacity = ".2";
-                style.zIndex = "500";
-                style.marginTop = "0";
-                domElement.innerHTML = node.name;
-            }
-
-            var left = parseInt(style.left);
-            var w = domElement.offsetWidth;
-            style.left = (left - w / 2) + 'px';
-        },
-
-        onAfterCompute: function(){
-            $("#infovis").fadeIn(300);
-            $("#message_out").empty();
-            $(".node").draggable();
-            updateHooks();
-        }
-    });
-
-
-    //load JSON data.
-    ht.loadJSON(json);
-    //compute positions and plot.
-    ht.refresh();
-    //end
-    ht.controller.onAfterCompute();
-
-}
-
+/**************************************************************************/
 function getCharCountElement(){
     var charCount = document.createElement("div");
     charCount.setAttribute('id', 'char_count');
@@ -508,10 +405,25 @@ function getCharCountElement(){
     return charCount;
 }
 
-function getInfoVisElement(){
-    infoVisCount++;
-    var infoVis = document.createElement("div");
-    infoVis.setAttribute('id', 'infovis'+infoVisCount);
-    infoVis.setAttribute('class', 'infovis');
-    return infoVis;
+/*****************************************************************************/
+function reloadConversation(seedURL){
+    $.ajax({
+        url: "./jit.json?q=" + seedURL,
+        success: function(data) {
+            $("#infovis0 .node").remove();
+            initialp($.parseJSON(data));
+        //perform morphing animation.
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+    
+}
+/*****************************************************************************/
+function afterCompute(){
+
+    $("#message_out").empty();
+    $(".node").draggable();
+    updateHooks();
 }

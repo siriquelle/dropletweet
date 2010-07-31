@@ -1,4 +1,4 @@
 <%@ page session="false"%>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
 
-<c:redirect url="/index.htm"/>
+<c:redirect url="/droplet.htm"/>

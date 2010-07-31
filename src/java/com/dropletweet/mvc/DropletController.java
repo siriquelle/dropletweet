@@ -213,6 +213,7 @@ public class DropletController extends AbstractController {
         List<Tweet> tweetList = null;
         List<Tweet> oldList = null;
         List<Conversation> conversationList = null;
+        Paging paging = new Paging().count(65);
         try
         {
             session = request.getSession();
@@ -227,28 +228,28 @@ public class DropletController extends AbstractController {
                 listType = "friendsList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()))
-                        : twitter.getFriendsTimeline();
+                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        : twitter.getFriendsTimeline(paging);
 
             } else if (action.equals("replyList"))
             {
                 listType = "replyList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getMentions(new Paging(oldList.get(0).getId()))
-                        : twitter.getMentions();
+                        ? twitter.getMentions(new Paging(oldList.get(0).getId()).count(350))
+                        : twitter.getMentions(paging);
             } else if (action.equals("dmList"))
             {
                 listType = "dmList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 List<Tweet> dmSentList = (List<Tweet>) modelMap.get("dmSentList");
                 tweetList = (oldList.size() > 0)
-                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(oldList.get(0).getId())))
-                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages());
+                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(oldList.get(0).getId()).count(350)))
+                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging));
 
                 dmSentList = (dmSentList.size() > 0)
-                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(dmSentList.get(0).getId())))
-                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages());
+                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(dmSentList.get(0).getId()).count(350)))
+                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
 
                 modelMap.put("dmSentList", dmSentList);
                 tweetList.addAll(dmSentList);
@@ -261,8 +262,8 @@ public class DropletController extends AbstractController {
                 listType = "sentList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getUserTimeline(new Paging(oldList.get(0).getId()))
-                        : twitter.getUserTimeline();
+                        ? twitter.getUserTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        : twitter.getUserTimeline(paging);
 
             } else if (action.contains("search"))
             {
@@ -412,7 +413,7 @@ public class DropletController extends AbstractController {
                     if (con != null)
                     {
                         dropletService.deleteConversation(con);
-                    }   
+                    }
                     modelMap.put("tweetList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("tweetList"), tweet));
                     modelMap.put("friendsList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("friendsList"), tweet));
                     modelMap.put("sentList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("sentList"), tweet));
@@ -634,26 +635,16 @@ public class DropletController extends AbstractController {
         try
         {
             Paging paging = new Paging().count(65);
-            User user = new User(twitter.verifyCredentials());
             List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
-            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
-            DLog.sleep();
-            List<Status> statusListReplies = twitter.getMentions(paging);
-            List<Tweet> replyList = getFormattedTweetListFromStatusList(statusListReplies);
-            DLog.sleep();
-            List<Tweet> dmList = getFormattedTweetListFromTweetList(this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging)));
-            DLog.sleep();
-            List<Tweet> dmSentList = this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
-            DLog.sleep();
-            List<Status> statusListSent = twitter.getUserTimeline(paging);
-            List<Tweet> sentList = getFormattedTweetListFromStatusList(statusListSent);
-            DLog.sleep();
-            List<Status> statusFavouritesList = twitter.getFavorites();
-            List<Tweet> favouritesList = getFormattedTweetListFromStatusList(statusFavouritesList);
-            List<Status> statusRetweetsByMe = twitter.getRetweetedByMe();
-            List<Tweet> retweetsList = getFormattedTweetListFromStatusList(statusRetweetsByMe);
-            DLog.sleep();
-
+            
+            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends); 
+            List<Tweet> replyList = new LinkedList<Tweet>();
+            List<Tweet> dmList = new LinkedList<Tweet>();
+            List<Tweet> dmSentList = new LinkedList<Tweet>();
+            List<Tweet> sentList = new LinkedList<Tweet>();
+            List<Tweet> favouritesList = new LinkedList<Tweet>();
+            List<Tweet> retweetsList = new LinkedList<Tweet>();
+            
             modelMap.put("tweetList", friendsList);
             modelMap.put("friendsList", friendsList);
             modelMap.put("replyList", replyList);
@@ -662,6 +653,8 @@ public class DropletController extends AbstractController {
             modelMap.put("sentList", sentList);
             modelMap.put("favouritesList", favouritesList);
             modelMap.put("retweetList", retweetsList);
+            
+            User user = new User(twitter.verifyCredentials());
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);
             modelMap.put("user", user);
@@ -740,9 +733,9 @@ public class DropletController extends AbstractController {
 
         for (Tweet tweet : tweetList)
         {
-            tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
-            if (!tweet.getTracked())
+            if (tweet.getCreated_at() != null && tweet.getText() != null)
             {
+                tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
                 tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
             }
         }
@@ -904,7 +897,10 @@ public class DropletController extends AbstractController {
         {
             for (Tweet tweet : tweetList)
             {
-                tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+                if (tweet.getCreated_at() != null)
+                {
+                    tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+                }
             }
         }
         return tweetList;
