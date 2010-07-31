@@ -1,13 +1,41 @@
 <%@ page contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
-<div class="user_info">
-    <div class="name">
-        <c:out value="${modelMap.user.name}" />
+<div class="user_info_action">
+    <a id="user_info_hide_show" class="user_info_show" href="##" title="Show/Hide user info."></a>
+</div>
+<div class="user_info" id="user_info_container">
+    <div class="user_info_profile_image">
+        <img alt="<c:out value="${modelMap.user.screen_name}" />"  src="<c:out value="${modelMap.user.profile_image_url}" />" width="48px" height="48px"/>
+    </div>
+    <div class="user_info_screen_name" id="screen_name">
+        <c:out value="${modelMap.user.screen_name}" />
+    </div>
+    <div class="user_info_details_container">
+        <div class="user_info_details_item">
+            <c:out value="${modelMap.user.description}" />
+        </div>
+        <div class="user_info_details_item">
+            <c:out value="${modelMap.user.location}" />
+        </div>
     </div>
 
-</div>
 
+    <div class="user_info_count_container">
+        <div class="user_info_count" >
+            <div class="user_info_count_head">Following</div>
+            <div class="user_info_count_number"  id="friends_count"><c:out value="${modelMap.user.friends_count}" /></div>
+        </div>
+        <div class="user_info_count" >
+            <div class="user_info_count_head">Followers</div>
+            <div class="user_info_count_number" id="followers_count"><c:out value="${modelMap.user.followers_count}" /></div>
+        </div>
+        <div class="user_info_count" >
+            <div class="user_info_count_head">Tweets</div>
+            <div class="user_info_count_number" id="statuses_count"><c:out value="${modelMap.user.statuses_count}" /></div>
+        </div>
+    </div>
+</div>
 <div class="actions">
 
     <div class="action" id="friendsList"><a href="##" title="Tweets from People you Follow"></a></div>
@@ -23,7 +51,7 @@
         </div>
     </div>
     <div class="action_conversations" id="conversationList"><a href="##" title="List Conversations Being Tracked By You" ></a></div>
-    <div class="action" id="logout"><a href="./signin.htm?logout" title="Logout of Dropletweet"></a></div>
+
 
 </div>
 

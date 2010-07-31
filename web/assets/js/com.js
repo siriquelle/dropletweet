@@ -17,7 +17,9 @@ function createLoadingImage(){
 
 var dropletCommonError = "dropletweet is error, boo!";
 
-var seedURL = "http://twitter.com/dropletweet/status/19821003664";//Bug Tracking
+var seedURL = "http://twitter.com/conoro/status/19943612580"; // Show Review
+
+//"http://twitter.com/dropletweet/status/19821003664";//Bug Tracking
 //"http://twitter.com/damienmulley/status/19605819998"; //Largest To Date
 ////http://twitter.com/DerrenBrown/status/19483147595";//Don't sit down
 //http://twitter.com/PhillyD/status/19382288629";//Philly D/

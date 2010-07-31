@@ -106,7 +106,25 @@ function tweetStreamHooks(){
             }
         });
     });
-    
+    /**************************************************************************/
+    var temp_height;
+    $("#user_info_hide_show").click(function(){
+        $(this).toggleClass("user_info_show");
+        $(this).toggleClass("user_info_hide");
+        var height = $("#user_info_container").height();
+        if(height != 0){
+            $("#user_info_container").animate({
+                height:0
+            }, 250, "linear", function(){
+                temp_height = height;
+            });
+        } else{
+            $("#user_info_container").animate({
+                height:temp_height
+            }, 250, "linear");
+        }
+    });
+
 }
 /**************************************************************************/
 function resetTweetInput(){

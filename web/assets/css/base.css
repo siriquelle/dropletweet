@@ -49,11 +49,11 @@ table {border-collapse: collapse;border-spacing: 0;}
 /* START FONTS */
 
 @font-face {
-	font-family: 'Reenie Beanie';
-	src: url('../fnt/reeniebeanie-webfont.eot');
-	src: local('☺'), url('../fnt/reeniebeanie-webfont.woff') format('woff'), url('../fnt/reeniebeanie-webfont.ttf') format('truetype'), url('../fnt/reeniebeanie-webfont.svg#webfont5H5VaBq7') format('svg');
-	font-weight: normal;
-	font-style: normal;
+    font-family: 'Reenie Beanie';
+    src: url('../fnt/reeniebeanie-webfont.eot');
+    src: local('☺'), url('../fnt/reeniebeanie-webfont.woff') format('woff'), url('../fnt/reeniebeanie-webfont.ttf') format('truetype'), url('../fnt/reeniebeanie-webfont.svg#webfont5H5VaBq7') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
 /*END FONTS*/
 
@@ -65,10 +65,19 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .page{width:960px; margin:0 auto;}
 .b{font-weight:bold; text-decoration: none}
 .b:hover {text-decoration: underline}
+.ar{text-align: right;}
 /*END BROWSER RESET*/
 
 /* START HEADER*/
 .header_text{font-family: 'Reenie Beanie', arial, serif; font-weight:bold; font-size:6em; padding:10px; color:#333; text-align:center; text-shadow:3px 3px 5px #EFEFED; }
+.header_menu_container{border: 3px solid #82BBC5; background-color: #AAF2FF; display: inline-block; margin-bottom: -40px;-moz-border-radius:5px; -webkit-border-radius:5px;}
+/**/
+.header_menu_container_text a{color: #275A64; font-size:.8em; text-decoration: none;}
+.header_menu_container_text a:hover{font-size:.8em; text-decoration: underline;}
+/**/
+.header_menu_container_image{width: 20px; height:20px; display: inline-block;}
+.header_menu_container_image a{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -20px transparent; display: block; width: 20px; height:20px;}
+.header_menu_container_image a:active{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -40px transparent;}
 /* END HEADER*/
 
 /* START LEFT COLUMN*/
@@ -80,13 +89,28 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 #rightColumn{z-index:200;width:300px; padding:15px; margin:0px auto; float:right; z-index:10000; background-color:#B1F3FF; border:10px solid #85B6BF; -moz-border-radius:10px; -webkit-border-radius:10px; opacity:.9; color: #0F4853; }
 
 /* START USER INFO*/
-.user_info{}
-.user_info .name {font-size:1.6em; text-shadow:1px -1px 1px #666; padding-bottom:3px; font-weight:bold;}
-
+.user_info{overflow:hidden;}
+/**/
+.user_info_action{height:15px; width:15px; float:right; margin-bottom:-15px; position:relative; top:-10px; right:-10px;}
+.user_info_show{display:block;height:15px; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 -15px transparent;}
+.user_info_show:hover{background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 0px transparent;}
+.user_info_hide{display:block;height:15px; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 0 transparent;}
+.user_info_hide:hover{background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 -15px transparent;}
+/**/
+.user_info_profile_image{width:48px; height: 48px; float:left; padding:3px; border: 1px solid #8EBBC4; background-color: #C1F5FF; margin-right: 5px;margin-bottom: 3px;}
+.user_info_screen_name {font-size:1.5em; text-shadow:1px -1px 1px #666; padding-bottom:3px; font-weight:bold;}
+/**/
+.user_info_details_container{font-size:.8em;}
+.user_info_details_item{padding-bottom: 3px;}
+/**/
+.user_info_count_container{font-size: .8em; clear:both;}
+.user_info_count{display:inline-block; padding:3px; background-color: #C1F5FF;}
+.user_info_count_head{font-weight: bold;}
+.user_info_count_number{text-align: center;}
 /* END USER INFO*/
 
 /* START ACTIONS */
-.actions{text-align:center;}
+.actions{text-align:left;}
 /*START SIGNIN*/
 .link_twitter_sign_in{}
 .link_twitter_sign_in a{width:151px; height:24px;margin:0px auto; display:block; background:url("../img/twitter_sign_in.png") no-repeat scroll 0 -24px #9FF0FF;}
@@ -113,9 +137,6 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /**/
 .actions #conversationList a{background:url("../img/actions/action_conversations.png") no-repeat scroll 0 0 transparent;}
 /**/
-.actions #logout a{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -20px transparent;}
-.actions #logout a:active{background:url("../img/actions/action_logout_sprite.png") no-repeat scroll 0 -40px transparent;}
-/**/
 .actions #sentList a{background:url("../img/actions/action_retweets.png") no-repeat scroll 0 0 transparent;}
 .actions #favouritesList a{background:url("../img/actions/action_favourites.png") no-repeat scroll 0 0 transparent;}
 /*END STREAM ACTIONS*/
@@ -136,7 +157,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /*START GLOBAL TWEET FORMATTING*/
 /*START TWEET STREAM*/
 .tweet_stream{max-height:600px; overflow:auto; overflow-x: hidden; width:315px; clear:both; margin-top:3px; }
-.tweet_stream #tweetUpdatePanel{border-left: 1px solid #85B6BF;}
+.tweet_stream #tweetUpdatePanel{}
 .tweet_stream .more_tweet_submit{height: 23px; width:100%; background: url("../img/actions/btn_bg.png") repeat-x scroll 0px -24px #e7e7e7; border:1px solid #87BBC5; cursor:pointer; margin:-2px auto; padding: 1px 0px 15px; -moz-border-radius:3px; -webkit-border-radius:3px; text-shadow:0px 0px 1px #999; margin: 5px auto;}
 .tweet_stream .more_tweet_submit_active{background-image: none !important}
 
