@@ -136,6 +136,11 @@ public class Tweet implements Comparable<Tweet> {
      */
     public String getSource()
     {
+
+        source = source.replaceAll("&lt;", "<");
+        source = source.replaceAll("&gt;", ">");
+        source = source.replaceAll("&quot;", "\"");
+
         return source;
     }
 

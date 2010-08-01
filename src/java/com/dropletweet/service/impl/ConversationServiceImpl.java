@@ -231,6 +231,7 @@ public class ConversationServiceImpl implements ConversationService {
                 }
 
             } while (tweetReply != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0);
+            id = tweet.getId();
             DLog.log("END CHECK LOCAL DATABASE FOR SEED TWEET");
         } else
         {
