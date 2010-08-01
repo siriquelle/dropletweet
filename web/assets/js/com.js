@@ -4,7 +4,7 @@ var infovis = null;
 var w = null , h = null;
 var canvas = null;
 var ht = null;
-
+var currentConversation;
 function createLoadingImage(){
     loadingImage =document.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
@@ -138,7 +138,8 @@ function updateConversation(seedURL){
     $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
-            initialp($.parseJSON(data));
+            currentConversation = $.parseJSON(data);
+            initialp(currentConversation);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             $("#message_out").empty().append(dropletCommonError);
@@ -153,8 +154,14 @@ function initialp(json){
     ht.loadJSON(json);
     //compute positions and plot.
     ht.refresh();
+    //
+    calculateStatistics();
     //end
     afterCompute();
 
 }
-
+function calculateStatistics(){
+    $("#tweets_out").empty().append(currentConversation.data.stats.tweetCount);
+    $("#peeps_out").empty().append(currentConversation.data.stats.peepCount);
+    $("#terms_out").empty().append(currentConversation.data.stats.term);
+}

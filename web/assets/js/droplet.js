@@ -429,6 +429,7 @@ function reloadConversation(seedURL){
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
             $("#infovis0 .node").remove();
+            currentConversation = $.parseJSON(data);
             initialp($.parseJSON(data));
         //perform morphing animation.
         },
@@ -440,8 +441,8 @@ function reloadConversation(seedURL){
 }
 /*****************************************************************************/
 function afterCompute(){
-
     $("#message_out").empty();
     $(".node").draggable();
     updateHooks();
 }
+

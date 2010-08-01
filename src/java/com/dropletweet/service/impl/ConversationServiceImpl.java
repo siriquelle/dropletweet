@@ -12,6 +12,7 @@ import com.dropletweet.model.Single;
 import com.dropletweet.model.Droplet;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
+import com.dropletweet.util.DropletUtil;
 import com.dropletweet.util.TweetUtil;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -122,8 +123,14 @@ public class ConversationServiceImpl implements ConversationService {
         String prettyDate = TweetUtil.getDateAsPrettyTime(tweet.getCreated_at());
         jit.append("\"created_at\" : \"").append(prettyDate).append("\",");
         jit.append("\"profile_image_url\" : \"").append(tweet.getProfile_image_url()).append("\",");
-        jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\"");
+        jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\",");
+        jit.append("\"stats\": {");
+        jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
+        jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet).size()).append("\",");
+        jit.append("\"term\" : \"").append(DropletUtil.getKeyTerm(droplet)).append("\",");
+        jit.append("}");
         jit.append("},");
+
         jit.append("\"children\": [");
         if (!droplet.getWave().isEmpty())
         {
