@@ -6,13 +6,17 @@ package com.dropletweet.util;
 
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.model.Droplet;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.collections.Bag;
 import org.apache.commons.collections.bag.HashBag;
+import ptstemmer.Stemmer;
+import ptstemmer.Stemmer.StemmerType;
+import ptstemmer.exceptions.PTStemmerException;
 
 /**
  *
@@ -20,7 +24,20 @@ import org.apache.commons.collections.bag.HashBag;
  */
 public class DropletUtil {
 
-    public static Porter porter = new Porter();
+    public static Stemmer stemmer;
+
+    static
+    {
+        try
+        {
+            stemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
+            stemmer.enableCaching(1000);
+            stemmer.ignore(TextUtil.STOP_WORDS_EN);
+        } catch (PTStemmerException ex)
+        {
+            Logger.getLogger(DropletUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * 
@@ -43,13 +60,53 @@ public class DropletUtil {
         return removeDuplicates(fillPeepListFromWave(droplet.getWave(), peepList));
     }
 
-    public static String getKeyTerm(Droplet droplet)
+    public static String getKeyTerms(Droplet droplet)
     {
         List<Tweet> tweetList = getAllTweets(droplet);
-        Bag termList = new HashBag();
+        List<String> wordList = new LinkedList<String>();
+        List<String> hashTagList = new LinkedList<String>();
+        Bag wordBag = new HashBag();
+        String keyTerms = "";
+        Integer keyTermCount = 0;
+//
+        wordBag = fillWordBagFromTweetList(tweetList, wordBag);
+//
+        wordList.addAll(wordBag);
+        wordList = removeDuplicates(wordList);
+        wordList = removeCommonTerms(wordList);
+        wordList = removeConversationParticipants(wordList, getAllPeeps(droplet));
+//
+        hashTagList = extractHashTagsFromWordList(wordList);
+//
+        wordList = stemWords(wordList);
+//
+        wordList = removeDuplicates(wordList);
+        wordList = removeCommonTerms(wordList);
 
-        String mostFrequentWord = "";
-        Integer mostFrequentCount = 0;
+        for (String word : wordList)
+        {
+            Integer tempCount = wordBag.getCount(word);
+
+            if (tempCount > keyTermCount)
+            {
+                keyTermCount = tempCount;
+                keyTerms = word;
+            } else if (tempCount == keyTermCount)
+            {
+                keyTerms = (keyTerms + " " + word);
+            }
+        }
+
+        for (String hashTag : hashTagList)
+        {
+            keyTerms = (keyTerms + " " + hashTag);
+        }
+
+        return keyTerms;
+    }
+
+    private static Bag fillWordBagFromTweetList(List<Tweet> tweetList, Bag wordBag)
+    {
         for (Tweet tweet : tweetList)
         {
             String[] words = tweet.getText().split(" ");
@@ -57,31 +114,11 @@ public class DropletUtil {
             {
                 if (word.length() > 0)
                 {
-                    termList.add(porter.stripAffixes(word));
+                    wordBag.add(word);
                 }
             }
         }
-
-        List<String> wordList = new LinkedList<String>();
-        wordList.addAll(termList);
-        wordList = removeDuplicates(wordList);
-        wordList = removeCommonTerms(wordList);
-        wordList = removeConversationParticipants(wordList, getAllPeeps(droplet));
-        for (String word : wordList)
-        {
-            Integer tempCount = termList.getCount(word);
-
-            if (tempCount > mostFrequentCount)
-            {
-                mostFrequentCount = tempCount;
-                mostFrequentWord = word;
-            } else if (tempCount == mostFrequentCount)
-            {
-                mostFrequentWord = (mostFrequentWord + ", " + word);
-            }
-        }
-
-        return mostFrequentWord;
+        return wordBag;
     }
 
     private static List<Tweet> fillTweetListFromWave(LinkedList<Droplet> wave, List<Tweet> tweetList)
@@ -147,7 +184,7 @@ public class DropletUtil {
             String word = (String) iter.next();
             for (String peep : peepList)
             {
-                if (word.equals(peep))
+                if (word.toLowerCase().equals(peep) || word.toLowerCase().equals("@" + peep))
                 {
                     iter.remove();
                     break;
@@ -156,5 +193,36 @@ public class DropletUtil {
         }
 
         return wordList;
+    }
+
+    private static List<String> stemWords(List<String> wordList)
+    {
+
+        for (int i = 0; i < wordList.size(); i++)
+        {
+            if (stemmer != null && wordList.get(i) != null && wordList.get(i).length() > 0)
+            {
+                wordList.set(i, stemmer.getWordStem(wordList.get(i)));
+            }
+        }
+
+        return wordList;
+    }
+
+    private static List<String> extractHashTagsFromWordList(List<String> wordList)
+    {
+        List<String> hashTags = new LinkedList<String>();
+        Iterator iter = wordList.iterator();
+        while (iter.hasNext())
+        {
+            String word = (String) iter.next();
+            if (word.startsWith("#"))
+            {
+                iter.remove();
+                hashTags.add(word);
+            }
+        }
+
+        return hashTags;
     }
 }

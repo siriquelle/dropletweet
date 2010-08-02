@@ -15,6 +15,7 @@ import com.dropletweet.util.DLog;
 import com.dropletweet.util.DropletUtil;
 import com.dropletweet.util.TweetUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class ConversationServiceImpl implements ConversationService {
         jit.append("\"stats\": {");
         jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
         jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet).size()).append("\",");
-        jit.append("\"term\" : \"").append(DropletUtil.getKeyTerm(droplet)).append("\",");
+        jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\",");
         jit.append("}");
         jit.append("},");
 
@@ -442,7 +442,7 @@ public class ConversationServiceImpl implements ConversationService {
         TagNode node = null;
         try
         {
-            Thread.sleep(Long.valueOf((new Random().nextInt(500))));
+            Thread.sleep(Long.valueOf((new Random().nextInt(150))));
             node = cleaner.clean(new URL("http://twitter.com/" + reply.getFrom_user() + "/status/" + reply.getId()));
         } catch (InterruptedException ex)
         {

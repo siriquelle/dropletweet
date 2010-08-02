@@ -14,7 +14,12 @@
                     <a href="http://twitter.com/<c:out value="${tweet.from_user}" />" title="<c:out value="${tweet.from_user}" />" target="_blank">
                         <img src="<c:out value="${tweet.profile_image_url}" />" alt="<c:out value="${tweet.from_user}" />" height="48px" width="48px" />
                     </a>
+
+                    <div class="tweet_profile_action_container" >
+                        <div class="tweet_profile_action follow fl" id="follow<c:out value="${tweet.from_user}" />" ><a href="##" title="Follow @<c:out value="${tweet.from_user}" />"></a></div>
+                    </div>
                 </div>
+
             </c:if>
 
             <div class="tweet_text">

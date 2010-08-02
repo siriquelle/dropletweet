@@ -7,7 +7,7 @@
         <div id="container">
             <div id="infovis0" class="infovis" ></div>
         </div>
-        <div class="infovis_stats_container">
+        <div class="infovis_stats_container" id="infovis_stats">
             <div class="infovis_stat" >
                 <div class="infovis_stat_head">Tweets</div>
                 <div class="infovis_stat_text" id="tweets_out">0</div>

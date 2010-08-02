@@ -17,7 +17,8 @@ function createLoadingImage(){
 
 var dropletCommonError = "dropletweet is error, boo!";
 
-var seedURL = "http://twitter.com/conoro/status/19943612580"; // Show Review
+var seedURL = "http://twitter.com/Nonomadic/status/20099105077"//MINIROLLS
+    //"http://twitter.com/conoro/status/19943612580"; // Show Review
 
 //"http://twitter.com/dropletweet/status/19821003664";//Bug Tracking
 //"http://twitter.com/damienmulley/status/19605819998"; //Largest To Date
@@ -129,7 +130,11 @@ function setup(){
             var left = parseInt(style.left);
             var w = domElement.offsetWidth;
             style.left = (left - w / 2) + 'px';
+        },
+        onAfterCompute:function(){
+            afterCompute();
         }
+
     });
 }
 
@@ -149,6 +154,7 @@ function updateConversation(seedURL){
 }
 /*****************************************************************************/
 function initialp(json){
+    $("#infovis_stats").fadeOut(350);
     ht.fx.clearLabels(true);
     //load JSON data.
     ht.loadJSON(json);
@@ -163,5 +169,11 @@ function initialp(json){
 function calculateStatistics(){
     $("#tweets_out").empty().append(currentConversation.data.stats.tweetCount);
     $("#peeps_out").empty().append(currentConversation.data.stats.peepCount);
-    $("#terms_out").empty().append(currentConversation.data.stats.term);
+    var terms = currentConversation.data.stats.terms.split(" ");
+    $("#terms_out").empty();
+    for(var i=0; i < terms.length; i++){
+        $("#terms_out").append(terms[i]);
+        $("#terms_out").append("<br />");
+    }
+    $("#infovis_stats").fadeIn(350);
 }

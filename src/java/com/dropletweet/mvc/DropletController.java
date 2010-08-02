@@ -502,6 +502,25 @@ public class DropletController extends AbstractController {
                         }
                     }
                 }
+            } else if (action.equals("follow"))
+            {
+                String screen_name = request.getParameter("screen_name");
+                if (screen_name != null && screen_name.length() > 0)
+                {
+                    try
+                    {
+                        twitter.createFriendship(screen_name);
+                        ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.follow.complete"));
+                    } catch (TwitterException twitterException)
+                    {
+                        DLog.log(twitterException.getMessage());
+                        twitter.destroyFriendship(screen_name);
+                        ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.unfollow.complete"));
+                    }
+                } else
+                {
+                    ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.follow.failed"));
+                }
             }
         } catch (TwitterException ex)
         {
@@ -636,15 +655,15 @@ public class DropletController extends AbstractController {
         {
             Paging paging = new Paging().count(65);
             List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
-            
-            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends); 
+
+            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
             List<Tweet> replyList = new LinkedList<Tweet>();
             List<Tweet> dmList = new LinkedList<Tweet>();
             List<Tweet> dmSentList = new LinkedList<Tweet>();
             List<Tweet> sentList = new LinkedList<Tweet>();
             List<Tweet> favouritesList = new LinkedList<Tweet>();
             List<Tweet> retweetsList = new LinkedList<Tweet>();
-            
+
             modelMap.put("tweetList", friendsList);
             modelMap.put("friendsList", friendsList);
             modelMap.put("replyList", replyList);
@@ -653,7 +672,7 @@ public class DropletController extends AbstractController {
             modelMap.put("sentList", sentList);
             modelMap.put("favouritesList", favouritesList);
             modelMap.put("retweetList", retweetsList);
-            
+
             User user = new User(twitter.verifyCredentials());
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);

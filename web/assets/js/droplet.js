@@ -8,16 +8,12 @@ $(document).ready(function() {
     setup();
     updateConversation(seedURL);
     tweetStreamHooks();
+    tweetHooks();
     startAutoUpdate();
-    updateHooks();
 });
 
 /**********************************************************************/
 
-function updateHooks(){
-
-    tweetHooks();
-}
 
 function stopAutoUpdate(){
     if(intervalID != null){
@@ -141,7 +137,7 @@ function ajaxAction(action){
         success: function(data) {
             $("#tweetUpdatePanel").empty().append(data);
             $("#message_out").empty();
-            updateHooks();
+            tweetHooks();
             startAutoUpdate();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -158,7 +154,7 @@ function searchAjaxAction(query){
         success: function(data) {
             listType = "search_" + query;
             $("#tweetUpdatePanel").empty().append(data);
-            updateHooks();
+            tweetHooks();
             $("#message_out").empty();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -178,6 +174,8 @@ function tweetHooks(){
     trackHook();
     reloadHook();
     moreTweetsHook();
+    followHook();
+
 }
 
 /******************************************************************************/
@@ -286,6 +284,19 @@ function reloadHook(){
     });
 }
 /**************************************************************************/
+function followHook(){
+    $(".follow").unbind();
+    $(".follow").click(function(){
+        stopAutoUpdate();
+        $("#message_out").empty().append(loadingImage);
+
+        var id = $(this).attr("id").toString();
+        var screen_name = id.substr("follow".length, id.length);
+        //
+        followUser(screen_name);
+    });
+}
+
 /**************************************************************************/
 function moreTweetsHook(){
     $("#more_tweet_submit_btn").unbind();
@@ -308,7 +319,7 @@ function moreTweetsHook(){
                 $("#tweetUpdatePanel").empty().append(data);
                 $("#message_out").empty();
                 $("#"+hrpoint).after("<hr class=\"page_break\"/>");
-                updateHooks();
+                tweetHooks();
                 startAutoUpdate();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -378,8 +389,18 @@ function spamTweet(userId){
 }
 
 /******************************************************************************/
-
-
+function followUser(screen_name){
+    $.ajax({
+        url: "./tweet.ajax?action=follow&screen_name=" + screen_name,
+        success: function(data) {
+            $("#message_out").empty().append(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+}
+/******************************************************************************/
 
 function getDomElement(node){
     var source = node.data.source;
@@ -395,6 +416,9 @@ function getDomElement(node){
                                     <a href=\"http://twitter.com/"+ node.data.from_user +"\" title=\""+ node.data.from_user +"\" target=\"_blank\">\
                                         <img src=\""+ node.data.profile_image_url +"\" alt=\""+ node.data.from_user +"\" height=\"48px\" width=\"48px\" />\
                                     </a>\
+                                    <div class=\"tweet_profile_action_container\" >\
+                                        <div class=\"tweet_profile_action follow fl\" id=\"follow"+node.data.from_user  +"\" ><a href=\"##\" title=\"Follow @"+node.data.from_user  +"\"></a></div>\
+                                    </div>\
                                 </div>\
                                 \
                                 <div class=\"tweet_text\">\
@@ -443,6 +467,6 @@ function reloadConversation(seedURL){
 function afterCompute(){
     $("#message_out").empty();
     $(".node").draggable();
-    updateHooks();
+    tweetHooks();
 }
 
