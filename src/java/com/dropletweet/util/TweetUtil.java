@@ -96,6 +96,8 @@ public class TweetUtil {
     public static String swapAllForLinks(String tweet)
     {
         DLog.log("START SWAP ALL FOR LINKS");
+        tweet = sanatizeTweetText(tweet);
+
         tweet = swapForAnchors("http://", "", tweet);
 
         tweet = swapForAnchors("@", "http://twitter.com/", tweet);
@@ -176,5 +178,13 @@ public class TweetUtil {
             }
         }
         return tweetList;
+    }
+
+    public static String sanatizeTweetText(String text)
+    {
+        text = text.replaceAll("<", "&lt;");
+        text = text.replaceAll(">", "&gt;");
+        return text;
+
     }
 }

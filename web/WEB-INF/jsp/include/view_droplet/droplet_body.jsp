@@ -43,6 +43,7 @@
     <div class="action" id="dmList"><a href="##" title="Direct Messages"></a></div>
     <div class="action" id="favouritesList"><a href="##" title="Your Favourite Tweets"></a></div>
     <div class="action" id="sentList"><a href="##" title="Your Sent Tweets"></a></div>
+    <div class="action" id="discussionList"><a href="##" title="Tweets from your followers in conversation."></a></div>
     <div class="action_search" id="search"><a href="##" title="Search" id="search_a"></a></div>
     <div id="action_search_container_outer">
         <div class="action_search_container_inner">

@@ -15,6 +15,7 @@ import com.dropletweet.util.TweetUtil;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -285,6 +286,24 @@ public class DropletController extends AbstractController {
                         tweetList.add(con.getTweet());
                     }
                 }
+            } else if (action.equals("discussionList"))
+            {
+                DLog.log("//TODO: CREATE A LIST OF ALL TWEETS FROM FRIENDS TIMELINE THAT HAVE IN_REPLY_TO_IDs");
+
+                listType = "discussionList";
+
+                oldList = (List<Tweet>) modelMap.get("friendsList");
+                statusList = (oldList.size() > 0)
+                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        : twitter.getFriendsTimeline(paging);
+                List<Tweet> newList = getFormattedTweetListFromStatusList(statusList);
+                newList.addAll(oldList);
+                modelMap.put("friendsList", newList);
+
+                tweetList = getDiscussionTweets(newList);
+
+                statusList = null;
+                oldList = null;
             } else if (action.equals("more"))
             {
                 listType = request.getParameter("listType");
@@ -324,22 +343,22 @@ public class DropletController extends AbstractController {
             }
 
 
-            if (statusList != null)
+            if (statusList != null && statusList.size() > 0)
             {
                 tweetList = getFormattedTweetListFromStatusList(statusList);
-            } else if (tweetList != null)
+            } else if (tweetList != null && tweetList.size() > 0)
             {
                 if (action != null)
                 {
                     tweetList = getFormattedTweetListFromTweetList(tweetList);
                 }
             }
-            if (oldList != null)
+            if (oldList != null && oldList.size() > 0)
             {
                 tweetList.addAll(oldList);
             }
 
-            if (tweetList != null)
+            if (tweetList != null && tweetList.size() > 0)
             {
                 tweetList = setTrackedTweets(tweetList, modelMap);
                 tweetList = setFavouriteTweets(tweetList, modelMap);
@@ -663,15 +682,18 @@ public class DropletController extends AbstractController {
             List<Tweet> sentList = new LinkedList<Tweet>();
             List<Tweet> favouritesList = new LinkedList<Tweet>();
             List<Tweet> retweetsList = new LinkedList<Tweet>();
+            List<Tweet> discussionList = new LinkedList<Tweet>();
 
             modelMap.put("tweetList", friendsList);
             modelMap.put("friendsList", friendsList);
+            modelMap.put("discussionList", discussionList);
             modelMap.put("replyList", replyList);
             modelMap.put("dmList", dmList);
             modelMap.put("dmSentList", dmSentList);
             modelMap.put("sentList", sentList);
             modelMap.put("favouritesList", favouritesList);
             modelMap.put("retweetList", retweetsList);
+
 
             User user = new User(twitter.verifyCredentials());
             user.setLatest_tweet_id(friendsList.get(0).getId());
@@ -849,8 +871,24 @@ public class DropletController extends AbstractController {
     }
 
     /*******************************************************************************/
-    /*START TWEET UPDATE METHODS*/
+    /*START TWEET LIST METHODS*/
     /*******************************************************************************/
+    private List<Tweet> getDiscussionTweets(List<Tweet> tweetList)
+    {
+        //
+        Iterator iter = tweetList.listIterator();
+        while (iter.hasNext())
+        {
+            Tweet t = (Tweet) iter.next();
+            DLog.log(t.getIn_reply_to_id().toString());
+            if (t.getIn_reply_to_id() == null || t.getIn_reply_to_id() <= 0)
+            {
+                iter.remove();
+            }
+        }
+        return tweetList;
+    }
+
     private List<Tweet> setTrackedTweets(List<Tweet> tweetList, Map modelMap)
     {
         User user = (User) modelMap.get("user");
@@ -925,7 +963,7 @@ public class DropletController extends AbstractController {
         return tweetList;
     }
     /*******************************************************************************/
-    /*END TWEET UPDATE METHODS*/
+    /*END TWEET LIST METHODS*/
     /*******************************************************************************/
     private static final Integer SEVEN_DAYS_IN_SECONDS = 604800;
 }

@@ -6,6 +6,8 @@
 <c:set var="modelMap" value="${modelMap}"/>
 
 <c:if test="${modelMap.tweetList != null}">
+    <c:set var="listLength" value="${fn:length(modelMap.tweetList)}"/>
+    
     <c:forEach items="${modelMap.tweetList}" var="tweet" >
 
         <div class="tweet_container" id="dt<c:out value="${tweet.id}" />">
@@ -87,8 +89,12 @@
         </div>
         <c:set var="lastId" value="${tweet.id}"/>
     </c:forEach>
-    <c:if test="${fn:length(modelMap.tweetList) > 40}" >
+    <c:if test="${listLength > 40}" >
         <button id="more_tweet_submit_btn" name="ldt<c:out value="${lastId}" />"class="more_tweet_submit">more</button>
+    </c:if>
+
+    <c:if test="${fn:length(modelMap.tweetList) == 0}" >
+        <div class="message" >nothing in here yet :(</div>
     </c:if>
 </c:if>
 

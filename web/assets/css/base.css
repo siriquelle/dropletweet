@@ -134,6 +134,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .action a, .action_search a, .action_conversations a{display:block; width: 20px; height:20px; margin:5px;}
 .action a:hover, .action_search a:hover, .action_conversations a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
 .actions #friendsList a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
+.actions #discussionList a{background:url("../img/actions/action_active_tweet.png") no-repeat scroll 0 0 transparent;}
 .actions #replyList a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
 .actions #dmList a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
 .actions #search a{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0 0 transparent;}
@@ -173,6 +174,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .tweet_stream .more_tweet_submit_active{background-image: none !important}
 
 .tweet_stream .page_break{border-top: 1px dashed #85B6BF; margin: 0px auto; border-bottom:0px; border-left:0px; border-right: 0px;}
+.tweet_stream .message{text-align: center; font-size: 1.5em; background-color: #C7F6FF; width:292px; padding: 3px 3px 9px 3px; border: 1px dashed #87BBC5; margin-top: 3px;}
 /**/
 .tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top:1px solid #87BBC5}
 .tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
