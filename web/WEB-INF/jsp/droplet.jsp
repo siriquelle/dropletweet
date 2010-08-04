@@ -1,4 +1,3 @@
-<%@ page contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 <%@include file="/WEB-INF/jsp/include/tiles/base/base_definitions.jsp" %>
 <%@include file="/WEB-INF/jsp/include/tiles/body/body_definitions.jsp" %>

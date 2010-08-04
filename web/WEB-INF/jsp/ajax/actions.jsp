@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
 <c:if test="${modelMap.ajaxTweetActionBean.error == null}">
     Latest: <c:out value="${modelMap.ajaxTweetActionBean.text}" escapeXml="false" />

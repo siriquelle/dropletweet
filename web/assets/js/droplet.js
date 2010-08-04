@@ -89,10 +89,11 @@ function tweetStreamHooks(){
         $(this).removeClass("new_tweet_submit_active");
         $("#message_out").empty().append(loadingImage);
         var tweet_text = $("#new_tweet_text_txt").val();
+        tweet_text = encodeURIComponent(tweet_text);
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
 
         $.ajax({
-            url: "./tweet.ajax?action=post&tweet_text="+tweet_text+"&in_reply_to_id=" + in_reply_to_id,
+            url: "./tweet.ajax?action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
             success: function(data) {
                 $("#message_out").empty().append(data);
                 resetTweetInput();
@@ -150,7 +151,7 @@ function searchAjaxAction(query){
 
     $("#message_out").empty().append(loadingImage);
     $.ajax({
-        url: "./statuslist.ajax?action=search&q=" + query,
+        url: "./statuslist.ajax?action=search&q=" + encodeURIComponent(query),
         success: function(data) {
             listType = "search_" + query;
             $("#tweetUpdatePanel").empty().append(data);
@@ -175,7 +176,7 @@ function tweetHooks(){
     reloadHook();
     moreTweetsHook();
     followHook();
-
+    searchForHashTagHook();
 }
 
 /******************************************************************************/
@@ -296,7 +297,19 @@ function followHook(){
         followUser(screen_name);
     });
 }
-
+/**************************************************************************/
+function searchForHashTagHook(){
+    $(".hash").unbind();
+    $(".hash").click(function(){
+        stopAutoUpdate();
+        var hashTag = $(this).text();
+        $("#search_a").addClass("search_a_toggle");
+        $("#action_search_container_outer").show();
+        $("#search_txt").val(hashTag);
+        $("#search_txt").focus();
+        searchAjaxAction(hashTag);
+    });
+}
 /**************************************************************************/
 function moreTweetsHook(){
     $("#more_tweet_submit_btn").unbind();

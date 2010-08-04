@@ -29,7 +29,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapLinksForAnchorsTest");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetUtil.swapForAnchors("http://", "", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("http://", "", "_self", random, "outlink"));
         DLog.log("END : swapLinksForAnchorsTest");
         random = temp;
     }
@@ -43,7 +43,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapScreenNamesForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetUtil.swapForAnchors("@", "http://twitter.com/", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("@", "http://twitter.com/", "_self", random, "outlink"));
         DLog.log("END : swapScreenNamesForLinks");
         random = temp;
     }
@@ -57,7 +57,7 @@ public class TweetTextUtilTest {
         String temp = random;
         DLog.log("BEGIN : swapHashTagsForLinks");
         DLog.log("BEFORE : " + random);
-        DLog.log("AFTER : " + TweetUtil.swapForAnchors("#", "http://twitter.com/#search?q=", random));
+        DLog.log("AFTER : " + TweetUtil.swapForAnchors("#", "http://twitter.com/#search?q=", "_self", random, "outlink"));
         DLog.log("END : swapHashTagsForLinks");
         random = temp;
     }

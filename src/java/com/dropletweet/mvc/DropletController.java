@@ -12,8 +12,10 @@ import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
 import com.dropletweet.util.TweetUtil;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,9 +50,12 @@ public class DropletController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
+        request.setCharacterEncoding("UTF-8");
 //
         DLog.log("GET USERS SESSION");
+
         Map modelMap = this.getModelMap(request);
+
 //
         DLog.log("SET UP DEFAULT DESTINATION");
         String view = "redirect:/index.jsp";
@@ -155,7 +160,7 @@ public class DropletController extends AbstractController {
                 if (cookie.getName().equals(accessToken))
                 {
                     cookie.setMaxAge(-1);
-                    cookie.setValue(accessToken);
+                    cookie.setValue("accessToken");
                     response.addCookie(cookie);
                     break;
                 }
@@ -202,7 +207,7 @@ public class DropletController extends AbstractController {
      * @param request
      * @return
      */
-    private Map doAjaxStatusList(HttpServletRequest request)
+    private Map doAjaxStatusList(HttpServletRequest request) throws UnsupportedEncodingException
     {
         Map modelMap = getModelMap(request);
         User user = null;
@@ -270,6 +275,7 @@ public class DropletController extends AbstractController {
             {
                 listType = "search";
                 String query = request.getParameter("q");
+
                 List<twitter4j.Tweet> tl = twitter.search(new Query(query).rpp(100)).getTweets();
                 if (tl != null)
                 {
@@ -383,12 +389,19 @@ public class DropletController extends AbstractController {
     /**
      *
      */
-    public Map doAjaxTweetAction(HttpServletRequest request)
+    public Map doAjaxTweetAction(HttpServletRequest request) throws UnsupportedEncodingException
     {
         AjaxTweetActionBean ajaxTweetActionBean = new AjaxTweetActionBean();
         Map modelMap = getModelMap(request);
         User user = (User) modelMap.get("user");
         String action = request.getParameter("action");
+
+        Enumeration<String> enumer = request.getParameterNames();
+        while (enumer.hasMoreElements())
+        {
+            DLog.log(enumer.nextElement());
+        }
+
         HttpSession session = request.getSession();
         Twitter twitter = (Twitter) session.getAttribute("twitter");
         Tweet tweet = null;
@@ -407,6 +420,7 @@ public class DropletController extends AbstractController {
             } else if (action.equals("post"))
             {
                 String tweet_text = request.getParameter("tweet_text");
+                
                 String in_reply_to_id = request.getParameter("in_reply_to_id");
                 if (in_reply_to_id.length() > 0)
                 {

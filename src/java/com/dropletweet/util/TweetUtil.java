@@ -27,7 +27,7 @@ public class TweetUtil {
      * @param tweet
      * @return
      */
-    public static String swapForAnchors(String key, String href, String tweet)
+    public static String swapForAnchors(String key, String href, String target, String tweet, String cssClass)
     {
         DLog.log("START SWAP FOR ANCHORS");
         DLog.log(tweet);
@@ -62,7 +62,7 @@ public class TweetUtil {
 
                             String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
 
-                            anchor = "<a href=\"" + link + "\" class=\"outlink\" target=\"_blank\" >" + value + "</a>";
+                            anchor = "<a href=\"" + link + "\" class=\"" + cssClass + "\" target=\"" + target + "\" >" + value + "</a>";
                             tweet = tweet.replace(value, anchor);
                             linkEnd = tweet.indexOf("</a>", linkEnd);
                         }
@@ -98,16 +98,21 @@ public class TweetUtil {
         DLog.log("START SWAP ALL FOR LINKS");
         tweet = sanatizeTweetText(tweet);
 
-        tweet = swapForAnchors("http://", "", tweet);
+        tweet = swapForAnchors("http://", "", "_blank", tweet, "outlink url");
 
-        tweet = swapForAnchors("@", "http://twitter.com/", tweet);
+        tweet = swapForAnchors("@", "http://twitter.com/", "_blank", tweet, "outlink person");
 
-        tweet = swapForAnchors("#", "http://twitter.com/#search?q=", tweet);
+        tweet = swapForAnchors("#", "", "_self", tweet, "outlink hash");
         DLog.log(tweet);
         DLog.log("END SWAP ALL FOR LINKS");
         return tweet.replace("\n", "");
     }
 
+    /**
+     * 
+     * @param tweet
+     * @return
+     */
     public static String encodeTweetTextQuotes(String tweet)
     {
 

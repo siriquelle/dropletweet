@@ -1,6 +1,5 @@
-<%@ page contentType="text/html" %>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
-
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <div class="page">
     <div id="leftColumn">
 
