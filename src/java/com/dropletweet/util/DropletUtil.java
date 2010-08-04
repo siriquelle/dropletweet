@@ -219,7 +219,7 @@ public class DropletUtil {
             if (word.startsWith("#"))
             {
                 iter.remove();
-                hashTags.add(word);
+                hashTags.add(TextUtil.removePunctuation(word));
             }
         }
 

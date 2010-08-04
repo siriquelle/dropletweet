@@ -43,7 +43,7 @@ public class ConversationServiceImpl implements ConversationService {
     private HtmlCleaner cleaner = new HtmlCleaner();
     private final Integer TWENTY_MINUTES_IN_MILLISECONDS = 1200000;
     private final Integer SIX_HOURS_IN_MILLISECONDS = 64800000;
-    DropletService dropletService;
+    private DropletService dropletService;
 
     /**
      *
@@ -109,25 +109,30 @@ public class ConversationServiceImpl implements ConversationService {
     private String fillJIT(Droplet droplet)
     {
         DLog.log("START FILL JIT");
+
         StringBuilder jit = new StringBuilder();
         Tweet tweet = droplet.getSeed();
         jit.append("{");
         jit.append("\"id\": \"").append(tweet.getId()).append("\",");
         jit.append("\"name\": \"").append(tweet.getFrom_user()).append("\",");
         jit.append("\"data\": {");
+        
         String formattedText = TweetUtil.swapAllForLinks(droplet.getSeed().getText());
         formattedText = TweetUtil.encodeTweetTextQuotes(formattedText);
         jit.append("\"text\" : \"").append(formattedText).append("\",");
         jit.append("\"id\" : \"").append(tweet.getId()).append("\",");
         jit.append("\"from_user\" : \"").append(tweet.getFrom_user()).append("\",");
+
         String prettyDate = TweetUtil.getDateAsPrettyTime(tweet.getCreated_at());
         jit.append("\"created_at\" : \"").append(prettyDate).append("\",");
         jit.append("\"profile_image_url\" : \"").append(tweet.getProfile_image_url()).append("\",");
         jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\",");
+
         jit.append("\"stats\": {");
         jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
         jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet).size()).append("\",");
-        jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\",");
+        jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\"");
+
         jit.append("}");
         jit.append("},");
 

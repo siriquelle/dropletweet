@@ -5,6 +5,8 @@ var w = null , h = null;
 var canvas = null;
 var ht = null;
 var currentConversation;
+var nodeCurrentPositionLeft;
+var nodeCurrentPositionRight;
 function createLoadingImage(){
     loadingImage =document.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
@@ -18,7 +20,7 @@ function createLoadingImage(){
 var dropletCommonError = "dropletweet is error, boo!";
 
 var seedURL = "http://twitter.com/Nonomadic/status/20099105077"//MINIROLLS
-    //"http://twitter.com/conoro/status/19943612580"; // Show Review
+//"http://twitter.com/conoro/status/19943612580"; // Show Review
 
 //"http://twitter.com/dropletweet/status/19821003664";//Bug Tracking
 //"http://twitter.com/damienmulley/status/19605819998"; //Largest To Date
@@ -79,9 +81,21 @@ function setup(){
         //labels. This method is only triggered on label
         //creation
         onCreateLabel: function(domElement, node){
-            addEvent(domElement, 'click', function () {
-                ht.onClick(node.id);
+            
+
+            $("#"+node.id).mousedown(function(){
+                nodeCurrentPositionLeft = $("#"+node.id).css("left");
+                nodeCurrentPositionRight = $("#"+node.id).css("right");
             });
+
+            $("#"+node.id).mouseup(function(){
+                if(nodeCurrentPositionLeft == $("#"+node.id).css("left") && nodeCurrentPositionRight == $("#"+node.id).css("right")){
+                    ht.onClick(node.id);
+                }
+
+            });
+
+  
         },
         //Change node styles when labels are placed
         //or moved.

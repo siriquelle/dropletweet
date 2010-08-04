@@ -715,7 +715,7 @@ public class DropletController extends AbstractController {
      */
     private Map getModelMap(HttpServletRequest request)
     {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(true);
 
         if (session.getAttribute("modelMap") == null)
         {

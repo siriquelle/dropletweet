@@ -88,7 +88,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 #img_loading{position:relative; display: block; width:128px; height:15px; margin:7px auto;}
 
 /* START INFOVIS STATS*/
-.infovis_stats_container{font-size:.8em; width:100px; text-align: center;position:relative; top:-100px; background-color:#AEF2FF; -moz-border-radius:5px; -webkit-border-radius:5px; display:none;}
+.infovis_stats_container{font-size:.8em; width:100px; text-align: center;position:relative; top:-300px; background-color:#AEF2FF; -moz-border-radius:5px; -webkit-border-radius:5px; display:none;}
 .infovis_stat{background-color: #C1F5FF; display:inline-block; width:80px; padding:3px; margin:5px; -moz-border-radius:3px; -webkit-border-radius:3px;}
 .infovis_stat_head{font-weight:bold;}
 .infovis_stat_text{}
