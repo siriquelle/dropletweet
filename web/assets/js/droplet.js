@@ -6,7 +6,7 @@ var charCount = 0;
 $(document).ready(function() {
     createLoadingImage();
     setup();
-    updateConversation(seedURL);
+    initialize($);
     tweetStreamHooks();
     tweetHooks();
     startAutoUpdate();
@@ -177,6 +177,7 @@ function tweetHooks(){
     moreTweetsHook();
     followHook();
     searchForHashTagHook();
+    searchForFromUser();
 }
 
 /******************************************************************************/
@@ -308,6 +309,21 @@ function searchForHashTagHook(){
         $("#search_txt").val(hashTag);
         $("#search_txt").focus();
         searchAjaxAction(hashTag);
+    });
+}
+/**************************************************************************/
+function searchForFromUser(){
+    $(".person").unbind();
+    $(".person").click(function(){
+        stopAutoUpdate();
+        var user = $(this).text();
+        user = user.substring(user.indexOf("@")+1, user.length);
+        query = "from:"+user;
+        $("#search_a").addClass("search_a_toggle");
+        $("#action_search_container_outer").show();
+        $("#search_txt").val(query);
+        $("#search_txt").focus();
+        searchAjaxAction(query);
     });
 }
 /**************************************************************************/

@@ -93,7 +93,7 @@ public class ConversationServiceImpl implements ConversationService {
         Droplet droplet = getDropletConversation(url);
         StringBuilder jit = new StringBuilder();
 
-        jit.append(this.fillJIT(droplet));
+        jit.append(this.fillJIT(droplet, Boolean.TRUE));
 
         String jcon = jit.toString();
 
@@ -106,7 +106,7 @@ public class ConversationServiceImpl implements ConversationService {
 
     }
 
-    private String fillJIT(Droplet droplet)
+    private String fillJIT(Droplet droplet, Boolean showStats)
     {
         DLog.log("START FILL JIT");
 
@@ -116,7 +116,14 @@ public class ConversationServiceImpl implements ConversationService {
         jit.append("\"id\": \"").append(tweet.getId()).append("\",");
         jit.append("\"name\": \"").append(tweet.getFrom_user()).append("\",");
         jit.append("\"data\": {");
-        
+        if (showStats)
+        {
+            jit.append("\"stats\": {");
+            jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
+            jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet)).append("\",");
+            jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\"");
+            jit.append("},");
+        }
         String formattedText = TweetUtil.swapAllForLinks(droplet.getSeed().getText());
         formattedText = TweetUtil.encodeTweetTextQuotes(formattedText);
         jit.append("\"text\" : \"").append(formattedText).append("\",");
@@ -126,14 +133,8 @@ public class ConversationServiceImpl implements ConversationService {
         String prettyDate = TweetUtil.getDateAsPrettyTime(tweet.getCreated_at());
         jit.append("\"created_at\" : \"").append(prettyDate).append("\",");
         jit.append("\"profile_image_url\" : \"").append(tweet.getProfile_image_url()).append("\",");
-        jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\",");
+        jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\"");
 
-        jit.append("\"stats\": {");
-        jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
-        jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet).size()).append("\",");
-        jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\"");
-
-        jit.append("}");
         jit.append("},");
 
         jit.append("\"children\": [");
@@ -141,7 +142,7 @@ public class ConversationServiceImpl implements ConversationService {
         {
             for (Droplet d : droplet.getWave())
             {
-                jit.append(fillJIT(d));
+                jit.append(fillJIT(d, Boolean.FALSE));
             }
         }
         jit.append("]");

@@ -5,7 +5,9 @@ $(document).ready(function() {
     createLoadingImage();
     $("#message_out").append(loadingImage);
     setup();
-    updateConversation(seedURL);
+    initialize($);
+    setInterval ( "initialize()", 300000, $);
+
 });
 
 /**********************************************************************/
@@ -45,3 +47,4 @@ function afterCompute(){
     $(".node").draggable();
  
 }
+

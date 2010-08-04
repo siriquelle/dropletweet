@@ -95,6 +95,7 @@
                                 /index.htm=IS_AUTHENTICATED_ANONYMOUSLY
                                 /signin.htm=IS_AUTHENTICATED_ANONYMOUSLY
                                 /**.json=IS_AUTHENTICATED_ANONYMOUSLY
+                                /util.ajax=IS_AUTHENTICATED_ANONYMOUSLY
                                 /assets/**=IS_AUTHENTICATED_ANONYMOUSLY
                                 /assets/js/droplet.js=IS_AUTHENTICATED_REMEMBERED
                                 /**=IS_AUTHENTICATED_REMEMBERED

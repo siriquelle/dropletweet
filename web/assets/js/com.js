@@ -19,7 +19,9 @@ function createLoadingImage(){
 
 var dropletCommonError = "dropletweet is error, boo!";
 
-var seedURL = "http://twitter.com/Nonomadic/status/20099105077"//MINIROLLS
+var seedURL;// = "http://twitter.com/dropletweet/status/19821003664";
+
+//"http://twitter.com/Nonomadic/status/20099105077"//MINIROLLS
 //"http://twitter.com/conoro/status/19943612580"; // Show Review
 
 //"http://twitter.com/dropletweet/status/19821003664";//Bug Tracking
@@ -182,12 +184,29 @@ function initialp(json){
 }
 function calculateStatistics(){
     $("#tweets_out").empty().append(currentConversation.data.stats.tweetCount);
-    $("#peeps_out").empty().append(currentConversation.data.stats.peepCount);
+    
+    var peeps = currentConversation.data.stats.peepCount;
+    peeps = peeps.substring(1, peeps.length-1).split(",");
+    $("#peeps_out").empty().append(peeps.length);
+    
     var terms = currentConversation.data.stats.terms.split(" ");
     $("#terms_out").empty();
-    for(var i=0; i < terms.length; i++){
-        $("#terms_out").append(terms[i]);
+    for(var j=0; j < terms.length; j++){
+        $("#terms_out").append(terms[j]);
         $("#terms_out").append("<br />");
     }
     $("#infovis_stats").fadeIn(350);
+}
+
+function initialize($){
+    $("#message_out").empty().append(loadingImage);
+    $.ajax({
+        url: "./util.ajax?action=get_latest_url",
+        success: function(data) {
+            updateConversation(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
 }

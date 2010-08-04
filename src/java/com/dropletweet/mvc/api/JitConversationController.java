@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -33,7 +34,7 @@ public class JitConversationController extends AbstractController {
                 modelMap.put("jit", jit);
                 request.getSession().setAttribute("jit", jit);
                 request.getSession().setAttribute("url", seedURL);
-
+                this.getServletContext().setAttribute("latest_url", seedURL);
                 modelMap.put("jit", request.getSession().getAttribute("jit"));
                 modelMap.put("url", seedURL);
             }

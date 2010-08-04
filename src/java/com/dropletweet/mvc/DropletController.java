@@ -8,6 +8,7 @@ import com.dropletweet.domain.Conversation;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
 import com.dropletweet.model.bean.AjaxTweetActionBean;
+import com.dropletweet.model.bean.AjaxUtilBean;
 import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.util.DLog;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,6 +80,9 @@ public class DropletController extends AbstractController {
         } else if (uri.contains("tweet.ajax"))
         {
             modelMap.putAll(doAjaxTweetAction(request));
+        } else if (uri.contains("util.ajax"))
+        {
+            modelMap.putAll(doAjaxUtil(request));
         }
 //
         modelMap.putAll(saveModelMap(request, modelMap));
@@ -388,6 +393,9 @@ public class DropletController extends AbstractController {
 
     /**
      *
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
      */
     public Map doAjaxTweetAction(HttpServletRequest request) throws UnsupportedEncodingException
     {
@@ -420,7 +428,7 @@ public class DropletController extends AbstractController {
             } else if (action.equals("post"))
             {
                 String tweet_text = request.getParameter("tweet_text");
-                
+
                 String in_reply_to_id = request.getParameter("in_reply_to_id");
                 if (in_reply_to_id.length() > 0)
                 {
@@ -576,6 +584,47 @@ public class DropletController extends AbstractController {
         }
         modelMap.put("ajaxTweetActionBean", ajaxTweetActionBean);
         modelMap.put("view", "ajax/actions");
+        return modelMap;
+    }
+
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public Map doAjaxUtil(HttpServletRequest request)
+    {
+        String action = request.getParameter("action");
+        Map modelMap = getModelMap(request);
+        AjaxUtilBean ajaxUtilBean = new AjaxUtilBean();
+
+        if (action.equals("get_latest_url"))
+        {
+            String url = dropletProperties.getProperty("droplet.ajax.util.default.url");
+            if ((User) modelMap.get("user") != null)
+            {
+                User user = (User) modelMap.get("user");
+                Conversation latestConversation = (dropletService.getAllConversationsByUserId(user.getId()).size() > 0)
+                        ? dropletService.getAllConversationsByUserId(user.getId()).get(dropletService.getAllConversationsByUserId(user.getId()).size() - 1)
+                        : null;
+
+                if (latestConversation != null)
+                {
+                    url = "http://twitter.com/" + latestConversation.getTweet().getFrom_user() + "/status/" + latestConversation.getTweet().getId();
+                }
+            } else
+            {
+                if ((String) this.getServletContext().getAttribute("latest_url") != null)
+                {
+                    url = (String) this.getServletContext().getAttribute("latest_url");
+                }
+            }
+            ajaxUtilBean.setMessage(url);
+        }
+
+        modelMap.put("ajaxUtilBean", ajaxUtilBean);
+        modelMap.put("view", "ajax/util");
         return modelMap;
     }
 

@@ -100,9 +100,9 @@ public class TweetUtil {
 
         tweet = swapForAnchors("http://", "", "_blank", tweet, "outlink url");
 
-        tweet = swapForAnchors("@", "http://twitter.com/", "_blank", tweet, "outlink person");
+        tweet = swapForAnchors("@", "#", "_self", tweet, "outlink person");
 
-        tweet = swapForAnchors("#", "", "_self", tweet, "outlink hash");
+        tweet = swapForAnchors("#", "#", "_self", tweet, "outlink hash");
         DLog.log(tweet);
         DLog.log("END SWAP ALL FOR LINKS");
         return tweet.replace("\n", "");
