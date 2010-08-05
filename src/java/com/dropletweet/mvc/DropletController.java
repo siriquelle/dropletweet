@@ -8,6 +8,7 @@ import com.dropletweet.domain.Conversation;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
 import com.dropletweet.model.bean.AjaxTweetActionBean;
+import com.dropletweet.model.bean.AjaxUserBean;
 import com.dropletweet.model.bean.AjaxUtilBean;
 import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
@@ -24,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,6 +80,9 @@ public class DropletController extends AbstractController {
         } else if (uri.contains("tweet.ajax"))
         {
             modelMap.putAll(doAjaxTweetAction(request));
+        } else if (uri.contains("user.ajax"))
+        {
+            modelMap.putAll(doAjaxUser(request));
         } else if (uri.contains("util.ajax"))
         {
             modelMap.putAll(doAjaxUtil(request));
@@ -625,6 +628,35 @@ public class DropletController extends AbstractController {
 
         modelMap.put("ajaxUtilBean", ajaxUtilBean);
         modelMap.put("view", "ajax/util");
+        return modelMap;
+    }
+
+    public Map doAjaxUser(HttpServletRequest request)
+    {
+        String action = request.getParameter("action");
+        Map modelMap = getModelMap(request);
+        AjaxUserBean ajaxUserBean = null;
+        HttpSession session = request.getSession();
+        Twitter twitter = (Twitter) session.getAttribute("twitter");
+
+        if (action.equals("get_user_info"))
+        {
+            String userName = request.getParameter("screen_name");
+            if (userName != null && userName.length() > 0)
+            {
+                try
+                {
+                    twitter4j.User user = (twitter4j.User) twitter.showUser(userName);
+                    ajaxUserBean = new AjaxUserBean((twitter4j.User) user);
+                } catch (TwitterException ex)
+                {
+                    DLog.log(ex.getMessage());
+                }
+            }
+        }
+
+        modelMap.put("ajaxUserBean", ajaxUserBean);
+        modelMap.put("view", "ajax/user");
         return modelMap;
     }
 

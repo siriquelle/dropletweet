@@ -2,6 +2,8 @@
 var listType = "friendsList";
 var intervalID = null;
 var charCount = 0;
+var temp_height;
+var screenName;
 //
 $(document).ready(function() {
     createLoadingImage();
@@ -10,6 +12,7 @@ $(document).ready(function() {
     tweetStreamHooks();
     tweetHooks();
     startAutoUpdate();
+    setScreenNameFromDocument();
 });
 
 /**********************************************************************/
@@ -104,7 +107,7 @@ function tweetStreamHooks(){
         });
     });
     /**************************************************************************/
-    var temp_height;
+
     $("#user_info_hide_show").click(function(){
         $(this).toggleClass("user_info_show");
         $(this).toggleClass("user_info_hide");
@@ -116,6 +119,7 @@ function tweetStreamHooks(){
                 temp_height = height;
             });
         } else{
+            showUserDetails(screenName);
             $("#user_info_container").animate({
                 height:temp_height
             }, 250, "linear");
@@ -318,12 +322,14 @@ function searchForFromUser(){
         stopAutoUpdate();
         var user = $(this).text();
         user = user.substring(user.indexOf("@")+1, user.length);
+        showUserDetails(user);
         query = "from:"+user;
         $("#search_a").addClass("search_a_toggle");
         $("#action_search_container_outer").show();
         $("#search_txt").val(query);
         $("#search_txt").focus();
         searchAjaxAction(query);
+
     });
 }
 /**************************************************************************/
@@ -498,4 +504,42 @@ function afterCompute(){
     $(".node").draggable();
     tweetHooks();
 }
+/*****************************************************************************/
+function showUserDetails(user){
+    
+    $.ajax({
+        url: "./user.ajax?action=get_user_info&screen_name=" + user,
+        success: function(data) {
 
+            if(temp_height>0){
+                $("#user_info_container").animate({
+                    height:temp_height
+                }, 250, "linear");
+            }
+            user = $.parseJSON(data);
+            var animationSpeed = 500;
+            $("#screen_name").fadeOut(animationSpeed).empty().append(user.screen_name).fadeIn(animationSpeed);
+            animationSpeed+=300;
+            $("#description").fadeOut(animationSpeed).empty().append(user.description).fadeIn(animationSpeed);
+            animationSpeed-=300;
+            $("#profile_image_url").fadeOut(animationSpeed).attr("src", user.profile_image_url);
+            $("#profile_image_url").fadeIn(animationSpeed);
+            animationSpeed+=300;
+            $("#location").fadeOut(animationSpeed).empty().append(user.location).fadeIn(animationSpeed);
+            animationSpeed-=300;
+            $("#friends_count").fadeOut(animationSpeed).empty().append(user.following).fadeIn(animationSpeed);
+            animationSpeed+=300;
+            $("#followers_count").fadeOut(animationSpeed).empty().append(user.followers).fadeIn(animationSpeed);
+            animationSpeed-=300;
+            $("#statuses_count").fadeOut(animationSpeed).empty().append(user.tweets).fadeIn(animationSpeed);
+            animationSpeed+=300;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+}
+
+function setScreenNameFromDocument(){
+    screenName = $("#screen_name").text().trim();
+}

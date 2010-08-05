@@ -176,7 +176,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .tweet_stream .page_break{border-top: 1px dashed #85B6BF; margin: 0px auto; border-bottom:0px; border-left:0px; border-right: 0px;}
 .tweet_stream .message{text-align: center; font-size: 1.5em; background-color: #C7F6FF; width:292px; padding: 3px 3px 9px 3px; border: 1px dashed #87BBC5; margin-top: 3px;}
 /**/
-.tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top:1px solid #87BBC5}
+.tweet_container{background-color:#C6F6FF; margin:3px; padding:2px; border-top:1px solid #87BBC5; width:292px;}
 .tweet_profile_image_container{float: left; width:48px; height: 48px; padding-right: 3px;}
 /**/
 .tweet_profile_action_container{}

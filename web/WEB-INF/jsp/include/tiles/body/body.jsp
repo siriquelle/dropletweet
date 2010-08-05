@@ -6,7 +6,7 @@
         <div id="container">
             <div id="infovis0" class="infovis" ></div>
         </div>
-        <div class="infovis_stats_container" id="infovis_stats">
+        <details class="infovis_stats_container" id="infovis_stats">
             <div class="infovis_stat" >
                 <div class="infovis_stat_head">Tweets</div>
                 <div class="infovis_stat_text" id="tweets_out">0</div>
@@ -19,10 +19,10 @@
                 <div class="infovis_stat_head">Key Terms</div>
                 <div class="infovis_stat_text" id="terms_out">0</div>
             </div>
-        </div>
+        </details>
 
     </div>
-    <div id="rightColumn">
+    <aside id="rightColumn">
 
         <div class="rightPanel">
 
@@ -30,5 +30,5 @@
 
         </div>
 
-    </div>
+    </aside>
 </div>
