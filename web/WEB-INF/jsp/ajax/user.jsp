@@ -4,7 +4,7 @@
 {
 "screen_name" :"<c:out value="${modelMap.ajaxUserBean.screenName}" />",
 
-"profile_image_url" :"<c:out value="${modelMap.ajaxUserBean.profileImageURL}" />",
+"profile_image_url" :"<c:out value="${modelMap.ajaxUserBean.profileImageUrl}" />",
 "description" :"<c:out value="${modelMap.ajaxUserBean.description}" />",
 "location" :"<c:out value="${modelMap.ajaxUserBean.location}" />",
 

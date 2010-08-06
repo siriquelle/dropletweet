@@ -14,7 +14,7 @@ import twitter4j.User;
 public class AjaxUserBean {
 
     private String screenName;
-    private URL profileImageURL;
+    private URL profileImageUrl;
     private String description;
     private String location;
     private Integer following;
@@ -28,7 +28,7 @@ public class AjaxUserBean {
     public AjaxUserBean(User user)
     {
         screenName = user.getScreenName();
-        profileImageURL = user.getProfileImageURL();
+        profileImageUrl = user.getProfileImageURL();
         description = user.getDescription();
         location = user.getLocation();
         following = user.getFriendsCount();
@@ -86,14 +86,14 @@ public class AjaxUserBean {
         this.location = location;
     }
 
-    public URL getProfileImageURL()
+    public URL getProfileImageUrl()
     {
-        return profileImageURL;
+        return profileImageUrl;
     }
 
-    public void setProfileImageURL(URL profileImageURL)
+    public void setProfileImageUrl(URL profileImageUrl)
     {
-        this.profileImageURL = profileImageURL;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public String getScreenName()

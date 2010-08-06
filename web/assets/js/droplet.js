@@ -514,10 +514,13 @@ function showUserDetails(user){
             if(temp_height>0){
                 $("#user_info_container").animate({
                     height:temp_height
-                }, 250, "linear");
+                }, 250, "linear", function(){
+                    $("#user_info_container").css("height", "100%")
+
+                });
             }
             user = $.parseJSON(data);
-            var animationSpeed = 500;
+            var animationSpeed = 200;
             $("#screen_name").fadeOut(animationSpeed).empty().append(user.screen_name).fadeIn(animationSpeed);
             animationSpeed+=300;
             $("#description").fadeOut(animationSpeed).empty().append(user.description).fadeIn(animationSpeed);
