@@ -33,6 +33,7 @@ public class DropletUtil {
             stemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
             stemmer.enableCaching(1000);
             stemmer.ignore(TextUtil.STOP_WORDS_EN);
+            stemmer.ignore(TextUtil.IGNORE_WORDS_EN);
         } catch (PTStemmerException ex)
         {
             Logger.getLogger(DropletUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -40,8 +41,8 @@ public class DropletUtil {
     }
 
     /**
-     * 
-     * @param key 
+     *
+     * @param key
      * @param href
      * @param tweet
      * @return
@@ -78,7 +79,9 @@ public class DropletUtil {
 //
         hashTagList = extractHashTagsFromWordList(wordList);
 //
+        DLog.log(wordList.toString());
         wordList = stemWords(wordList);
+        DLog.log(wordList.toString());
 //
         wordList = removeDuplicates(wordList);
         wordList = removeCommonTerms(wordList);
@@ -114,7 +117,7 @@ public class DropletUtil {
             {
                 if (word.length() > 0)
                 {
-                    wordBag.add(word);
+                    wordBag.add(TextUtil.removePunctuation(word).toLowerCase());
                 }
             }
         }
@@ -138,7 +141,7 @@ public class DropletUtil {
     {
         for (int i = 0; i < wave.size(); i++)
         {
-            peepList.add(wave.get(i).getSeed().getFrom_user());
+            peepList.add(wave.get(i).getSeed().getFrom_user().trim());
             if (wave.get(i).getWave().size() > 0)
             {
                 fillPeepListFromWave(wave.get(i).getWave(), peepList);
@@ -184,7 +187,7 @@ public class DropletUtil {
             String word = (String) iter.next();
             for (String peep : peepList)
             {
-                if (word.toLowerCase().equals(peep) || word.toLowerCase().equals("@" + peep))
+                if (word.toLowerCase().equals(peep.toLowerCase()) || word.toLowerCase().equals("@" + peep.toLowerCase()))
                 {
                     iter.remove();
                     break;

@@ -4,6 +4,7 @@
  */
 package com.dropletweet.test.util;
 
+import com.dropletweet.util.DLog;
 import com.dropletweet.util.Porter;
 import com.dropletweet.util.TextUtil;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import ptstemmer.Stemmer;
 import ptstemmer.Stemmer.StemmerType;
 import ptstemmer.exceptions.PTStemmerException;
+import ptstemmer.implementations.PorterStemmer;
 
 /**
  *
@@ -23,6 +25,12 @@ import ptstemmer.exceptions.PTStemmerException;
 public class DropletUtilTest {
 
     public static Stemmer stemmer;
+    public static PorterStemmer stemmesar;
+    public static String[] testvocab = new String[]
+    {
+        "ENJOY", "ONE", "", "SWIMMER", "HARDER", "SIX", "I", "JOE", "@JOE", "CHICAGO", "MIAMI", "iPHONE", "LOVE", "HATE", "UGLY", "MINUTE",
+        "ABASE", "GATE", "UGLY", "JOE", "JAMES"
+    };
 
     static
     {
@@ -31,6 +39,13 @@ public class DropletUtilTest {
             stemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
             stemmer.enableCaching(1000);
             stemmer.ignore(TextUtil.STOP_WORDS_EN);
+            stemmer.ignore(TextUtil.IGNORE_WORDS_EN);
+
+            stemmesar = new ptstemmer.implementations.PorterStemmer();
+            stemmesar.enableCaching(1000);
+            stemmesar.ignore(TextUtil.STOP_WORDS_EN);
+            stemmesar.ignore(TextUtil.IGNORE_WORDS_EN);
+
         } catch (PTStemmerException ex)
         {
             Logger.getLogger(DropletUtilTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -41,13 +56,10 @@ public class DropletUtilTest {
     public void testStemWords()
     {
         List<String> wordList = new LinkedList<String>();
-        wordList.addAll(Arrays.asList(new String[]
-                {
-                    "ENJOY", "ONE", "", "SWIMMER", "HARDER", "SIX", "I", "JOE", "@JOE"
-                }));
+        wordList.addAll(Arrays.asList(DropletUtilTest.testvocab));
 
         stemWords(wordList);
-
+        DLog.log(wordList.toString());
     }
 
     private static List<String> stemWords(List<String> wordList)
@@ -60,4 +72,5 @@ public class DropletUtilTest {
 
         return wordList;
     }
+
 }

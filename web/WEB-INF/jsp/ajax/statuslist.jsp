@@ -7,7 +7,7 @@
 
 <c:if test="${modelMap.tweetList != null}">
     <c:set var="listLength" value="${fn:length(modelMap.tweetList)}"/>
-    
+
     <c:forEach items="${modelMap.tweetList}" var="tweet" >
 
         <div class="tweet_container" id="dt<c:out value="${tweet.id}" />">

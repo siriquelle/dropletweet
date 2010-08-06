@@ -17,6 +17,6 @@ public interface TweetDao extends AbstractDao<Tweet>{
     public Tweet getByID(Long id);
 
     public List<Tweet> getAllByFromUserID(Integer id);
-    
+
     public List<Tweet> getAllByToTweetID(Long id);
 }

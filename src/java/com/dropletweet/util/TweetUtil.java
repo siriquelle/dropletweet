@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 public class TweetUtil {
 
     /**
-     * 
-     * @param key 
+     *
+     * @param key
      * @param href
      * @param tweet
      * @return
@@ -89,7 +89,7 @@ public class TweetUtil {
     }
 
     /**
-     * 
+     *
      * @param tweet
      * @return
      */
@@ -109,7 +109,7 @@ public class TweetUtil {
     }
 
     /**
-     * 
+     *
      * @param tweet
      * @return
      */

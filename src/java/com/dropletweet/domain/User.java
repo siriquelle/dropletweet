@@ -522,7 +522,7 @@ public class User {
     }
 
     /**
-     * 
+     *
      * @param screen_name
      */
     public void setScreen_name(String screen_name)

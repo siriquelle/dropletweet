@@ -201,7 +201,7 @@ public class Retrieve {
     }// </editor-fold>
 
     /**
-     * 
+     *
      * @param seedURL
      * @return
      * @throws IOException
@@ -326,7 +326,7 @@ public class Retrieve {
     }// </editor-fold>
 
     /**
-     * 
+     *
      * @param seedId
      * @return
      * @throws IOException
@@ -362,7 +362,7 @@ public class Retrieve {
     }// </editor-fold>
 
     /**
-     * 
+     *
      * @param results
      * @param seedId
      * @return
@@ -405,7 +405,7 @@ public class Retrieve {
     }// </editor-fold>
 
     /**
-     * 
+     *
      * @param reply
      * @return
      * @throws NumberFormatException

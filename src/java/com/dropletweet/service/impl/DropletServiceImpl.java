@@ -174,7 +174,7 @@ public class DropletServiceImpl implements DropletService {
     }
 
     /**
-     * 
+     *
      * @param conversationDao
      */
     public void setConversationDao(ConversationDao conversationDao)

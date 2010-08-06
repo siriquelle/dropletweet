@@ -7,6 +7,7 @@ var ht = null;
 var currentConversation;
 var nodeCurrentPositionLeft;
 var nodeCurrentPositionRight;
+var nodeCurrentId;
 function createLoadingImage(){
     loadingImage =document.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
@@ -88,11 +89,13 @@ function setup(){
             $("#"+node.id).mousedown(function(){
                 nodeCurrentPositionLeft = $("#"+node.id).css("left");
                 nodeCurrentPositionRight = $("#"+node.id).css("right");
+                
             });
 
             $("#"+node.id).mouseup(function(){
-                if(nodeCurrentPositionLeft == $("#"+node.id).css("left") && nodeCurrentPositionRight == $("#"+node.id).css("right")){
+                if(nodeCurrentPositionLeft == $("#"+node.id).css("left") && nodeCurrentPositionRight == $("#"+node.id).css("right") && nodeCurrentId != node.id){
                     ht.onClick(node.id);
+                    nodeCurrentId = node.id;
                 }
 
             });
@@ -174,6 +177,7 @@ function initialp(json){
     ht.fx.clearLabels(true);
     //load JSON data.
     ht.loadJSON(json);
+    nodeCurrentId = json.id;
     //compute positions and plot.
     ht.refresh();
     //

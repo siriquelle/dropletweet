@@ -6,10 +6,10 @@
 </div>
 <section class="user_info" id="user_info_container">
     <div class="user_info_profile_image">
-        <img id="profile_image_url" alt="<c:out value="${modelMap.user.screenName}" />"  src="<c:out value="${modelMap.user.profileImageUrl}" />" width="48px" height="48px"/>
+        <img id="profile_image_url" alt="<c:out value="${modelMap.user.screen_name}" />"  src="<c:out value="${modelMap.user.profile_image_url}" />" width="48px" height="48px"/>
     </div>
     <div class="user_info_screen_name" id="screen_name">
-        <c:out value="${modelMap.user.screeName}" />
+        <c:out value="${modelMap.user.screen_name}" />
     </div>
     <div class="user_info_details_container">
         <div class="user_info_details_item" id="description">
@@ -24,15 +24,15 @@
     <details class="user_info_count_container">
         <div class="user_info_count" >
             <div class="user_info_count_head">Following</div>
-            <div class="user_info_count_number"  id="friends_count"><c:out value="${modelMap.user.friendsCount}" /></div>
+            <div class="user_info_count_number"  id="friends_count"><c:out value="${modelMap.user.friends_count}" /></div>
         </div>
         <div class="user_info_count" >
             <div class="user_info_count_head">Followers</div>
-            <div class="user_info_count_number" id="followers_count"><c:out value="${modelMap.user.followersCount}" /></div>
+            <div class="user_info_count_number" id="followers_count"><c:out value="${modelMap.user.followers_count}" /></div>
         </div>
         <div class="user_info_count" >
             <div class="user_info_count_head">Tweets</div>
-            <div class="user_info_count_number" id="statuses_count"><c:out value="${modelMap.user.statusesCount}" /></div>
+            <div class="user_info_count_number" id="statuses_count"><c:out value="${modelMap.user.statuses_count}" /></div>
         </div>
     </details>
 </section>
