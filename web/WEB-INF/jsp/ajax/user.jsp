@@ -10,5 +10,6 @@
 
 "following" :"<c:out value="${modelMap.ajaxUserBean.following}" />",
 "followers" :"<c:out value="${modelMap.ajaxUserBean.followers}" />",
-"tweets" :"<c:out value="${modelMap.ajaxUserBean.tweets}" />"
+"tweets" :"<c:out value="${modelMap.ajaxUserBean.tweets}" />",
+"hits" :"<c:out value="${modelMap.ajaxUserBean.hits}" />"
 }

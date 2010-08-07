@@ -47,8 +47,8 @@ input,select{vertical-align:middle}
     left:-20px !important;
 }
 /* END INFOVIS TOOLKIT*/
-/* START FONTS */
 
+/* START FONTS */
 @font-face {
     font-family: 'Reenie Beanie';
     src: url('../fnt/reeniebeanie-webfont.eot');
@@ -235,11 +235,10 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /* END RIGHT COLUMN*/
 
 /* START FOOTER*/
-.footer{clear:both; font-size:.6em; border:2px solid #82BBC5; background-color: #B7F3FE; color:#32585F; margin-bottom:15px; padding:3px; width:320px; text-align: center; -moz-border-radius:5px; -webkit-border-radius:5px;}
+.footer{clear:both; font-size:.6em; border:2px solid #82BBC5; background-color: #B7F3FE; color:#32585F; position:relative; top:-5px; padding:3px; width:320px; text-align: center; -moz-border-radius:5px; -webkit-border-radius:5px;}
 /* END FOOTER*/
 
 /* START BOX SHADOW*/
-#rightColumn, .node, .link_twitter_sign_in a:hover{-moz-box-shadow:0 0 3px #9DC5CC; -webkit-box-shadow:0 0 5px #333333; box-shadow:0 0 5px #333333;}
-.link_twitter_sign_in a:active{-moz-box-shadow:0 0 0px #000;}
-.footer{box-shadow:0 0 5px #333333;}
+#rightColumn, .node, .infovis_stats_container,.footer, .link_twitter_sign_in a:hover{-moz-box-shadow:0 0 3px #9DC5CC; -webkit-box-shadow:0 0 5px #333333;}
+.link_twitter_sign_in a:active{-moz-box-shadow:0 0 0px #000;-webkit-box-shadow:0 0 0px #000;}
 /* END BOX SHADOW*/

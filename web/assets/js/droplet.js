@@ -513,11 +513,8 @@ function showUserDetails(user){
 
             if(temp_height>0){
                 $("#user_info_container").animate({
-                    height:temp_height
-                }, 250, "linear", function(){
-                    $("#user_info_container").css("height", "100%")
-
-                });
+                    height:"100%"
+                }, 250, "linear");
             }
             user = $.parseJSON(data);
             var animationSpeed = 200;
@@ -536,6 +533,7 @@ function showUserDetails(user){
             animationSpeed-=300;
             $("#statuses_count").fadeOut(animationSpeed).empty().append(user.tweets).fadeIn(animationSpeed);
             animationSpeed+=300;
+            $("#hits_count").empty().append(user.hits);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             $("#message_out").empty().append(dropletCommonError);

@@ -5,7 +5,6 @@
 package com.dropletweet.test.util;
 
 import com.dropletweet.util.DLog;
-import com.dropletweet.util.Porter;
 import com.dropletweet.util.TextUtil;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -16,7 +15,6 @@ import org.junit.Test;
 import ptstemmer.Stemmer;
 import ptstemmer.Stemmer.StemmerType;
 import ptstemmer.exceptions.PTStemmerException;
-import ptstemmer.implementations.PorterStemmer;
 
 /**
  *
@@ -25,7 +23,6 @@ import ptstemmer.implementations.PorterStemmer;
 public class DropletUtilTest {
 
     public static Stemmer stemmer;
-    public static PorterStemmer stemmesar;
     public static String[] testvocab = new String[]
     {
         "ENJOY", "ONE", "", "SWIMMER", "HARDER", "SIX", "I", "JOE", "@JOE", "CHICAGO", "MIAMI", "iPHONE", "LOVE", "HATE", "UGLY", "MINUTE",
@@ -41,10 +38,7 @@ public class DropletUtilTest {
             stemmer.ignore(TextUtil.STOP_WORDS_EN);
             stemmer.ignore(TextUtil.IGNORE_WORDS_EN);
 
-            stemmesar = new ptstemmer.implementations.PorterStemmer();
-            stemmesar.enableCaching(1000);
-            stemmesar.ignore(TextUtil.STOP_WORDS_EN);
-            stemmesar.ignore(TextUtil.IGNORE_WORDS_EN);
+
 
         } catch (PTStemmerException ex)
         {
@@ -72,5 +66,4 @@ public class DropletUtilTest {
 
         return wordList;
     }
-
 }

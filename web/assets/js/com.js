@@ -115,7 +115,6 @@ function setup(){
                 style.textAlign = "left";
                 style.marginLeft = "0px";
                 style.marginTop = "-60px";
-
                 domElement.innerHTML = getDomElement(node);
 
             } else if(node._depth == 1){

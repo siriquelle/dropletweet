@@ -34,6 +34,10 @@
             <div class="user_info_count_head">Tweets</div>
             <div class="user_info_count_number" id="statuses_count"><c:out value="${modelMap.user.statuses_count}" /></div>
         </div>
+        <div class="user_info_count fr" >
+            <div class="user_info_count_head">Hits</div>
+            <div class="user_info_count_number" id="hits_count"><c:out value="${modelMap.user.requests}" /></div>
+        </div>
     </details>
 </section>
 

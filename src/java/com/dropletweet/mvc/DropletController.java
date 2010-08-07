@@ -646,8 +646,18 @@ public class DropletController extends AbstractController {
             {
                 try
                 {
-                    twitter4j.User user = (twitter4j.User) twitter.showUser(userName);
+                    twitter4j.User user = null;
+
+                    if (userName.equals(((User) modelMap.get("user")).getScreen_name()))
+                    {
+                        user = (twitter4j.User) twitter.verifyCredentials();
+                    } else
+                    {
+                        user = (twitter4j.User) twitter.showUser(userName);
+                    }
+
                     ajaxUserBean = new AjaxUserBean((twitter4j.User) user);
+
                 } catch (TwitterException ex)
                 {
                     DLog.log(ex.getMessage());

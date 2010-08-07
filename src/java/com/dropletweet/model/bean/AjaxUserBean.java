@@ -20,9 +20,11 @@ public class AjaxUserBean {
     private Integer following;
     private Integer followers;
     private Integer tweets;
+    private Integer hits;
 
     public AjaxUserBean()
     {
+
     }
 
     public AjaxUserBean(User user)
@@ -34,6 +36,7 @@ public class AjaxUserBean {
         following = user.getFriendsCount();
         followers = user.getFollowersCount();
         tweets = user.getStatusesCount();
+        hits = user.getRateLimitStatus().getRemainingHits();
     }
 
     public Integer getTweets()
@@ -104,5 +107,25 @@ public class AjaxUserBean {
     public void setScreenName(String screenName)
     {
         this.screenName = screenName;
+    }
+
+    /**
+     * Get the value of hits
+     *
+     * @return the value of hits
+     */
+    public Integer getHits()
+    {
+        return hits;
+    }
+
+    /**
+     * Set the value of hits
+     *
+     * @param hits new value of hits
+     */
+    public void setHits(Integer hits)
+    {
+        this.hits = hits;
     }
 }

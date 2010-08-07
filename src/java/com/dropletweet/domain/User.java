@@ -4,10 +4,6 @@
  */
 package com.dropletweet.domain;
 
-import com.dropletweet.util.DLog;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class represents a Twitter User.
  *
@@ -49,6 +45,7 @@ public class User {
     protected String profile_text_color;
     protected String access_token;
     protected String access_token_secret;
+    protected Integer requests;
 
     public User()
     {
@@ -94,6 +91,7 @@ public class User {
         this.name = user.getName();
         this.lang = user.getLang();
         this.profile_text_color = user.getProfileTextColor();
+        this.requests = user.getRateLimitStatus().getRemainingHits();
     }
 
     /**
@@ -659,4 +657,16 @@ public class User {
     {
         this.access_token_secret = access_token_secret;
     }
+
+
+    public Integer getRequests()
+    {
+        return requests;
+    }
+
+    public void setRequests(Integer requests)
+    {
+        this.requests = requests;
+    }
+    
 }

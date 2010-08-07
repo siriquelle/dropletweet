@@ -16,7 +16,9 @@ public class TextUtil {
     };
     public static final String[] IGNORE_WORDS_EN = new String[]
     {
-        "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love", "hate", "ugly", "joe", "james", "minute", "gate"
+        "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
+        "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
+        "better", "remember", "capable", "attitude", "george"
     };
 
     public static String removePunctuation(String word)
