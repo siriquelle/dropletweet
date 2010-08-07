@@ -6,8 +6,6 @@ $(document).ready(function() {
     $("#message_out").append(loadingImage);
     setup();
     initialize($);
-    setInterval ( "initialize()", 300000, $);
-
 });
 
 /**********************************************************************/
