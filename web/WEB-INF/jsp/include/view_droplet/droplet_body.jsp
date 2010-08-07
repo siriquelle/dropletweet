@@ -2,7 +2,8 @@
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib prefix="c" uri="/WEB-INF/tld/c.tld" %>
 <div class="user_info_action">
-    <a id="user_info_hide_show" class="user_info_show" href="##" title="Show/Hide user info."></a>
+    <a id="user_info_action_reset" class="user_info_reset" href="##" title="Reset user info"></a>
+    <a id="user_info_action_hide_show" class="user_info_show" href="##" title="Show/Hide user info"></a>
 </div>
 <section class="user_info" id="user_info_container">
     <div class="user_info_profile_image">

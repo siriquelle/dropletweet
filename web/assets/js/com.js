@@ -8,6 +8,9 @@ var currentConversation;
 var nodeCurrentPositionLeft;
 var nodeCurrentPositionRight;
 var nodeCurrentId;
+var firstLoad = true;
+var loadingComplete = 0;
+
 function createLoadingImage(){
     loadingImage =document.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
@@ -79,6 +82,7 @@ function setup(){
         clearCanvas: true,
         transition: Trans.Expo.easeInOut,
         onBeforeCompute: function(node){
+            startLoading();
         },
         //Attach event handlers and add text to the
         //labels. This method is only triggered on label
@@ -150,6 +154,7 @@ function setup(){
             style.left = (left - w / 2) + 'px';
         },
         onAfterCompute:function(){
+            stopLoading();
             afterCompute();
         }
 
@@ -158,13 +163,16 @@ function setup(){
 
 /*****************************************************************************/
 function updateConversation(seedURL){
+    startLoading();
     $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
+            stopLoading();
             currentConversation = $.parseJSON(data);
             initialp(currentConversation);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -173,6 +181,7 @@ function updateConversation(seedURL){
 /*****************************************************************************/
 function initialp(json){
     $("#infovis_stats").fadeOut(350);
+    //
     ht.fx.clearLabels(true);
     //load JSON data.
     ht.loadJSON(json);
@@ -202,14 +211,31 @@ function calculateStatistics(){
 }
 
 function initialize($){
-    $("#message_out").empty().append(loadingImage);
+    startLoading();
     $.ajax({
         url: "./util.ajax?action=get_latest_url",
         success: function(data) {
+            stopLoading();
             updateConversation(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
+}
+function startLoading(){
+    $("#message_out").empty().append(loadingImage);
+    loadingComplete++;
+}
+
+function stopLoading(){
+    if(--loadingComplete == 0){
+        $("#img_loading").remove();
+    }
+}
+
+function resetLoading(){
+    $("#message_out").empty();
+    loadingComplete = 1;
 }

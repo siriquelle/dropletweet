@@ -102,11 +102,15 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /* START USER INFO*/
 .user_info{overflow:hidden;}
 /**/
-.user_info_action{height:15px; width:15px; float:right; margin-bottom:-15px; position:relative; top:-10px; right:-10px;}
-.user_info_show{display:block;height:15px; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 -15px transparent;}
+.user_info_action{height:15px; width:32px; float:right; margin-bottom:-15px; position:relative; top:-10px; right:-10px;}
+.user_info_show{display:block; float: right; height:15px; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 -15px transparent;}
 .user_info_show:hover{background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 0px transparent;}
-.user_info_hide{display:block;height:15px; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 0 transparent;}
+.user_info_hide{display:block;height:15px; float: right; width:15px; background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 0 transparent;}
 .user_info_hide:hover{background:url("../img/actions/action_user_info_show_sprite.png") no-repeat scroll 0 -15px transparent;}
+
+.user_info_reset{display:block; float: left; height:15px; width:15px; background:url("../img/actions/action_user_info_reset_sprite.png") no-repeat scroll 0px 0px transparent;}
+.user_info_reset:hover{background:url("../img/actions/action_user_info_reset_sprite.png") no-repeat scroll 0px -15px transparent;}
+.user_info_reset:active{background:url("../img/actions/action_user_info_reset_sprite.png") no-repeat scroll 0px -30px transparent;}
 /**/
 .user_info_profile_image{width:48px; height: 48px; float:left; padding:3px; border: 1px solid #8EBBC4; background-color: #C1F5FF; margin-right: 5px;margin-bottom: 3px;}
 .user_info_screen_name {font-size:1.5em; text-shadow:1px -1px 1px #666; padding-bottom:3px; font-weight:bold;}

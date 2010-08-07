@@ -4,6 +4,8 @@ var intervalID = null;
 var charCount = 0;
 var temp_height;
 var screenName;
+
+
 //
 $(document).ready(function() {
     createLoadingImage();
@@ -66,7 +68,6 @@ function tweetStreamHooks(){
         var charCount = getCharCountElement();
         charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
         $("#message_out").empty().append(charCount);
-
     });
     
     $("#new_tweet_text_txt").blur(function(){
@@ -88,6 +89,7 @@ function tweetStreamHooks(){
         $(this).removeClass("new_tweet_submit_active");
     });
     $("#new_tweet_submit_btn").mouseup(function(){
+        startLoading();
         stopAutoUpdate();
         $(this).removeClass("new_tweet_submit_active");
         $("#message_out").empty().append(loadingImage);
@@ -98,17 +100,19 @@ function tweetStreamHooks(){
         $.ajax({
             url: "./tweet.ajax?action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
             success: function(data) {
+                stopLoading();
                 $("#message_out").empty().append(data);
                 resetTweetInput();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
+                resetLoading();
                 $("#message_out").empty().append(dropletCommonError);
             }
         });
     });
     /**************************************************************************/
 
-    $("#user_info_hide_show").click(function(){
+    $("#user_info_action_hide_show").click(function(){
         $(this).toggleClass("user_info_show");
         $(this).toggleClass("user_info_hide");
         var height = $("#user_info_container").height();
@@ -119,12 +123,15 @@ function tweetStreamHooks(){
                 temp_height = height;
             });
         } else{
-            showUserDetails(screenName);
             $("#user_info_container").animate({
                 height:temp_height
             }, 250, "linear");
         }
     });
+    $("#user_info_action_reset").click(function(){
+        showUserDetails(screenName);
+    });
+
 
 }
 /**************************************************************************/
@@ -135,34 +142,38 @@ function resetTweetInput(){
 }
 /**************************************************************************/
 function ajaxAction(action){
+    startLoading();
     stopAutoUpdate();
-    $("#message_out").empty().append(loadingImage);
     $.ajax({
         url: "./statuslist.ajax?action=" + action,
         success: function(data) {
+            stopLoading();
             $("#tweetUpdatePanel").empty().append(data);
-            $("#message_out").empty();
             tweetHooks();
             startAutoUpdate();
+            decrementHitsCounter();
+            
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
 }
 /**************************************************************************/
 function searchAjaxAction(query){
-
-    $("#message_out").empty().append(loadingImage);
+    startLoading();
     $.ajax({
         url: "./statuslist.ajax?action=search&q=" + encodeURIComponent(query),
         success: function(data) {
+            stopLoading();
             listType = "search_" + query;
             $("#tweetUpdatePanel").empty().append(data);
             tweetHooks();
-            $("#message_out").empty();
+            decrementHitsCounter();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -189,7 +200,6 @@ function tweetHooks(){
 function replyHook(){
     $(".reply").unbind();
     $(".reply").click(function(){
-        $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
         id = id.substr("reply".length, id.length);
         //
@@ -202,7 +212,6 @@ function replyHook(){
 function retweetHook(){
     $(".retweet").unbind();
     $(".retweet").click(function(){
-        $("#message_out").empty().append(loadingImage);
         $(this).children("a").toggleClass("isRetweet");
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("retweet".length, id.length);
@@ -213,7 +222,6 @@ function retweetHook(){
 function favouriteHook(){
     $(".favourite").unbind();
     $(".favourite").click(function(){
-        $("#message_out").empty().append(loadingImage);
         $(this).children("a").toggleClass("isFavourite");
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("favourite".length, id.length);
@@ -224,7 +232,6 @@ function favouriteHook(){
 function deleteHook(){
     $(".delete").unbind();
     $(".delete").click(function(){
-        $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("delete".length, id.length);
         deleteTweet(tweetId);
@@ -234,7 +241,6 @@ function deleteHook(){
 function spamHook(){
     $(".spam").unbind();
     $(".spam").click(function(){
-        $("#message_out").empty().append(loadingImage);
         var id = $(this).attr("id").toString();
         var tweetId = id.substr("spam".length, id.length);
         spamTweet(tweetId);
@@ -245,7 +251,6 @@ function trackHook(){
     $(".track").unbind();
     $(".track").click(function(){
         stopAutoUpdate();
-        $("#message_out").empty().append(loadingImage);
         $(this).children("a").toggleClass("isTracked");
         
         var id = $(this).attr("id").toString();
@@ -264,6 +269,7 @@ function trackHook(){
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 $("#message_out").empty().append(dropletCommonError);
+                resetLoading();
             }
         });
     });
@@ -273,7 +279,7 @@ function reloadHook(){
     $(".reload").unbind();
     $(".reload").click(function(){
         stopAutoUpdate();
-        $("#message_out").empty().append(loadingImage);
+
         $(this).children("a").toggleClass("isTracked");
         var id = $(this).attr("id").toString();
         id = id.substr("reload".length, id.length);
@@ -294,7 +300,6 @@ function followHook(){
     $(".follow").unbind();
     $(".follow").click(function(){
         stopAutoUpdate();
-        $("#message_out").empty().append(loadingImage);
 
         var id = $(this).attr("id").toString();
         var screen_name = id.substr("follow".length, id.length);
@@ -324,12 +329,7 @@ function searchForFromUser(){
         user = user.substring(user.indexOf("@")+1, user.length);
         showUserDetails(user);
         query = "from:"+user;
-        $("#search_a").addClass("search_a_toggle");
-        $("#action_search_container_outer").show();
-        $("#search_txt").val(query);
-        $("#search_txt").focus();
         searchAjaxAction(query);
-
     });
 }
 /**************************************************************************/
@@ -342,23 +342,27 @@ function moreTweetsHook(){
         $(this).removeClass("more_tweet_submit_active");
     });
     $("#more_tweet_submit_btn").mouseup(function(){
+        startLoading();
         stopAutoUpdate();
         var hrpoint = $("#more_tweet_submit_btn").attr("name");
         hrpoint = hrpoint.toString().substring(1, hrpoint.length);
         $(this).removeClass("more_tweet_submit_active");
-        $("#message_out").empty().append(loadingImage);
-
+        
         $.ajax({
             url: ".statuslist.ajax?action=more&listType="+listType,
             success: function(data) {
+                stopLoading();
                 $("#tweetUpdatePanel").empty().append(data);
-                $("#message_out").empty();
+                
                 $("#"+hrpoint).after("<hr class=\"page_break\"/>");
                 tweetHooks();
                 startAutoUpdate();
+                
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
+                resetLoading();
                 $("#message_out").empty().append(dropletCommonError);
+                
             }
         });
     });
@@ -366,58 +370,76 @@ function moreTweetsHook(){
 /******************************************************************************/
 
 function replyTweet(tweetId, from_user){
+    startLoading();
     $("#new_tweet_in_reply_to_id").val(tweetId);
     $("#new_tweet_text_txt").val("@" +from_user + " ");
     $("#new_tweet_text_txt").focus();
-    $("#message_out").empty();
+    stopLoading();
 }
 /**************************************************************************/
 function retweetTweet(tweetId){
+    startLoading();
     $.ajax({
         url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
         success: function(data) {
-            $("#message_out").empty().append(data);
+            stopLoading();
+            $("#message_out").append(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
+            
         }
     });
 }
 /**************************************************************************/
 function favouriteTweet(tweetId){
+    startLoading();
     $.ajax({
         url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
         success: function(data) {
-            $("#message_out").empty().append(data);
+            stopLoading();
+            $("#message_out").append(data);
+
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
+            
         }
     });
 }
 /**************************************************************************/
 function deleteTweet(tweetId){
+    startLoading();
     $.ajax({
         url: "./tweet.ajax?action=delete&tweetId=" + tweetId,
         success: function(data) {
+            stopLoading();
             if(!data.toString().match("Error")){
                 $("#dt"+tweetId).fadeOut("slow");
             }
-            $("#message_out").empty().append(data);
+            
+            $("#message_out").append(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
+
         }
     });
 }
 /**************************************************************************/
 function spamTweet(userId){
+    startLoading();
     $.ajax({
         url: "./tweet.ajax?action=spam&userId=" + userId,
         success: function(data) {
-            $("#message_out").empty().append(data);
+            stopLoading();
+            $("#message_out").append(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -425,12 +447,15 @@ function spamTweet(userId){
 
 /******************************************************************************/
 function followUser(screen_name){
+    startLoading();
     $.ajax({
         url: "./tweet.ajax?action=follow&screen_name=" + screen_name,
         success: function(data) {
-            $("#message_out").empty().append(data);
+            stopLoading();
+            $("#message_out").append(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -484,15 +509,19 @@ function getCharCountElement(){
 
 /*****************************************************************************/
 function reloadConversation(seedURL){
+    startLoading();
     $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
+            stopLoading();
             $("#infovis0 .node").remove();
             currentConversation = $.parseJSON(data);
             initialp($.parseJSON(data));
         //perform morphing animation.
+            
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -500,17 +529,16 @@ function reloadConversation(seedURL){
 }
 /*****************************************************************************/
 function afterCompute(){
-    $("#message_out").empty();
     $(".node").draggable();
     tweetHooks();
 }
 /*****************************************************************************/
 function showUserDetails(user){
-    
+    startLoading();
     $.ajax({
         url: "./user.ajax?action=get_user_info&screen_name=" + user,
         success: function(data) {
-
+            stopLoading();
             if(temp_height>0){
                 $("#user_info_container").animate({
                     height:"100%"
@@ -534,8 +562,10 @@ function showUserDetails(user){
             $("#statuses_count").fadeOut(animationSpeed).empty().append(user.tweets).fadeIn(animationSpeed);
             animationSpeed+=300;
             $("#hits_count").empty().append(user.hits);
+            
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -544,3 +574,9 @@ function showUserDetails(user){
 function setScreenNameFromDocument(){
     screenName = $("#screen_name").text().trim();
 }
+
+function decrementHitsCounter(){
+    hitsCount = $("#hits_count").text().trim();
+    $("#hits_count").text(--hitsCount);
+}
+

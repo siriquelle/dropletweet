@@ -24,15 +24,14 @@ public class AjaxUserBean {
 
     public AjaxUserBean()
     {
-
     }
 
     public AjaxUserBean(User user)
     {
-        screenName = user.getScreenName();
+        screenName = user.getScreenName().replaceAll("\\n*\\r*", "");
         profileImageUrl = user.getProfileImageURL();
-        description = user.getDescription();
-        location = user.getLocation();
+        description = user.getDescription().replaceAll("\\n*\\r*", "");
+        location = user.getLocation().replaceAll("\\n*\\r*", "");
         following = user.getFriendsCount();
         followers = user.getFollowersCount();
         tweets = user.getStatusesCount();

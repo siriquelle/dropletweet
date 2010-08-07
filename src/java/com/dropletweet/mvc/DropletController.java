@@ -284,11 +284,22 @@ public class DropletController extends AbstractController {
                 listType = "search";
                 String query = request.getParameter("q");
 
-                List<twitter4j.Tweet> tl = twitter.search(new Query(query).rpp(100)).getTweets();
-                if (tl != null)
+                if (query.contains("from:"))
                 {
-                    tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
+                    statusList = new LinkedList<twitter4j.Status>();
+                    String screenName = query.substring("from:".length(), query.length());
+                    statusList.addAll(twitter.getUserTimeline(screenName));
+
+                } else
+                {
+
+                    List<twitter4j.Tweet> tl = twitter.search(new Query(query).rpp(100)).getTweets();
+                    if (tl != null)
+                    {
+                        tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
+                    }
                 }
+
             } else if (action.equals("conversationList"))
             {
                 conversationList = dropletService.getAllConversationsByUserId(user.getId());

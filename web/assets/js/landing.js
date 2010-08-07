@@ -42,9 +42,6 @@ function getDomElement(node){
 }
 
 function afterCompute(){
-    
-    $("#message_out").empty();
     $(".node").draggable();
- 
 }
 
