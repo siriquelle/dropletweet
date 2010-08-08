@@ -11,7 +11,7 @@ import com.dropletweet.model.Search;
 import com.dropletweet.model.Single;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import java.io.BufferedReader;

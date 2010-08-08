@@ -4,11 +4,12 @@ var intervalID = null;
 var charCount = 0;
 var temp_height;
 var screenName;
-
+var loadingImageSmall;
 
 //
 $(document).ready(function() {
     createLoadingImage();
+    createLoadingImageSmall();
     setup();
     initialize($);
     tweetStreamHooks();
@@ -342,12 +343,12 @@ function moreTweetsHook(){
         $(this).removeClass("more_tweet_submit_active");
     });
     $("#more_tweet_submit_btn").mouseup(function(){
+        $("#more_tweet_submit_btn").empty().append(loadingImageSmall);
         startLoading();
         stopAutoUpdate();
         var hrpoint = $("#more_tweet_submit_btn").attr("name");
         hrpoint = hrpoint.toString().substring(1, hrpoint.length);
         $(this).removeClass("more_tweet_submit_active");
-        
         $.ajax({
             url: ".statuslist.ajax?action=more&listType="+listType,
             success: function(data) {
@@ -357,10 +358,11 @@ function moreTweetsHook(){
                 $("#"+hrpoint).after("<hr class=\"page_break\"/>");
                 tweetHooks();
                 startAutoUpdate();
-                
+                $("#more_tweet_submit_btn").empty().append("more");
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 resetLoading();
+                $("#more_tweet_submit_btn").empty().append("more");
                 $("#message_out").empty().append(dropletCommonError);
                 
             }
@@ -580,3 +582,13 @@ function decrementHitsCounter(){
     $("#hits_count").text(--hitsCount);
 }
 
+
+function createLoadingImageSmall(){
+    loadingImageSmall =document.createElement("img");
+    loadingImageSmall.setAttribute('src', './assets/img/load_small.gif');
+    loadingImageSmall.setAttribute('alt', 'Loading Conversation');
+    loadingImageSmall.setAttribute('height', '20px');
+    loadingImageSmall.setAttribute('width', '20px');
+    loadingImageSmall.setAttribute('id', 'img_loading_small');
+
+}

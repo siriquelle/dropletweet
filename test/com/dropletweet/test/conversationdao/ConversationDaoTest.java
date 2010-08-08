@@ -11,7 +11,7 @@ import com.dropletweet.domain.Conversation;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.test.StartUp;
 import com.dropletweet.domain.User;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import org.junit.Test;
 
 /**

@@ -237,5 +237,5 @@ function stopLoading(){
 
 function resetLoading(){
     $("#message_out").empty();
-    loadingComplete = 1;
+    loadingComplete = 0;
 }

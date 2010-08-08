@@ -4,7 +4,7 @@
  */
 package com.dropletweet.test.util;
 
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import com.dropletweet.util.TextUtil;
 import java.util.Arrays;
 import java.util.LinkedList;

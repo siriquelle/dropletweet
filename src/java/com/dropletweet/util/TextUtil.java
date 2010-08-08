@@ -18,12 +18,11 @@ public class TextUtil {
     {
         "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
         "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
-        "better", "remember", "capable", "attitude", "george"
+        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve"
     };
 
     public static String removePunctuation(String word)
     {
-
         return word.replaceAll("[^a-zA-Z0-9#@]", "");
     }
 }

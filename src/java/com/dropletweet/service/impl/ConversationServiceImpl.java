@@ -11,7 +11,7 @@ import com.dropletweet.model.Search;
 import com.dropletweet.model.Single;
 import com.dropletweet.model.Droplet;
 import com.dropletweet.service.DropletService;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import com.dropletweet.util.DropletUtil;
 import com.dropletweet.util.TweetUtil;
 import com.google.gson.Gson;

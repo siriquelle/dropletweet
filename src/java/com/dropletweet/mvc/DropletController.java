@@ -12,14 +12,15 @@ import com.dropletweet.model.bean.AjaxUserBean;
 import com.dropletweet.model.bean.AjaxUtilBean;
 import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
+import com.dropletweet.util.CookiesUtil;
+import com.dropletweet.util.ModelMapUtil;
+import com.dropletweet.util.TweetListUtil;
 import com.dropletweet.util.TweetUtil;
+import com.dropletweet.util.Twitter4jAdapterUtil;
+import com.dropletweet.util.TwitterUtil;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,17 +31,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.http.AccessToken;
 import twitter4j.http.RequestToken;
 
 /**
@@ -53,17 +50,17 @@ public class DropletController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         request.setCharacterEncoding("UTF-8");
-//
-        DLog.log("GET USERS SESSION");
-
-        Map modelMap = this.getModelMap(request);
-
-//
-        DLog.log("SET UP DEFAULT DESTINATION");
+//**                                                                        **//
+        DLog.log("START GETTING USERS SESSION");
+        Map modelMap = ModelMapUtil.getModelMap(request);
+        DLog.log("END GETTING USERS SESSION");
+//**                                                                        **//
+        DLog.log("START SETTING UP DEFAULT DESTINATION");
         String view = "redirect:/index.jsp";
         modelMap.put("view", view);
-//
-        DLog.log("PROCESS REQUESTS");
+        DLog.log("END SETTING UP DEFAULT DESTINATION");
+//**                                                                        **//
+        DLog.log("START PROCESSING REQUEST");
         String uri = request.getRequestURI();
         if (uri.contains("index.htm"))
         {
@@ -87,9 +84,12 @@ public class DropletController extends AbstractController {
         {
             modelMap.putAll(doAjaxUtil(request));
         }
-//
-        modelMap.putAll(saveModelMap(request, modelMap));
-//
+        DLog.log("END PROCESSING REQUEST");
+//**                                                                        **//
+        DLog.log("START SAVING MODEL MAP");
+        modelMap.putAll(ModelMapUtil.saveModelMap(request, modelMap));
+        DLog.log("END SAVING MODEL MAP");
+//**                                                                        **//
         return new ModelAndView((String) modelMap.get("view"), "modelMap", modelMap);
     }
 
@@ -104,15 +104,18 @@ public class DropletController extends AbstractController {
      */
     private Map doIndexView(HttpServletRequest request) throws Exception
     {
-        Map modelMap = getModelMap(request);
+//**                                                                        **//
+        Map modelMap = ModelMapUtil.getModelMap(request);
         HttpSession session = request.getSession();
         if (session.getAttribute("user") != null)
         {
             this.doDropletView(request);
+        } else
+        {
+            modelMap.put("view", "index");
         }
-        modelMap.put("view", "index");
+//**                                                                        **//
         return modelMap;
-
     }
 
     /**
@@ -123,7 +126,7 @@ public class DropletController extends AbstractController {
      */
     private Map doSigninView(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
         modelMap.put("view", "redirect:index.htm");
         HttpSession session = request.getSession();
         Cookie[] cookies = request.getCookies();
@@ -131,31 +134,24 @@ public class DropletController extends AbstractController {
         if (request.getParameter("logout") == null)
         {
 
-            for (Cookie cookie : cookies)
-            {
-                if (cookie.getName().equals(accessToken))
-                {
-                    accessToken = cookie.getValue();
-                    break;
-                }
-            }
+            accessToken = CookiesUtil.getValue(cookies, accessToken);
 
             if (!accessToken.equals("accessToken"))
             {
                 String tokenKey = accessToken.substring(0, accessToken.indexOf("_"));
                 String tokenSecret = accessToken.substring(accessToken.indexOf("_") + 1, accessToken.length());
-                modelMap.putAll(updateModelMap(this.getAuthorizedTwitter(request, tokenKey, tokenSecret), request));
+                modelMap.putAll(ModelMapUtil.updateModelMap(TwitterUtil.getAuthorizedTwitter(request, tokenKey, tokenSecret, dropletProperties), request, dropletService));
                 modelMap.put("view", "redirect:droplet.htm");
             } else if ((RequestToken) session.getAttribute("requestToken") == null)
             {
-                String authorizationURL = this.getAuthorizationURL(session).toExternalForm();
+                String authorizationURL = TwitterUtil.getAuthorizationURL(session, dropletProperties).toExternalForm();
                 if (authorizationURL != null)
                 {
                     modelMap.put("view", "redirect:" + authorizationURL);
                 }
             } else
             {
-                modelMap.putAll(updateModelMap(this.getAuthorizedTwitter(request, response), request));
+                modelMap.putAll(ModelMapUtil.updateModelMap(TwitterUtil.getAuthorizedTwitter(request, response), request, dropletService));
                 modelMap.put("view", "redirect:droplet.htm");
             }
 
@@ -163,16 +159,8 @@ public class DropletController extends AbstractController {
         {
             session.invalidate();
             SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
-            for (Cookie cookie : cookies)
-            {
-                if (cookie.getName().equals(accessToken))
-                {
-                    cookie.setMaxAge(-1);
-                    cookie.setValue("accessToken");
-                    response.addCookie(cookie);
-                    break;
-                }
-            }
+
+            response.addCookie(CookiesUtil.destroyCookie(cookies, accessToken));
 
             modelMap.put("view", "redirect:index.htm");
         }
@@ -187,7 +175,7 @@ public class DropletController extends AbstractController {
      */
     private Map doDropletView(HttpServletRequest request) throws TwitterException
     {
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
 
         HttpSession session = request.getSession();
         if ((Map) session.getAttribute("modelMap") == null || ((Twitter) session.getAttribute("twitter") == null))
@@ -205,9 +193,13 @@ public class DropletController extends AbstractController {
     /*******************************************************************************/
     /*END PAGE VIEW REQUEST HANDLERS*/
     /*******************************************************************************/
-    //
+    /**                                                                           **/
     /*******************************************************************************/
-    /*START AJAX Request Handlers*/
+    /*START AJAX HANDLERS*/
+    /*******************************************************************************/
+    /**                                                                           **/
+    /*******************************************************************************/
+    /*START AJAX TWEET LIST**/
     /*******************************************************************************/
     /**
      *
@@ -217,23 +209,23 @@ public class DropletController extends AbstractController {
      */
     private Map doAjaxStatusList(HttpServletRequest request) throws UnsupportedEncodingException
     {
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
         User user = null;
         Twitter twitter = null;
         HttpSession session = null;
         String action = null;
         String listType = null;
         List<Status> statusList = null;
-        List<Tweet> tweetList = null;
         List<Tweet> oldList = null;
         List<Conversation> conversationList = null;
+        List<Tweet> tweetList = new LinkedList<Tweet>();
         Paging paging = new Paging().count(65);
+
         try
         {
             session = request.getSession();
             twitter = (Twitter) session.getAttribute("twitter");
-            user = new User(twitter.verifyCredentials());
-            dropletService.persistUser(user);
+            user = (User) modelMap.get("user");
 
             action = request.getParameter("action");
 
@@ -242,7 +234,7 @@ public class DropletController extends AbstractController {
                 listType = "friendsList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()))
                         : twitter.getFriendsTimeline(paging);
 
             } else if (action.equals("replyList"))
@@ -250,7 +242,7 @@ public class DropletController extends AbstractController {
                 listType = "replyList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getMentions(new Paging(oldList.get(0).getId()).count(350))
+                        ? twitter.getMentions(new Paging(oldList.get(0).getId()))
                         : twitter.getMentions(paging);
             } else if (action.equals("dmList"))
             {
@@ -258,12 +250,12 @@ public class DropletController extends AbstractController {
                 oldList = (List<Tweet>) modelMap.get(listType);
                 List<Tweet> dmSentList = (List<Tweet>) modelMap.get("dmSentList");
                 tweetList = (oldList.size() > 0)
-                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(oldList.get(0).getId()).count(350)))
-                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging));
+                        ? Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(oldList.get(0).getId())))
+                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging));
 
                 dmSentList = (dmSentList.size() > 0)
-                        ? this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(dmSentList.get(0).getId()).count(350)))
-                        : this.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
+                        ? Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(dmSentList.get(0).getId())))
+                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
 
                 modelMap.put("dmSentList", dmSentList);
                 tweetList.addAll(dmSentList);
@@ -276,7 +268,7 @@ public class DropletController extends AbstractController {
                 listType = "sentList";
                 oldList = (List<Tweet>) modelMap.get(listType);
                 statusList = (oldList.size() > 0)
-                        ? twitter.getUserTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        ? twitter.getUserTimeline(new Paging(oldList.get(0).getId()))
                         : twitter.getUserTimeline(paging);
 
             } else if (action.contains("search"))
@@ -296,14 +288,14 @@ public class DropletController extends AbstractController {
                     List<twitter4j.Tweet> tl = twitter.search(new Query(query).rpp(100)).getTweets();
                     if (tl != null)
                     {
-                        tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
+                        tweetList = Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jListOfTweets(tl);
                     }
                 }
 
             } else if (action.equals("conversationList"))
             {
                 conversationList = dropletService.getAllConversationsByUserId(user.getId());
-                tweetList = new LinkedList<Tweet>();
+
                 if (conversationList != null && conversationList.size() > 0)
                 {
                     for (Conversation con : conversationList)
@@ -319,13 +311,13 @@ public class DropletController extends AbstractController {
 
                 oldList = (List<Tweet>) modelMap.get("friendsList");
                 statusList = (oldList.size() > 0)
-                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()).count(350))
+                        ? twitter.getFriendsTimeline(new Paging(oldList.get(0).getId()))
                         : twitter.getFriendsTimeline(paging);
-                List<Tweet> newList = getFormattedTweetListFromStatusList(statusList);
+                List<Tweet> newList = Twitter4jAdapterUtil.getFormattedTweetListFromStatusList(statusList);
                 newList.addAll(oldList);
                 modelMap.put("friendsList", newList);
 
-                tweetList = getDiscussionTweets(newList);
+                tweetList = TweetListUtil.getDiscussionTweets(newList);
 
                 statusList = null;
                 oldList = null;
@@ -347,10 +339,10 @@ public class DropletController extends AbstractController {
                     {
                         if (listType.equals("friendsList"))
                         {
-                            tweetList = getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                            tweetList = Twitter4jAdapterUtil.getFormattedTweetListFromStatusList(twitter.getFriendsTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
                         } else if (listType.equals("sentList"))
                         {
-                            tweetList = getFormattedTweetListFromStatusList(twitter.getUserTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
+                            tweetList = Twitter4jAdapterUtil.getFormattedTweetListFromStatusList(twitter.getUserTimeline(new Paging().count(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)));
                         } else if (listType.contains("search"))
                         {
                             String q = listType.substring("search_".length());
@@ -359,7 +351,7 @@ public class DropletController extends AbstractController {
                                 List<twitter4j.Tweet> tl = twitter.search(new Query(q).rpp(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)).getTweets();
                                 if (tl != null)
                                 {
-                                    tweetList = this.getDropletTweetListFromTwitter4jListOfTweets(tl);
+                                    tweetList = Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jListOfTweets(tl);
                                 }
                             }
                         }
@@ -370,12 +362,12 @@ public class DropletController extends AbstractController {
 
             if (statusList != null && statusList.size() > 0)
             {
-                tweetList = getFormattedTweetListFromStatusList(statusList);
+                tweetList = Twitter4jAdapterUtil.getFormattedTweetListFromStatusList(statusList);
             } else if (tweetList != null && tweetList.size() > 0)
             {
                 if (action != null)
                 {
-                    tweetList = getFormattedTweetListFromTweetList(tweetList);
+                    tweetList = Twitter4jAdapterUtil.getFormattedTweetListFromTweetList(tweetList);
                 }
             }
             if (oldList != null && oldList.size() > 0)
@@ -385,10 +377,10 @@ public class DropletController extends AbstractController {
 
             if (tweetList != null && tweetList.size() > 0)
             {
-                tweetList = setTrackedTweets(tweetList, modelMap);
-                tweetList = setFavouriteTweets(tweetList, modelMap);
-                tweetList = setRetweetTweets(tweetList, modelMap);
-                tweetList = setPrettyTime(tweetList, modelMap);
+                tweetList = TweetListUtil.setTrackedTweets(tweetList, dropletService.getAllConversationsByUserId(user.getId()));
+                tweetList = TweetListUtil.setFavouriteTweets(tweetList, (List<Tweet>) modelMap.get("favouritesList"));
+                tweetList = TweetListUtil.setRetweetTweets(tweetList, (List<Tweet>) modelMap.get("retweetsList"));
+                tweetList = TweetListUtil.setPrettyTime(tweetList);
                 Collections.sort(tweetList);
                 Collections.reverse(tweetList);
             }
@@ -405,6 +397,13 @@ public class DropletController extends AbstractController {
         return modelMap;
     }
 
+    /*******************************************************************************/
+    /*END AJAX TWEET LIST*/
+    /*******************************************************************************/
+    /**                                                                           **/
+    /*******************************************************************************/
+    /*START AJAX TWEET ACTIONS*/
+    /*******************************************************************************/
     /**
      *
      * @param request
@@ -414,15 +413,9 @@ public class DropletController extends AbstractController {
     public Map doAjaxTweetAction(HttpServletRequest request) throws UnsupportedEncodingException
     {
         AjaxTweetActionBean ajaxTweetActionBean = new AjaxTweetActionBean();
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
         User user = (User) modelMap.get("user");
         String action = request.getParameter("action");
-
-        Enumeration<String> enumer = request.getParameterNames();
-        while (enumer.hasMoreElements())
-        {
-            DLog.log(enumer.nextElement());
-        }
 
         HttpSession session = request.getSession();
         Twitter twitter = (Twitter) session.getAttribute("twitter");
@@ -526,7 +519,7 @@ public class DropletController extends AbstractController {
                 String listType = request.getParameter("listType");
                 if (tweetId.length() > 0)
                 {
-                    tweet = getTweetFromSession(Long.valueOf(tweetId), listType, modelMap);
+                    tweet = ModelMapUtil.getTweetFromSession(Long.valueOf(tweetId), listType, modelMap, dropletService);
                     if (tweet != null)
                     {
                         if (tweet.getTracked() == true)
@@ -601,6 +594,13 @@ public class DropletController extends AbstractController {
         return modelMap;
     }
 
+    /*******************************************************************************/
+    /*END AJAX TWEET ACTIONS*/
+    /*******************************************************************************/
+    /**                                                                           **/
+    /*******************************************************************************/
+    /*START AJAX UTIL*/
+    /*******************************************************************************/
     /**
      *
      * @param request
@@ -610,7 +610,7 @@ public class DropletController extends AbstractController {
     public Map doAjaxUtil(HttpServletRequest request)
     {
         String action = request.getParameter("action");
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
         AjaxUtilBean ajaxUtilBean = new AjaxUtilBean();
 
         if (action.equals("get_latest_url"))
@@ -642,10 +642,17 @@ public class DropletController extends AbstractController {
         return modelMap;
     }
 
+    /*******************************************************************************/
+    /*END AJAX UTIL*/
+    /*******************************************************************************/
+    /**                                                                           **/
+    /*******************************************************************************/
+    /*START AJAX USER*/
+    /*******************************************************************************/
     public Map doAjaxUser(HttpServletRequest request)
     {
         String action = request.getParameter("action");
-        Map modelMap = getModelMap(request);
+        Map modelMap = ModelMapUtil.getModelMap(request);
         AjaxUserBean ajaxUserBean = null;
         HttpSession session = request.getSession();
         Twitter twitter = (Twitter) session.getAttribute("twitter");
@@ -680,256 +687,16 @@ public class DropletController extends AbstractController {
         modelMap.put("view", "ajax/user");
         return modelMap;
     }
-
     /*******************************************************************************/
-    /*END AJAX Request Handlers*/
+    /*END AJAX USER*/
     /*******************************************************************************/
-    //
+    /**                                                                           **/
     /*******************************************************************************/
-    /*START OAUTH AND TWITTER METHODS*/
+    /*END AJAX HANDLERS*/
     /*******************************************************************************/
-    /**
-     *
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    private URL getAuthorizationURL(HttpSession session) throws Exception
-    {
-
-        session.removeAttribute("twitter");
-        session.removeAttribute("requestToken");
-        Twitter twitter = new TwitterFactory().getInstance();
-        twitter.setOAuthConsumer(dropletProperties.getProperty("twitter.oauth.application.key"),
-                dropletProperties.getProperty("twitter.oauth.application.secret"));
-
-        RequestToken requestToken = twitter.getOAuthRequestToken();
-        String authorizationURL = requestToken.getAuthorizationURL();
-        session.setAttribute("twitter", twitter);
-        session.setAttribute("requestToken", requestToken);
-        return new URL(authorizationURL);
-    }
-
-    /**
-     *
-     * @param request
-     * @return
-     */
-    private Twitter getAuthorizedTwitter(HttpServletRequest request, HttpServletResponse response)
-    {
-        HttpSession session = request.getSession();
-        Twitter twitter = (Twitter) session.getAttribute("twitter");
-        RequestToken requestToken = (RequestToken) session.getAttribute("requestToken");
-        try
-        {
-
-            AccessToken accessToken = twitter.getOAuthAccessToken(requestToken);
-            Cookie cookie = new Cookie("accessToken", accessToken.getToken() + "_" + accessToken.getTokenSecret());
-            cookie.setMaxAge(SEVEN_DAYS_IN_SECONDS);
-            cookie.setComment("This cookie enables you to login automatically, for one week, to dropletweet. This means you do not have to negotiate with twitter for authorization every time you visit, :)");
-            response.addCookie(cookie);
-            SecurityContextHolder.clearContext();
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accessToken.getToken(), accessToken.getTokenSecret(), null));
-            session.removeAttribute("requestToken");
-
-        } catch (TwitterException e)
-        {
-            DLog.log(e.getMessage());
-        }
-
-        return twitter;
-    }
-
-    /**
-     *
-     * @param request
-     * @return
-     */
-    private Twitter getAuthorizedTwitter(HttpServletRequest request, String tokenKey, String tokenSecret)
-    {
-        AccessToken accessToken = new AccessToken(tokenKey, tokenSecret);
-        HttpSession session = request.getSession();
-
-        Twitter twitter = new TwitterFactory().getOAuthAuthorizedInstance(
-                dropletProperties.getProperty("twitter.oauth.application.key"),
-                dropletProperties.getProperty("twitter.oauth.application.secret"),
-                accessToken);
-        try
-        {
-            twitter.verifyCredentials();
-            session.setAttribute("twitter", twitter);
-        } catch (TwitterException ex)
-        {
-            DLog.log(ex.getMessage());
-        }
-
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(accessToken.getToken(), accessToken.getTokenSecret(), null));
-        return twitter;
-    }
-
+    /**                                                                           **/
     /*******************************************************************************/
-    /*END OAUTH AND TWITTER METHODS*/
-    /*******************************************************************************/
-    //
-    /*******************************************************************************/
-    /*START MODEL MAP MANIPULATION METHODS*/
-    /*******************************************************************************/
-    /**
-     *
-     * @param twitter
-     * @param session
-     * @throws TwitterException
-     */
-    private Map updateModelMap(Twitter twitter, HttpServletRequest request)
-    {
-        Map modelMap = getModelMap(request);
-
-        try
-        {
-            Paging paging = new Paging().count(65);
-            List<Status> statusListFriends = twitter.getFriendsTimeline(paging);
-
-            List<Tweet> friendsList = getFormattedTweetListFromStatusList(statusListFriends);
-            List<Tweet> replyList = new LinkedList<Tweet>();
-            List<Tweet> dmList = new LinkedList<Tweet>();
-            List<Tweet> dmSentList = new LinkedList<Tweet>();
-            List<Tweet> sentList = new LinkedList<Tweet>();
-            List<Tweet> favouritesList = new LinkedList<Tweet>();
-            List<Tweet> retweetsList = new LinkedList<Tweet>();
-            List<Tweet> discussionList = new LinkedList<Tweet>();
-
-            modelMap.put("tweetList", friendsList);
-            modelMap.put("friendsList", friendsList);
-            modelMap.put("discussionList", discussionList);
-            modelMap.put("replyList", replyList);
-            modelMap.put("dmList", dmList);
-            modelMap.put("dmSentList", dmSentList);
-            modelMap.put("sentList", sentList);
-            modelMap.put("favouritesList", favouritesList);
-            modelMap.put("retweetList", retweetsList);
-
-
-            User user = new User(twitter.verifyCredentials());
-            user.setLatest_tweet_id(friendsList.get(0).getId());
-            dropletService.persistUser(user);
-            modelMap.put("user", user);
-
-        } catch (TwitterException ex)
-        {
-            request.getSession().invalidate();
-            DLog.log(ex.getMessage());
-        }
-        return modelMap;
-    }
-
-    /**
-     *
-     * @param request
-     * @return
-     */
-    private Map getModelMap(HttpServletRequest request)
-    {
-        HttpSession session = request.getSession(true);
-
-        if (session.getAttribute("modelMap") == null)
-        {
-            session.setAttribute("modelMap", new HashMap(0));
-        }
-        return (Map) session.getAttribute("modelMap");
-    }
-
-    /**
-     *
-     * @param request
-     * @param modelMap
-     * @return
-     */
-    private Map saveModelMap(HttpServletRequest request, Map modelMap)
-    {
-        HttpSession session = request.getSession();
-        session.setAttribute("modelMap", modelMap);
-        return modelMap;
-    }
-
-    /*******************************************************************************/
-    /*END MODEL MAP MANIPULATION METHODS*/
-    /*******************************************************************************/
-    //
-    /*******************************************************************************/
-    /*START Twitter4j to Droplet ADAPTER METHODS*/
-    /*******************************************************************************/
-    /**
-     *
-     * @param twitter
-     * @param statusList
-     * @throws TwitterException
-     */
-    private List<Tweet> getFormattedTweetListFromStatusList(List<Status> statusList) throws TwitterException
-    {
-        List<Tweet> formattedTweetList = new LinkedList();
-        for (Status status : statusList)
-        {
-            Tweet tweet = new Tweet(status);
-            tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
-            tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
-            formattedTweetList.add(tweet);
-        }
-        return formattedTweetList;
-    }
-
-    /**
-     *
-     * @param twitter
-     * @param tweetList
-     * @throws TwitterException
-     */
-    private List<Tweet> getFormattedTweetListFromTweetList(List<Tweet> tweetList) throws TwitterException
-    {
-
-        for (Tweet tweet : tweetList)
-        {
-            if (tweet.getCreated_at() != null && tweet.getText() != null)
-            {
-                tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
-                tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
-            }
-        }
-        return tweetList;
-    }
-
-    private List<Tweet> getDropletTweetListFromTwitter4jListOfTweets(List tweets)
-    {
-        List<com.dropletweet.domain.Tweet> tweetList = new LinkedList();
-
-        for (twitter4j.Tweet tweet : (List<twitter4j.Tweet>) tweets)
-        {
-            com.dropletweet.domain.Tweet dt = new com.dropletweet.domain.Tweet(tweet);
-            tweetList.add(dt);
-        }
-
-        return tweetList;
-    }
-
-    private List<Tweet> getDropletTweetListFromTwitter4jDirectMessages(List directMessages)
-    {
-        List<Tweet> tweetList = new LinkedList();
-
-        for (DirectMessage directMessage : (List<DirectMessage>) directMessages)
-        {
-            Tweet dt = new Tweet(directMessage);
-            tweetList.add(dt);
-        }
-
-        return tweetList;
-    }
-    /*******************************************************************************/
-    /*END Twitter4j to Droplet ADAPTER METHODS*/
-    /*******************************************************************************/
-    //
-    /*******************************************************************************/
-    /*START DEPENDANCY INJECTION OBJECTS*/
+    /*START DEPENDANCY INJECTION */
     /*******************************************************************************/
     protected DropletService dropletService;
     protected DropletProperties dropletProperties;
@@ -948,138 +715,7 @@ public class DropletController extends AbstractController {
     {
         this.dropletProperties = dropletProperties;
     }
-
-    private Tweet getTweetFromSession(Long tweetId, String listType, Map modelMap)
-    {
-        Tweet trackTweet = null;
-
-        if (listType.equals("conversationList"))
-        {
-            List<Conversation> conversationList = dropletService.getAllConversationsByUserId(((User) modelMap.get("user")).getId());
-            if (conversationList != null)
-            {
-                for (Conversation con : conversationList)
-                {
-                    if (con.getTweet().getId().equals(tweetId))
-                    {
-                        trackTweet = con.getTweet();
-                        trackTweet.setTracked(Boolean.TRUE);
-                        break;
-                    }
-                }
-            }
-        } else
-        {
-            List<Tweet> tweetList = (List<Tweet>) modelMap.get(listType);
-            if (tweetList != null)
-            {
-                for (Tweet tweet : tweetList)
-                {
-                    if (tweet.getId().equals(tweetId))
-                    {
-                        trackTweet = tweet;
-                        break;
-                    }
-                }
-            }
-        }
-        return trackTweet;
-    }
-
     /*******************************************************************************/
-    /*START TWEET LIST METHODS*/
+    /*END DEPENDANCY INJECTION */
     /*******************************************************************************/
-    private List<Tweet> getDiscussionTweets(List<Tweet> tweetList)
-    {
-        //
-        Iterator iter = tweetList.listIterator();
-        while (iter.hasNext())
-        {
-            Tweet t = (Tweet) iter.next();
-            DLog.log(t.getIn_reply_to_id().toString());
-            if (t.getIn_reply_to_id() == null || t.getIn_reply_to_id() <= 0)
-            {
-                iter.remove();
-            }
-        }
-        return tweetList;
-    }
-
-    private List<Tweet> setTrackedTweets(List<Tweet> tweetList, Map modelMap)
-    {
-        User user = (User) modelMap.get("user");
-        List<Conversation> conversationList = dropletService.getAllConversationsByUserId(user.getId());
-        if (conversationList != null)
-        {
-            for (Tweet tweet : tweetList)
-            {
-                for (Conversation con : conversationList)
-                {
-                    if (con.getTweet().getId().equals(tweet.getId()))
-                    {
-                        tweet.setTracked(Boolean.TRUE);
-                    }
-                }
-            }
-        }
-        return tweetList;
-    }
-
-    private List<Tweet> setFavouriteTweets(List<Tweet> tweetList, Map modelMap)
-    {
-        List<Tweet> favouritesList = (List<Tweet>) modelMap.get("favouritesList");
-        if (favouritesList != null)
-        {
-            for (Tweet tweet : tweetList)
-            {
-                for (Tweet fav : favouritesList)
-                {
-                    if (fav.getId().equals(tweet.getId()))
-                    {
-                        tweet.setFavourite(Boolean.TRUE);
-                    }
-                }
-            }
-        }
-        return tweetList;
-    }
-
-    private List<Tweet> setRetweetTweets(List<Tweet> tweetList, Map modelMap)
-    {
-        List<Tweet> retweetList = (List<Tweet>) modelMap.get("retweetList");
-        if (retweetList != null)
-        {
-            for (Tweet tweet : tweetList)
-            {
-                for (Tweet ret : retweetList)
-                {
-                    if (ret.getId().equals(tweet.getId()))
-                    {
-                        tweet.setRetweet(Boolean.TRUE);
-                    }
-                }
-            }
-        }
-        return tweetList;
-    }
-
-    private List<Tweet> setPrettyTime(List<Tweet> tweetList, Map modelMap)
-    {
-        List<Tweet> retweetList = (List<Tweet>) modelMap.get("retweetList");
-        if (retweetList != null)
-        {
-            for (Tweet tweet : tweetList)
-            {
-                if (tweet.getCreated_at() != null)
-                {
-                    tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
-                }
-            }
-        }
-        return tweetList;
-    }
-    /*******************************************************************************/
-    /*END TWEET LIST METHODS*/
-    /*******************************************************************************/
-    private static final Integer SEVEN_DAYS_IN_SECONDS = 604800;
 }

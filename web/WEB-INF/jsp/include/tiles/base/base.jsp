@@ -8,8 +8,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><tiles:getAsString name="title" ignore="true"/></title>
-        <link type="text/css" href="./assets/css/base.css?8" rel="stylesheet" />
-        <script language="javascript" type="text/javascript" src="./assets/js/com.js?8"></script>
+        <link type="text/css" href="./assets/css/base.css?9" rel="stylesheet" />
+        <script language="javascript" type="text/javascript" src="./assets/js/com.js?9"></script>
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jquery.js"></script>
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jquery-ui.js"></script>
         <script language="javascript" type="text/javascript" src="./assets/js/lib/jit.js"></script>

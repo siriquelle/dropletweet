@@ -4,6 +4,7 @@
  */
 package com.dropletweet.util;
 
+import com.dropletweet.log.DLog;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.model.Droplet;
 import java.util.HashSet;

@@ -5,7 +5,7 @@
 package com.dropletweet.test.util;
 
 import org.junit.Test;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import com.dropletweet.util.TextUtil;
 
 /**

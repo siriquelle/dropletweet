@@ -6,7 +6,7 @@ package com.dropletweet.dao.impl;
 
 import com.dropletweet.dao.UserDao;
 import com.dropletweet.domain.User;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import java.util.List;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

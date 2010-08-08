@@ -4,7 +4,7 @@ import com.dropletweet.dao.TweetDao;
 import com.dropletweet.dao.UserDao;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.test.StartUp;
-import com.dropletweet.util.DLog;
+import com.dropletweet.log.DLog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
