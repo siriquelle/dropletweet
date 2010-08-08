@@ -482,10 +482,10 @@ function getDomElement(node){
                                 </div>\
                                 \
                                 <div class=\"tweet_text\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"\" class=\"outlink b\" target=\"_blank\">"+ node.data.from_user +"</a> "+ node.data.text +"\
+                                    <a href=\"#"+ node.data.from_user +"\" class=\"outlink b person\" target=\"_self\">"+ node.data.from_user +"</a> "+ node.data.text +"\
                                 </div>\
                                 <div class=\"tweet_info\">\
-                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" target=\"_blank\"/>"+ node.data.created_at +" </a>\
+                                    <a href=\"http://twitter.com/"+ node.data.from_user +"/status/"+ node.data.id +"\" target=\"_blank\"/>"+ node.data.created_at +"</a>\
                                     via\
                                     "+ source +"\
                                 </div>\
