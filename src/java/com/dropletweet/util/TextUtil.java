@@ -18,11 +18,30 @@ public class TextUtil {
     {
         "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
         "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
-        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve"
+        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro"
     };
 
     public static String removePunctuation(String word)
     {
-        return word.replaceAll("[^a-zA-Z0-9#@]", "");
+        word = word.replaceAll("[^a-zA-Z0-9#@&;]", "");
+        word = word.replaceAll("&([A-Za-z0-9]*);", "");
+        return word;
+    }
+
+    public static String encodeHTML(String s)
+    {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < s.length(); i++)
+        {
+            Character c = s.charAt(i);
+            if (c.equals('\"') || c.equals('\\') || c.equals('\''))
+            {
+                out.append("&#").append((int) c).append(";");
+            } else
+            {
+                out.append(c);
+            }
+        }
+        return out.toString();
     }
 }

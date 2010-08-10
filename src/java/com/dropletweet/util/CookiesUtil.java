@@ -15,12 +15,15 @@ public class CookiesUtil {
     public static String getValue(Cookie[] cookies, String key)
     {
         String value = null;
-        for (Cookie cookie : cookies)
+        if (cookies != null)
         {
-            if (cookie.getName().equals(key))
+            for (Cookie cookie : cookies)
             {
-                value = cookie.getValue();
-                break;
+                if (cookie.getName().equals(key))
+                {
+                    value = cookie.getValue();
+                    break;
+                }
             }
         }
         return value;

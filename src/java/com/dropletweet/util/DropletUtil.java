@@ -72,13 +72,13 @@ public class DropletUtil {
         Integer keyTermCount = 0;
 //
         wordBag = fillWordBagFromTweetList(tweetList, wordBag);
-//
-        wordList.addAll(wordBag);
-        wordList = removeDuplicates(wordList);
+        wordList.addAll(wordBag.uniqueSet());
+
         wordList = removeCommonTerms(wordList);
         wordList = removeConversationParticipants(wordList, getAllPeeps(droplet));
 //
         hashTagList = extractHashTagsFromWordList(wordList);
+
 //
         DLog.log(wordList.toString());
         wordList = stemWords(wordList);
@@ -89,15 +89,18 @@ public class DropletUtil {
 
         for (String word : wordList)
         {
-            Integer tempCount = wordBag.getCount(word);
+            if (!word.isEmpty())
+            {
+                Integer tempCount = wordBag.getCount(word);
 
-            if (tempCount > keyTermCount)
-            {
-                keyTermCount = tempCount;
-                keyTerms = word;
-            } else if (tempCount == keyTermCount)
-            {
-                keyTerms = (keyTerms + " " + word);
+                if (tempCount > keyTermCount)
+                {
+                    keyTermCount = tempCount;
+                    keyTerms = word;
+                } else if (tempCount == keyTermCount)
+                {
+                    keyTerms = (keyTerms + " " + word);
+                }
             }
         }
 
@@ -113,12 +116,12 @@ public class DropletUtil {
     {
         for (Tweet tweet : tweetList)
         {
-            String[] words = tweet.getText().split(" ");
+            String[] words = tweet.getText().split("\\s");
             for (String word : words)
             {
-                if (word.length() > 0)
+                if (!word.isEmpty())
                 {
-                    wordBag.add(TextUtil.removePunctuation(word).toLowerCase());
+                    wordBag.add(TextUtil.removePunctuation(word).toLowerCase().trim());
                 }
             }
         }
@@ -151,14 +154,14 @@ public class DropletUtil {
         return peepList;
     }
 
-    public static List<String> removeDuplicates(List<String> peepList)
+    public static List<String> removeDuplicates(List<String> list)
     {
 
-        HashSet h = new HashSet(peepList);
-        peepList.clear();
-        peepList.addAll(h);
+        HashSet h = new HashSet(list);
+        list.clear();
+        list.addAll(h);
 
-        return peepList;
+        return list;
     }
 
     private static List<String> removeCommonTerms(List<String> wordList)
@@ -220,6 +223,7 @@ public class DropletUtil {
         while (iter.hasNext())
         {
             String word = (String) iter.next();
+
             if (word.startsWith("#"))
             {
                 iter.remove();

@@ -22,7 +22,7 @@ import ptstemmer.exceptions.PTStemmerException;
  */
 public class DropletUtilTest {
 
-    public static Stemmer stemmer;
+    public static Stemmer ptstemmer;
     public static String[] testvocab = new String[]
     {
         "ENJOY", "ONE", "", "SWIMMER", "HARDER", "SIX", "I", "JOE", "@JOE", "CHICAGO", "MIAMI", "iPHONE", "LOVE", "HATE", "UGLY", "MINUTE",
@@ -33,10 +33,10 @@ public class DropletUtilTest {
     {
         try
         {
-            stemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
-            stemmer.enableCaching(1000);
-            stemmer.ignore(TextUtil.STOP_WORDS_EN);
-            stemmer.ignore(TextUtil.IGNORE_WORDS_EN);
+            ptstemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
+            ptstemmer.enableCaching(1000);
+            ptstemmer.ignore(TextUtil.STOP_WORDS_EN);
+            ptstemmer.ignore(TextUtil.IGNORE_WORDS_EN);
 
 
 
@@ -61,7 +61,7 @@ public class DropletUtilTest {
 
         for (int i = 0; i < wordList.size(); i++)
         {
-            wordList.set(i, stemmer.getWordStem(wordList.get(i)));
+            wordList.set(i, ptstemmer.getWordStem(wordList.get(i)));
         }
 
         return wordList;

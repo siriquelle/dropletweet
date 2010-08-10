@@ -64,25 +64,25 @@ public class DropletController extends AbstractController {
         String uri = request.getRequestURI();
         if (uri.contains("index.htm"))
         {
-            modelMap.putAll(doIndexView(request));
+            modelMap.putAll(doIndexView(request, response));
         } else if (uri.contains("droplet.htm"))
         {
-            modelMap.putAll(doDropletView(request));
+            modelMap.putAll(doDropletView(request, response));
         } else if (uri.contains("signin.htm"))
         {
             modelMap.putAll(doSigninView(request, response));
         } else if (uri.contains("statuslist.ajax"))
         {
-            modelMap.putAll(doAjaxStatusList(request));
+            modelMap.putAll(doAjaxStatusList(request, response));
         } else if (uri.contains("tweet.ajax"))
         {
-            modelMap.putAll(doAjaxTweetAction(request));
+            modelMap.putAll(doAjaxTweetAction(request, response));
         } else if (uri.contains("user.ajax"))
         {
-            modelMap.putAll(doAjaxUser(request));
+            modelMap.putAll(doAjaxUser(request, response));
         } else if (uri.contains("util.ajax"))
         {
-            modelMap.putAll(doAjaxUtil(request));
+            modelMap.putAll(doAjaxUtil(request, response));
         }
         DLog.log("END PROCESSING REQUEST");
 //**                                                                        **//
@@ -102,17 +102,23 @@ public class DropletController extends AbstractController {
      * @return
      * @throws Exception
      */
-    private Map doIndexView(HttpServletRequest request) throws Exception
+    private Map doIndexView(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
 //**                                                                        **//
         Map modelMap = ModelMapUtil.getModelMap(request);
         HttpSession session = request.getSession();
         if (session.getAttribute("user") != null)
         {
-            this.doDropletView(request);
+            modelMap.putAll(this.doDropletView(request, response));
         } else
         {
-            modelMap.put("view", "index");
+            if (CookiesUtil.getValue(request.getCookies(), "accessToken") != null)
+            {
+                modelMap.putAll(this.doSigninView(request, response));
+            } else
+            {
+                modelMap.put("view", "index");
+            }
         }
 //**                                                                        **//
         return modelMap;
@@ -135,7 +141,7 @@ public class DropletController extends AbstractController {
         {
 
             accessToken = CookiesUtil.getValue(cookies, accessToken);
-
+            accessToken = (accessToken == null) ? "accessToken" : accessToken;
             if (!accessToken.equals("accessToken"))
             {
                 String tokenKey = accessToken.substring(0, accessToken.indexOf("_"));
@@ -173,7 +179,7 @@ public class DropletController extends AbstractController {
      * @return
      * @throws TwitterException
      */
-    private Map doDropletView(HttpServletRequest request) throws TwitterException
+    private Map doDropletView(HttpServletRequest request, HttpServletResponse response) throws TwitterException
     {
         Map modelMap = ModelMapUtil.getModelMap(request);
 
@@ -207,7 +213,7 @@ public class DropletController extends AbstractController {
      * @param request
      * @return
      */
-    private Map doAjaxStatusList(HttpServletRequest request) throws UnsupportedEncodingException
+    private Map doAjaxStatusList(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException
     {
         Map modelMap = ModelMapUtil.getModelMap(request);
         User user = null;
@@ -410,7 +416,7 @@ public class DropletController extends AbstractController {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public Map doAjaxTweetAction(HttpServletRequest request) throws UnsupportedEncodingException
+    public Map doAjaxTweetAction(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException
     {
         AjaxTweetActionBean ajaxTweetActionBean = new AjaxTweetActionBean();
         Map modelMap = ModelMapUtil.getModelMap(request);
@@ -607,7 +613,7 @@ public class DropletController extends AbstractController {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public Map doAjaxUtil(HttpServletRequest request)
+    public Map doAjaxUtil(HttpServletRequest request, HttpServletResponse response)
     {
         String action = request.getParameter("action");
         Map modelMap = ModelMapUtil.getModelMap(request);
@@ -649,7 +655,7 @@ public class DropletController extends AbstractController {
     /*******************************************************************************/
     /*START AJAX USER*/
     /*******************************************************************************/
-    public Map doAjaxUser(HttpServletRequest request)
+    public Map doAjaxUser(HttpServletRequest request, HttpServletResponse response)
     {
         String action = request.getParameter("action");
         Map modelMap = ModelMapUtil.getModelMap(request);
@@ -681,10 +687,9 @@ public class DropletController extends AbstractController {
                     DLog.log(ex.getMessage());
                 }
             }
+            modelMap.put("view", "ajax/user");
         }
-
         modelMap.put("ajaxUserBean", ajaxUserBean);
-        modelMap.put("view", "ajax/user");
         return modelMap;
     }
     /*******************************************************************************/

@@ -1,48 +1,69 @@
-/**********************************************************************/
+//**                                                                        **//
 var listType = "friendsList";
-var intervalID = null;
-var charCount = 0;
-var temp_height;
+//
+var ajaxActionIntervalId;
+var searchRepliesIntervalId;
+//
+var tempHeight;
 var screenName;
+var pageTitle;
+//
 var loadingImageSmall;
-
+var audioElement;
+var messageElement;
+//
+var charCount = 0;
+//
+var mentionsCount = -1;
 //
 $(document).ready(function() {
     createLoadingImage();
     createLoadingImageSmall();
+    createAudioElement();
+    createMessageElement();
+    
+    //
     setup();
     initialize($);
+    //
     tweetStreamHooks();
     tweetHooks();
+    //
     startAutoUpdate();
     setScreenNameFromDocument();
+    setPageTitleFromDocument();
 });
 
-/**********************************************************************/
+//**                                                                        **//
 
 
 function stopAutoUpdate(){
-    if(intervalID != null){
-        clearInterval(intervalID);
-    }    
+    if(ajaxActionIntervalId != null || searchRepliesIntervalId != null){
+        clearInterval(ajaxActionIntervalId);
+        clearInterval(searchRepliesIntervalId);
+    }
 }
 function startAutoUpdate(){
-    if(intervalID != null){
-        clearInterval(intervalID);
-    }
-    intervalID = setInterval("ajaxAction('"+ listType +"')", 180000);
+
+    stopAutoUpdate();
+    
+    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 180000);
+    searchRepliesIntervalId = setInterval("getNewReplyCount()", 360000);
 }
-/******************************************************************************/
+//**                                                                        **//
 
 function tweetStreamHooks(){
+    /************************************************************************/
+    /************************************************************************/
     $(".action").click(function(){
-        var action = $(this).attr("id").toString();
+        var action = $(this).attr("id");
         listType = action;
         ajaxAction(action);
         resetTweetInput();
+        resetPageTitle();
     });
-    /**************************************************************************/
-    /**************************************************************************/
+    /************************************************************************/
+    /************************************************************************/
     $("#search").click(function(){
         stopAutoUpdate();
         $("#search_a").toggleClass("search_a_toggle");
@@ -53,17 +74,14 @@ function tweetStreamHooks(){
             searchAjaxAction($("#search_txt").val());
         });
     });
-    /**************************************************************************/
-    /**************************************************************************/
+    /************************************************************************/
+    /************************************************************************/
     $("#conversationList").click(function(){
         listType = "conversationList";
         ajaxAction(listType);
     });
-
-    /**************************************************************************/
-    /**************************************************************************/
-
-    /**************************************************************************/
+    /************************************************************************/
+    /************************************************************************/
     $("#new_tweet_text_txt").focus(function(){
         stopAutoUpdate();
         var charCount = getCharCountElement();
@@ -81,7 +99,8 @@ function tweetStreamHooks(){
         charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
         $("#message_out").empty().append(charCount);
     });
-    /**************************************************************************/
+    /************************************************************************/
+    /************************************************************************/
     $("#new_tweet_submit_btn").mousedown(function(){
         $(this).addClass("new_tweet_submit_active");
     });
@@ -111,8 +130,8 @@ function tweetStreamHooks(){
             }
         });
     });
-    /**************************************************************************/
-
+    
+    /************************************************************************/
     $("#user_info_action_hide_show").click(function(){
         $(this).toggleClass("user_info_show");
         $(this).toggleClass("user_info_hide");
@@ -121,11 +140,11 @@ function tweetStreamHooks(){
             $("#user_info_container").animate({
                 height:0
             }, 250, "linear", function(){
-                temp_height = height;
+                tempHeight = height;
             });
         } else{
             $("#user_info_container").animate({
-                height:temp_height
+                height:tempHeight
             }, 250, "linear");
         }
     });
@@ -133,16 +152,20 @@ function tweetStreamHooks(){
         showUserDetails(screenName);
     });
 
-
+/************************************************************************/
+/************************************************************************/
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function resetTweetInput(){
     $("#new_tweet_in_reply_to_id").val("");
     $("#new_tweet_text_txt").val("");
     startAutoUpdate();
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function ajaxAction(action){
+    $("#"+action).children("a").addClass("loading_small");
     startLoading();
     stopAutoUpdate();
     $.ajax({
@@ -153,15 +176,17 @@ function ajaxAction(action){
             tweetHooks();
             startAutoUpdate();
             decrementHitsCounter();
-            
+            $("#"+action).children("a").removeClass("loading_small");
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
             $("#message_out").empty().append(dropletCommonError);
+            $("#"+action).children("a").removeClass("loading_small");
         }
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function searchAjaxAction(query){
     startLoading();
     $.ajax({
@@ -180,8 +205,7 @@ function searchAjaxAction(query){
     });
 }
 
-/******************************************************************************/
-
+//**                                                                        **//
 function tweetHooks(){
     replyHook();
     retweetHook();
@@ -196,8 +220,7 @@ function tweetHooks(){
     searchForFromUser();
 }
 
-/******************************************************************************/
-
+//**                                                                        **//
 function replyHook(){
     $(".reply").unbind();
     $(".reply").click(function(){
@@ -209,7 +232,8 @@ function replyHook(){
         replyTweet(tweetId, from_user);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function retweetHook(){
     $(".retweet").unbind();
     $(".retweet").click(function(){
@@ -219,7 +243,8 @@ function retweetHook(){
         retweetTweet(tweetId);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function favouriteHook(){
     $(".favourite").unbind();
     $(".favourite").click(function(){
@@ -229,7 +254,8 @@ function favouriteHook(){
         favouriteTweet(tweetId);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function deleteHook(){
     $(".delete").unbind();
     $(".delete").click(function(){
@@ -238,7 +264,8 @@ function deleteHook(){
         deleteTweet(tweetId);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function spamHook(){
     $(".spam").unbind();
     $(".spam").click(function(){
@@ -247,7 +274,8 @@ function spamHook(){
         spamTweet(tweetId);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function trackHook(){
     $(".track").unbind();
     $(".track").click(function(){
@@ -275,7 +303,8 @@ function trackHook(){
         });
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function reloadHook(){
     $(".reload").unbind();
     $(".reload").click(function(){
@@ -296,7 +325,8 @@ function reloadHook(){
         $(this).children("a").toggleClass("isTracked");
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function followHook(){
     $(".follow").unbind();
     $(".follow").click(function(){
@@ -308,7 +338,8 @@ function followHook(){
         followUser(screen_name);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function searchForHashTagHook(){
     $(".hash").unbind();
     $(".hash").click(function(){
@@ -321,7 +352,8 @@ function searchForHashTagHook(){
         searchAjaxAction(hashTag);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function searchForFromUser(){
     $(".person").unbind();
     $(".person").click(function(){
@@ -333,7 +365,8 @@ function searchForFromUser(){
         searchAjaxAction(query);
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function moreTweetsHook(){
     $("#more_tweet_submit_btn").unbind();
     $("#more_tweet_submit_btn").mousedown(function(){
@@ -369,8 +402,8 @@ function moreTweetsHook(){
         });
     });
 }
-/******************************************************************************/
 
+//**                                                                        **//
 function replyTweet(tweetId, from_user){
     startLoading();
     $("#new_tweet_in_reply_to_id").val(tweetId);
@@ -378,7 +411,8 @@ function replyTweet(tweetId, from_user){
     $("#new_tweet_text_txt").focus();
     stopLoading();
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function retweetTweet(tweetId){
     startLoading();
     $.ajax({
@@ -394,7 +428,8 @@ function retweetTweet(tweetId){
         }
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function favouriteTweet(tweetId){
     startLoading();
     $.ajax({
@@ -411,7 +446,8 @@ function favouriteTweet(tweetId){
         }
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function deleteTweet(tweetId){
     startLoading();
     $.ajax({
@@ -431,7 +467,8 @@ function deleteTweet(tweetId){
         }
     });
 }
-/**************************************************************************/
+
+//**                                                                        **//
 function spamTweet(userId){
     startLoading();
     $.ajax({
@@ -447,7 +484,7 @@ function spamTweet(userId){
     });
 }
 
-/******************************************************************************/
+//**                                                                        **//
 function followUser(screen_name){
     startLoading();
     $.ajax({
@@ -462,14 +499,14 @@ function followUser(screen_name){
         }
     });
 }
-/******************************************************************************/
 
+//**                                                                        **//
 function getDomElement(node){
     var source = node.data.source;
-    while(source.match("&lt;") || source.match("&gt;") || source.match("&quote;")){
+    while(source.match("&lt;") || source.match("&gt;") || source.match("&quot;")){
         source = source.replace("&lt;", "<");
         source = source.replace("&gt;", ">");
-        source = source.replace("&quote;", "\"");
+        source = source.replace("&quot;", "\"");
     }
 
     var domElement = "\
@@ -501,7 +538,7 @@ function getDomElement(node){
     return domElement;
 }
 
-/**************************************************************************/
+//**                                                                        **//
 function getCharCountElement(){
     var charCount = document.createElement("div");
     charCount.setAttribute('id', 'char_count');
@@ -509,7 +546,7 @@ function getCharCountElement(){
     return charCount;
 }
 
-/*****************************************************************************/
+//**                                                                        **//
 function reloadConversation(seedURL){
     startLoading();
     $.ajax({
@@ -529,40 +566,42 @@ function reloadConversation(seedURL){
     });
     
 }
-/*****************************************************************************/
+
+//**                                                                        **//
 function afterCompute(){
     $(".node").draggable();
     tweetHooks();
 }
-/*****************************************************************************/
+
+//**                                                                        **//
 function showUserDetails(user){
     startLoading();
     $.ajax({
         url: "./user.ajax?action=get_user_info&screen_name=" + user,
         success: function(data) {
             stopLoading();
-            if(temp_height>0){
+            if(tempHeight>0){
                 $("#user_info_container").animate({
                     height:"100%"
                 }, 250, "linear");
             }
             user = $.parseJSON(data);
-            var animationSpeed = 200;
+            var animationSpeed = 100;
             $("#screen_name").fadeOut(animationSpeed).empty().append(user.screen_name).fadeIn(animationSpeed);
-            animationSpeed+=300;
+            animationSpeed+=100;
             $("#description").fadeOut(animationSpeed).empty().append(user.description).fadeIn(animationSpeed);
-            animationSpeed-=300;
+            animationSpeed-=100;
             $("#profile_image_url").fadeOut(animationSpeed).attr("src", user.profile_image_url);
             $("#profile_image_url").fadeIn(animationSpeed);
-            animationSpeed+=300;
+            animationSpeed+=100;
             $("#location").fadeOut(animationSpeed).empty().append(user.location).fadeIn(animationSpeed);
-            animationSpeed-=300;
+            animationSpeed-=100;
             $("#friends_count").fadeOut(animationSpeed).empty().append(user.following).fadeIn(animationSpeed);
-            animationSpeed+=300;
+            animationSpeed+=100;
             $("#followers_count").fadeOut(animationSpeed).empty().append(user.followers).fadeIn(animationSpeed);
-            animationSpeed-=300;
+            animationSpeed-=100;
             $("#statuses_count").fadeOut(animationSpeed).empty().append(user.tweets).fadeIn(animationSpeed);
-            animationSpeed+=300;
+            animationSpeed+=100;
             $("#hits_count").empty().append(user.hits);
             
         },
@@ -573,16 +612,16 @@ function showUserDetails(user){
     });
 }
 
-function setScreenNameFromDocument(){
-    screenName = $("#screen_name").text().trim();
-}
-
+//**                                                                        **//
 function decrementHitsCounter(){
     hitsCount = $("#hits_count").text().trim();
     $("#hits_count").text(--hitsCount);
+    if(hitsCount<2){
+        showUserDetails(screenName);
+    }
 }
 
-
+//**                                                                        **//
 function createLoadingImageSmall(){
     loadingImageSmall =document.createElement("img");
     loadingImageSmall.setAttribute('src', './assets/img/load_small.gif');
@@ -590,5 +629,70 @@ function createLoadingImageSmall(){
     loadingImageSmall.setAttribute('height', '20px');
     loadingImageSmall.setAttribute('width', '20px');
     loadingImageSmall.setAttribute('id', 'img_loading_small');
-
 }
+
+//**                                                                        **//
+function getNewReplyCount(){
+    $.ajax({
+        url: "./statuslist.ajax?action=replyList",
+        success: function(data) {
+            var initial = data.toString().trim().length;
+            var post = data.toString().replaceAll("tweet_container", "").trim().length;
+            var tweet = initial - post;
+            var eventual = (tweet/("tweet_container".length));
+            if(eventual!= null && eventual > mentionsCount){
+                var count = eventual - mentionsCount;
+                if(mentionsCount > -1){
+                    var replyText = (count>1)? "replies": "reply";
+                    $("#message_out").empty().append(getMessageElement(count + " new " + replyText));
+                    document.getElementById("audio_sound").play();
+                    $("title").empty().append("("+count+") " + pageTitle);
+                }
+                mentionsCount = eventual;
+            }
+            decrementHitsCounter();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+}
+
+//**                                                                        **//
+function createAudioElement(){
+    audioElement = document.createElement("audio");
+    audioElement.setAttribute('id', 'audio_sound');
+    audioElement.setAttribute('src', './assets/aud/action/action_reply_found.wav');
+    audioElement.setAttribute('autobuffer', 'autobuffer');
+    $("body").append(audioElement);
+}
+
+//**                                                                        **//
+function createMessageElement(){
+    messageElement = document.createElement("div");
+    messageElement.setAttribute("class", "simple_message");
+    
+}
+
+//**                                                                        **//
+function getMessageElement(message){
+    messageElement.textContent = message;
+    return messageElement;
+}
+
+//**                                                                        **//
+function setScreenNameFromDocument(){
+    screenName = $("#screen_name").text().trim();
+}
+
+//**                                                                        **//
+function setPageTitleFromDocument(){
+    pageTitle = document.title;
+}
+
+//**                                                                        **//
+function resetPageTitle(){
+    document.title = pageTitle;
+}
+

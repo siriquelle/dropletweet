@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 function getDomElement(node){
     var source = node.data.source;
-    while(source.match("&lt;") ||source.match("&rt;") || source.match("&quot") ){
+    while(source.match("&lt;") ||source.match("&rt;") || source.match("&quot;") ){
         source= source.replace("&lt;", "<");
         source= source.replace("&gt;", ">");
         source= source.replace("&quot;", "\"");

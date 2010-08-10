@@ -25,7 +25,7 @@
             </c:if>
 
             <div class="tweet_text">
-                <a href="#<c:out value="${tweet.from_user}" />" class="outlink b" target="_blank"><c:out value="${tweet.from_user}" escapeXml="false" /></a> <c:out value="${tweet.prettyText}" escapeXml="false"/>
+                <a href="#<c:out value="${tweet.from_user}" />" class="outlink b person" target="_self"><c:out value="${tweet.from_user}" escapeXml="false" /></a> <c:out value="${tweet.prettyText}" escapeXml="false"/>
             </div>
             <div class="tweet_info">
                 <a href="http://twitter.com/<c:out value="${tweet.from_user}" />/status/<c:out value="${tweet.id}" />" target="_blank"><c:out value="${tweet.prettyTime}" /></a>
