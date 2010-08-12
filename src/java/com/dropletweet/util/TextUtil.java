@@ -34,7 +34,7 @@ public class TextUtil {
         for (int i = 0; i < s.length(); i++)
         {
             Character c = s.charAt(i);
-            if (c.equals('\"') || c.equals('\\') || c.equals('\''))
+            if (c.toString().matches("[\"'\\‘’\\[\\]\\(\\)\\{\\}\\<\\>]"))
             {
                 out.append("&#").append((int) c).append(";");
             } else

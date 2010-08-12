@@ -15,6 +15,8 @@ var messageElement;
 var charCount = 0;
 //
 var mentionsCount = -1;
+var newMentionsCount = 0;
+
 //
 $(document).ready(function() {
     createLoadingImage();
@@ -47,8 +49,8 @@ function startAutoUpdate(){
 
     stopAutoUpdate();
     
-    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 180000);
-    searchRepliesIntervalId = setInterval("getNewReplyCount()", 360000);
+    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 185000);
+    searchRepliesIntervalId = setInterval("getNewReplyCount()", 175000);
 }
 //**                                                                        **//
 
@@ -61,6 +63,7 @@ function tweetStreamHooks(){
         ajaxAction(action);
         resetTweetInput();
         resetPageTitle();
+        resetNewMentionsCount();
     });
     /************************************************************************/
     /************************************************************************/
@@ -643,10 +646,11 @@ function getNewReplyCount(){
             if(eventual!= null && eventual > mentionsCount){
                 var count = eventual - mentionsCount;
                 if(mentionsCount > -1){
-                    var replyText = (count>1)? "replies": "reply";
-                    $("#message_out").empty().append(getMessageElement(count + " new " + replyText));
+                    newMentionsCount += count;
+                    var replyText = (newMentionsCount>1)? "replies": "reply";
+                    $("#message_out").empty().append(getMessageElement(newMentionsCount + " new " + replyText));
                     document.getElementById("audio_sound").play();
-                    $("title").empty().append("("+count+") " + pageTitle);
+                    $("title").empty().append("("+newMentionsCount+") " + pageTitle);
                 }
                 mentionsCount = eventual;
             }
@@ -694,5 +698,9 @@ function setPageTitleFromDocument(){
 //**                                                                        **//
 function resetPageTitle(){
     document.title = pageTitle;
+}
+
+function resetNewMentionsCount(){
+    newMentionsCount = 0;
 }
 

@@ -254,16 +254,17 @@ public class DropletController extends AbstractController {
             {
                 listType = "dmList";
                 oldList = (List<Tweet>) modelMap.get(listType);
-                List<Tweet> dmSentList = (List<Tweet>) modelMap.get("dmSentList");
+
+                List<Tweet> dmSentList = new LinkedList<Tweet>();
+
                 tweetList = (oldList.size() > 0)
                         ? Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(new Paging(oldList.get(0).getId())))
-                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging));
+                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getDirectMessages(paging.count(30)));
 
-                dmSentList = (dmSentList.size() > 0)
-                        ? Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(dmSentList.get(0).getId())))
-                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging));
+                dmSentList = (oldList.size() > 0)
+                        ? Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(new Paging(oldList.get(0).getId())))
+                        : Twitter4jAdapterUtil.getDropletTweetListFromTwitter4jDirectMessages(twitter.getSentDirectMessages(paging.count(30)));
 
-                modelMap.put("dmSentList", dmSentList);
                 tweetList.addAll(dmSentList);
             } else if (action.equals("favouritesList"))
             {

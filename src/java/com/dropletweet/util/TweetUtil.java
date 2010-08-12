@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  *
@@ -50,17 +51,25 @@ public class TweetUtil {
                 if (linkEnd > -1)
                 {
                     linkEnd = tweet.indexOf(" ", linkStart);
-                    while (!(String.valueOf(tweet.charAt(linkEnd - 1)).matches("[a-zA-Z0-9_/]")))
-                    {
-                        linkEnd--;
-                    }
+
 
                     if (linkStart < linkEnd && linkStart >= 0)
                     {
-                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches(" "))
+                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches("[\\s;]"))
                         {
                             value = tweet.substring(linkStart, linkEnd);
+                            value = StringEscapeUtils.unescapeHtml(value);
+                            linkEnd = value.length();
 
+                            while ((String.valueOf(value.charAt(linkEnd - 1)).matches("[^a-zA-Z0-9_/\\.]")) ||
+                                    (String.valueOf(value.charAt(linkEnd - 2)).matches("[^a-zA-Z0-9_/\\.]")))
+                            {
+                                linkEnd--;
+                            }
+
+                            value = value.substring(0, linkEnd);
+                            value = TextUtil.encodeHTML(value);
+                            
                             String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
 
                             anchor = "<a href=\"" + link + "\" class=\"" + cssClass + "\" target=\"" + target + "\" >" + value + "</a>";
@@ -104,6 +113,9 @@ public class TweetUtil {
         tweet = swapForAnchors("@", "#", "_self", tweet, "outlink person");
 
         tweet = swapForAnchors("#", "#", "_self", tweet, "outlink hash");
+
+
+
         DLog.log(tweet);
         DLog.log("END SWAP ALL FOR LINKS");
         return tweet.replace("\n", "");

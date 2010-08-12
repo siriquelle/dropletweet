@@ -89,7 +89,7 @@
         </div>
         <c:set var="lastId" value="${tweet.id}"/>
     </c:forEach>
-    <c:if test="${listLength > 40}" >
+    <c:if test="${listLength >= 20}" >
         <button id="more_tweet_submit_btn" name="ldt<c:out value="${lastId}" />"class="more_tweet_submit">more</button>
     </c:if>
 
