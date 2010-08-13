@@ -18,8 +18,10 @@ public class TweetUtilTest {
     {
     }
     //
-    private static String random1 = "At the request of @NoelDickover‘s & @poplifegirl, a 2nd #CrisisCongress  stream for Macs. #CCIC [Broadcasting live at [http://ustre.am/kTPH123.com123456435345]";
-    private static String random = "<http://ustre.am/kTPH123.com123456435345>";
+    private static String random1 = "RT @tedtalks: the request of @NoelDickover‘s & @poplifegirl, a 2nd #CrisisCongress  stream for Macs. #CCIC [Broadcasting live at [http://ustre.am/kTPH123.com123456435345]";
+    private static String random2 = "<http://ustre.am/kTPH123.com123456435345.jpg>";
+    private static String random = "RT -@tedtalks: Today's #TEDTalks playlist: Insightful, personal stories that are #TED fans' favorites http://on.ted.com/8VZa";
+    private static String random3 = "#FF @LexisSmith the lady that holds Sangria wed together! RT @LexisSmith: Now following @kennyboom #FF him for (cont) http://tl.gd/342ibl";
     /**
      *
      */

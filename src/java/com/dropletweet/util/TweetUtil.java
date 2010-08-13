@@ -4,6 +4,8 @@
  */
 package com.dropletweet.util;
 
+import com.dropletweet.command.text.EncodeHTML;
+import com.dropletweet.command.text.WordArray;
 import com.dropletweet.log.DLog;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.props.DropletProperties;
@@ -55,25 +57,26 @@ public class TweetUtil {
 
                     if (linkStart < linkEnd && linkStart >= 0)
                     {
-                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches("[\\s;]"))
+                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches("[\\s;:]"))
                         {
                             value = tweet.substring(linkStart, linkEnd);
                             value = StringEscapeUtils.unescapeHtml(value);
-                            linkEnd = value.length();
+                            int end = value.length();
 
-                            while ((String.valueOf(value.charAt(linkEnd - 1)).matches("[^a-zA-Z0-9_/\\.]")) ||
-                                    (String.valueOf(value.charAt(linkEnd - 2)).matches("[^a-zA-Z0-9_/\\.]")))
+                            while ((String.valueOf(value.charAt(end - 1)).matches("[^a-zA-Z0-9_/\\.]"))
+                                    || (String.valueOf(value.charAt(end - 2)).matches("[^a-zA-Z0-9_/\\.]")))
                             {
-                                linkEnd--;
+                                end--;
                             }
 
-                            value = value.substring(0, linkEnd);
-                            value = TextUtil.encodeHTML(value);
-                            
+                            value = value.substring(0, end);
+                            value = EncodeHTML.run(value);
+
                             String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);
 
                             anchor = "<a href=\"" + link + "\" class=\"" + cssClass + "\" target=\"" + target + "\" >" + value + "</a>";
-                            tweet = tweet.replace(value, anchor);
+                            String regex = "(?<!#)" + "(" + value + ")" + "(?=[^a-zA-Z0-9<])";
+                            tweet = tweet.replaceFirst(regex, anchor);
                             linkEnd = tweet.indexOf("</a>", linkEnd);
                         }
                         if (count == 14)
@@ -106,15 +109,11 @@ public class TweetUtil {
     public static String swapAllForLinks(String tweet)
     {
         DLog.log("START SWAP ALL FOR LINKS");
-        tweet = TextUtil.encodeHTML(tweet);
+        tweet = EncodeHTML.run(tweet);
 
         tweet = swapForAnchors("http://", "", "_blank", tweet, "outlink url");
-
-        tweet = swapForAnchors("@", "#", "_self", tweet, "outlink person");
-
         tweet = swapForAnchors("#", "#", "_self", tweet, "outlink hash");
-
-
+        tweet = swapForAnchors("@", "#", "_self", tweet, "outlink person");
 
         DLog.log(tweet);
         DLog.log("END SWAP ALL FOR LINKS");

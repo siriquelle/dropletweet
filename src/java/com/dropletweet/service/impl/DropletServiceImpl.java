@@ -63,7 +63,19 @@ public class DropletServiceImpl implements DropletService {
         tweetDao.delete(tweet);
     }
 
+    @Override
+    public void persistTweetList(List<Tweet> tweetList)
+    {
+        for (Tweet tweet : tweetList)
+        {
+            if (tweet != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() >-1)
+            {
+                tweetDao.save(tweet);
+            }
+        }
+    }
     //USER SERVICE
+
     @Override
     public List<User> retieveAllUsers()
     {

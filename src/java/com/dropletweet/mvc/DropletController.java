@@ -312,8 +312,6 @@ public class DropletController extends AbstractController {
                 }
             } else if (action.equals("discussionList"))
             {
-                DLog.log("//TODO: CREATE A LIST OF ALL TWEETS FROM FRIENDS TIMELINE THAT HAVE IN_REPLY_TO_IDs");
-
                 listType = "discussionList";
 
                 oldList = (List<Tweet>) modelMap.get("friendsList");
@@ -390,8 +388,9 @@ public class DropletController extends AbstractController {
                 tweetList = TweetListUtil.setPrettyTime(tweetList);
                 Collections.sort(tweetList);
                 Collections.reverse(tweetList);
-            }
 
+            }
+            dropletService.persistTweetList(tweetList);
         } catch (TwitterException ex)
         {
             Logger.getLogger(DropletController.class.getName()).log(Level.SEVERE, null, ex);

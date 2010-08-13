@@ -5,7 +5,7 @@
 package com.dropletweet.test.util;
 
 import com.dropletweet.log.DLog;
-import com.dropletweet.util.TextUtil;
+import com.dropletweet.command.text.WordArray;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +35,8 @@ public class DropletUtilTest {
         {
             ptstemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
             ptstemmer.enableCaching(1000);
-            ptstemmer.ignore(TextUtil.STOP_WORDS_EN);
-            ptstemmer.ignore(TextUtil.IGNORE_WORDS_EN);
+            ptstemmer.ignore(WordArray.STOP_WORDS_EN);
+            ptstemmer.ignore(WordArray.IGNORE_WORDS_EN);
 
 
 

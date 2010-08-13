@@ -4,9 +4,10 @@
  */
 package com.dropletweet.test.util;
 
+import com.dropletweet.command.text.RemovePunctuation;
 import org.junit.Test;
 import com.dropletweet.log.DLog;
-import com.dropletweet.util.TextUtil;
+import com.dropletweet.command.text.WordArray;
 
 /**
  *
@@ -18,11 +19,11 @@ public class TextUtilTest {
     {
     }
     //
-    private static String random = "At the request!!:?..,#][=-asdas$$^$&&fsdf sdfsdf))(sdfsdf(*^%$^";
+    private static String random = "At the @cooper_mrequest!!:?..,#][=-a{&#345;}sdas$$^$&&fsdf sdfsdf))(sdfsdf(*^%$^";
 
     @Test
     public void removePunctuationTest()
     {
-        DLog.log(TextUtil.removePunctuation(random));
+        DLog.log(RemovePunctuation.run(random));
     }
 }

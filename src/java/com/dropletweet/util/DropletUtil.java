@@ -4,6 +4,8 @@
  */
 package com.dropletweet.util;
 
+import com.dropletweet.command.text.RemovePunctuation;
+import com.dropletweet.command.text.WordArray;
 import com.dropletweet.log.DLog;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.model.Droplet;
@@ -33,8 +35,8 @@ public class DropletUtil {
         {
             stemmer = Stemmer.StemmerFactory(StemmerType.PORTER);
             stemmer.enableCaching(1000);
-            stemmer.ignore(TextUtil.STOP_WORDS_EN);
-            stemmer.ignore(TextUtil.IGNORE_WORDS_EN);
+            stemmer.ignore(WordArray.STOP_WORDS_EN);
+            stemmer.ignore(WordArray.IGNORE_WORDS_EN);
         } catch (PTStemmerException ex)
         {
             Logger.getLogger(DropletUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -58,7 +60,7 @@ public class DropletUtil {
     public static List getAllPeeps(Droplet droplet)
     {
         List<String> peepList = new LinkedList<String>();
-        peepList.add(droplet.getSeed().getFrom_user());
+        peepList.add(droplet.getSeed().getFrom_user().toLowerCase().trim());
         return removeDuplicates(fillPeepListFromWave(droplet.getWave(), peepList));
     }
 
@@ -97,7 +99,7 @@ public class DropletUtil {
                 {
                     keyTermCount = tempCount;
                     keyTerms = word;
-                } else if (tempCount == keyTermCount)
+                } else if (tempCount == keyTermCount && tempCount > 1)
                 {
                     keyTerms = (keyTerms + " " + word);
                 }
@@ -121,7 +123,7 @@ public class DropletUtil {
             {
                 if (!word.isEmpty())
                 {
-                    wordBag.add(TextUtil.removePunctuation(word).toLowerCase().trim());
+                    wordBag.add(RemovePunctuation.run(word).toLowerCase().trim());
                 }
             }
         }
@@ -145,7 +147,7 @@ public class DropletUtil {
     {
         for (int i = 0; i < wave.size(); i++)
         {
-            peepList.add(wave.get(i).getSeed().getFrom_user().trim());
+            peepList.add(wave.get(i).getSeed().getFrom_user().toLowerCase().trim());
             if (wave.get(i).getWave().size() > 0)
             {
                 fillPeepListFromWave(wave.get(i).getWave(), peepList);
@@ -170,7 +172,7 @@ public class DropletUtil {
         while (iter.hasNext())
         {
             String word = (String) iter.next();
-            for (String stop : TextUtil.STOP_WORDS_EN)
+            for (String stop : WordArray.STOP_WORDS_EN)
             {
                 if (word.equals(stop))
                 {
@@ -227,7 +229,7 @@ public class DropletUtil {
             if (word.startsWith("#"))
             {
                 iter.remove();
-                hashTags.add(TextUtil.removePunctuation(word));
+                hashTags.add(RemovePunctuation.run(word));
             }
         }
 

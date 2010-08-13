@@ -34,6 +34,7 @@ $(document).ready(function() {
     startAutoUpdate();
     setScreenNameFromDocument();
     setPageTitleFromDocument();
+    doc = document;
 });
 
 //**                                                                        **//
@@ -49,8 +50,8 @@ function startAutoUpdate(){
 
     stopAutoUpdate();
     
-    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 185000);
-    searchRepliesIntervalId = setInterval("getNewReplyCount()", 175000);
+    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 175000);
+    searchRepliesIntervalId = setInterval("getNewReplyCount()", 185000);
 }
 //**                                                                        **//
 

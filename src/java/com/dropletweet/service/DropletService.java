@@ -19,6 +19,8 @@ public interface DropletService {
 
     public void persistTweet(Tweet tweet);
 
+    public void persistTweetList(List<Tweet> tweetList);
+
     public void deleteTweet(Tweet tweet);
 
 //USER SERVICE
