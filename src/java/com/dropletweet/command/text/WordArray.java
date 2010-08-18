@@ -22,6 +22,6 @@ public final class WordArray {
     {
         "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
         "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
-        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro"
+        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro", "league"
     };
 }

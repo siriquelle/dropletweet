@@ -13,10 +13,18 @@ import com.dropletweet.model.bean.AjaxUtilBean;
 import com.dropletweet.props.DropletProperties;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.log.DLog;
-import com.dropletweet.util.CookiesUtil;
+import com.dropletweet.command.cookie.DestroyCookie;
+import com.dropletweet.command.cookie.GetCookieValue;
+import com.dropletweet.command.tweet.Clean;
+import com.dropletweet.command.tweet.GetDateAsPrettyTime;
+import com.dropletweet.command.tweet.RemoveTweetFromListByValue;
+import com.dropletweet.command.tweet.SwapAllForLinks;
+import com.dropletweet.command.tweet.list.GetDiscussionTweets;
+import com.dropletweet.command.tweet.list.SetFavouriteTweets;
+import com.dropletweet.command.tweet.list.SetPrettyTime;
+import com.dropletweet.command.tweet.list.SetRetweetTweets;
+import com.dropletweet.command.tweet.list.SetTrackedTweets;
 import com.dropletweet.util.ModelMapUtil;
-import com.dropletweet.util.TweetListUtil;
-import com.dropletweet.util.TweetUtil;
 import com.dropletweet.util.Twitter4jAdapterUtil;
 import com.dropletweet.util.TwitterUtil;
 import java.io.UnsupportedEncodingException;
@@ -112,7 +120,7 @@ public class DropletController extends AbstractController {
             modelMap.putAll(this.doDropletView(request, response));
         } else
         {
-            if (CookiesUtil.getValue(request.getCookies(), "accessToken") != null)
+            if (GetCookieValue.run(request.getCookies(), "accessToken") != null)
             {
                 modelMap.putAll(this.doSigninView(request, response));
             } else
@@ -140,7 +148,7 @@ public class DropletController extends AbstractController {
         if (request.getParameter("logout") == null)
         {
 
-            accessToken = CookiesUtil.getValue(cookies, accessToken);
+            accessToken = GetCookieValue.run(cookies, accessToken);
             accessToken = (accessToken == null) ? "accessToken" : accessToken;
             if (!accessToken.equals("accessToken"))
             {
@@ -166,7 +174,7 @@ public class DropletController extends AbstractController {
             session.invalidate();
             SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 
-            response.addCookie(CookiesUtil.destroyCookie(cookies, accessToken));
+            response.addCookie(DestroyCookie.run(cookies, accessToken));
 
             modelMap.put("view", "redirect:index.htm");
         }
@@ -322,7 +330,7 @@ public class DropletController extends AbstractController {
                 newList.addAll(oldList);
                 modelMap.put("friendsList", newList);
 
-                tweetList = TweetListUtil.getDiscussionTweets(newList);
+                tweetList = GetDiscussionTweets.run(newList);
 
                 statusList = null;
                 oldList = null;
@@ -382,10 +390,10 @@ public class DropletController extends AbstractController {
 
             if (tweetList != null && tweetList.size() > 0)
             {
-                tweetList = TweetListUtil.setTrackedTweets(tweetList, dropletService.getAllConversationsByUserId(user.getId()));
-                tweetList = TweetListUtil.setFavouriteTweets(tweetList, (List<Tweet>) modelMap.get("favouritesList"));
-                tweetList = TweetListUtil.setRetweetTweets(tweetList, (List<Tweet>) modelMap.get("retweetsList"));
-                tweetList = TweetListUtil.setPrettyTime(tweetList);
+                tweetList = SetTrackedTweets.run(tweetList, dropletService.getAllConversationsByUserId(user.getId()));
+                tweetList = SetFavouriteTweets.run(tweetList, (List<Tweet>) modelMap.get("favouritesList"));
+                tweetList = SetRetweetTweets.run(tweetList, (List<Tweet>) modelMap.get("retweetsList"));
+                tweetList = SetPrettyTime.run(tweetList);
                 Collections.sort(tweetList);
                 Collections.reverse(tweetList);
 
@@ -468,10 +476,10 @@ public class DropletController extends AbstractController {
                     {
                         dropletService.deleteConversation(con);
                     }
-                    modelMap.put("tweetList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("tweetList"), tweet));
-                    modelMap.put("friendsList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("friendsList"), tweet));
-                    modelMap.put("sentList", TweetUtil.removeTweetFromListByValue((List<Tweet>) modelMap.get("sentList"), tweet));
-                    tweet = TweetUtil.clean(tweet);
+                    modelMap.put("tweetList", RemoveTweetFromListByValue.run((List<Tweet>) modelMap.get("tweetList"), tweet));
+                    modelMap.put("friendsList", RemoveTweetFromListByValue.run((List<Tweet>) modelMap.get("friendsList"), tweet));
+                    modelMap.put("sentList", RemoveTweetFromListByValue.run((List<Tweet>) modelMap.get("sentList"), tweet));
+                    tweet = Clean.run(tweet);
                     if (dropletService.getTweetById(tweet.getId()) != null)
                     {
                         dropletService.persistTweet(tweet);
@@ -586,10 +594,10 @@ public class DropletController extends AbstractController {
         if (tweet != null && tweet.getCreated_at() != null && !action.equals("conversations"))
         {
             ajaxTweetActionBean.setLink(tweet.getSource());
-            ajaxTweetActionBean.setText(TweetUtil.swapAllForLinks(tweet.getText()));
+            ajaxTweetActionBean.setText(SwapAllForLinks.run(tweet.getText()));
             try
             {
-                ajaxTweetActionBean.setTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+                ajaxTweetActionBean.setTime(GetDateAsPrettyTime.run(tweet.getCreated_at()));
             } catch (Exception e)
             {
                 DLog.log(e.toString());

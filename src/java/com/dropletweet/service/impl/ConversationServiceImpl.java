@@ -4,6 +4,9 @@
  */
 package com.dropletweet.service.impl;
 
+import com.dropletweet.command.tweet.EncodeTweetTextQuotes;
+import com.dropletweet.command.tweet.GetDateAsPrettyTime;
+import com.dropletweet.command.tweet.SwapAllForLinks;
 import com.dropletweet.service.ConversationService;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
@@ -13,9 +16,7 @@ import com.dropletweet.model.Droplet;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.log.DLog;
 import com.dropletweet.util.DropletUtil;
-import com.dropletweet.util.TweetUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -124,16 +125,16 @@ public class ConversationServiceImpl implements ConversationService {
             jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\"");
             jit.append("},");
         }
-        String formattedText = TweetUtil.swapAllForLinks(droplet.getSeed().getText());
-        formattedText = TweetUtil.encodeTweetTextQuotes(formattedText);
+        String formattedText = SwapAllForLinks.run(droplet.getSeed().getText());
+        formattedText = EncodeTweetTextQuotes.run(formattedText);
         jit.append("\"text\" : \"").append(formattedText).append("\",");
         jit.append("\"id\" : \"").append(tweet.getId()).append("\",");
         jit.append("\"from_user\" : \"").append(tweet.getFrom_user()).append("\",");
 
-        String prettyDate = TweetUtil.getDateAsPrettyTime(tweet.getCreated_at());
+        String prettyDate = GetDateAsPrettyTime.run(tweet.getCreated_at());
         jit.append("\"created_at\" : \"").append(prettyDate).append("\",");
         jit.append("\"profile_image_url\" : \"").append(tweet.getProfile_image_url()).append("\",");
-        jit.append("\"source\" : \"").append(TweetUtil.encodeTweetTextQuotes(tweet.getSource())).append("\"");
+        jit.append("\"source\" : \"").append(EncodeTweetTextQuotes.run(tweet.getSource())).append("\"");
 
         jit.append("},");
 

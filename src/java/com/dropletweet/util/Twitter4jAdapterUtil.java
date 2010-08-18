@@ -4,6 +4,8 @@
  */
 package com.dropletweet.util;
 
+import com.dropletweet.command.tweet.GetDateAsPrettyTime;
+import com.dropletweet.command.tweet.SwapAllForLinks;
 import com.dropletweet.domain.Tweet;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +35,8 @@ public class Twitter4jAdapterUtil {
         for (Status status : statusList)
         {
             Tweet tweet = new Tweet(status);
-            tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
-            tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+            tweet.setPrettyText(SwapAllForLinks.run(tweet.getText()));
+            tweet.setPrettyTime(GetDateAsPrettyTime.run(tweet.getCreated_at()));
             formattedTweetList.add(tweet);
         }
         return formattedTweetList;
@@ -53,8 +55,8 @@ public class Twitter4jAdapterUtil {
         {
             if (tweet.getCreated_at() != null && tweet.getText() != null)
             {
-                tweet.setPrettyText(TweetUtil.swapAllForLinks(tweet.getText()));
-                tweet.setPrettyTime(TweetUtil.getDateAsPrettyTime(tweet.getCreated_at()));
+                tweet.setPrettyText(SwapAllForLinks.run(tweet.getText()));
+                tweet.setPrettyTime(GetDateAsPrettyTime.run(tweet.getCreated_at()));
             }
         }
         return tweetList;
