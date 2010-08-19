@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Conversation;
@@ -14,7 +13,8 @@ import java.util.List;
  * @author Siriquelle
  */
 public class SetTrackedTweets {
-public static List<Tweet> run(List<Tweet> tweetList, List<Conversation> conversationList)
+
+    public static List<Tweet> run(List<Tweet> tweetList, List<Conversation> conversationList)
     {
         if (conversationList != null)
         {

@@ -4,6 +4,7 @@
  */
 package com.dropletweet.command.cookie;
 
+import com.dropletweet.constants.AppValues;
 import javax.servlet.http.Cookie;
 
 /**
@@ -12,7 +13,7 @@ import javax.servlet.http.Cookie;
  */
 public class DestroyCookie {
 
-  public static Cookie run(Cookie[] cookies, String key)
+    public static Cookie run(Cookie[] cookies, String key)
     {
         Cookie cookie = null;
         for (Cookie c : cookies)
@@ -20,7 +21,7 @@ public class DestroyCookie {
             if (c.getName().equals(key))
             {
                 c.setMaxAge(-1);
-                c.setValue("accessToken");
+                c.setValue(AppValues.COOKIE_KEY_ACCESS_TOKEN);
                 cookie = c;
                 break;
             }

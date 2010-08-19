@@ -31,8 +31,9 @@ public class Tweet implements Comparable<Tweet> {
     protected String location;
     protected Date updated;
     protected Boolean favourite = false;
-    protected Boolean retweet = false;
     protected Boolean tracked = false;
+    protected Boolean retweet = false;
+    protected Tweet retweetTweet;
 
     /**
      * The default constructor can be used to create a tweet without any default values.
@@ -77,6 +78,10 @@ public class Tweet implements Comparable<Tweet> {
         this.location = status.getUser().getLocation();
         this.favourite = status.isFavorited();
         this.retweet = status.isRetweet();
+        if (status.isRetweet())
+        {
+            this.retweetTweet = new Tweet(status.getRetweetedStatus());
+        }
     }
 
     public Tweet(twitter4j.Tweet tweet)
@@ -473,6 +478,16 @@ public class Tweet implements Comparable<Tweet> {
     public void setTracked(Boolean tracked)
     {
         this.tracked = tracked;
+    }
+
+    public Tweet getRetweetTweet()
+    {
+        return retweetTweet;
+    }
+
+    public void setRetweetTweet(Tweet retweetTweet)
+    {
+        this.retweetTweet = retweetTweet;
     }
 
     @Override

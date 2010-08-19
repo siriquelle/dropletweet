@@ -4,6 +4,9 @@
  */
 package com.dropletweet.service.impl;
 
+import com.dropletweet.command.droplet.GetAllPeeps;
+import com.dropletweet.command.droplet.GetAllTweets;
+import com.dropletweet.command.droplet.GetKeyTerms;
 import com.dropletweet.command.tweet.EncodeTweetTextQuotes;
 import com.dropletweet.command.tweet.GetDateAsPrettyTime;
 import com.dropletweet.command.tweet.SwapAllForLinks;
@@ -15,8 +18,8 @@ import com.dropletweet.model.Single;
 import com.dropletweet.model.Droplet;
 import com.dropletweet.service.DropletService;
 import com.dropletweet.log.DLog;
-import com.dropletweet.util.DropletUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -120,9 +123,9 @@ public class ConversationServiceImpl implements ConversationService {
         if (showStats)
         {
             jit.append("\"stats\": {");
-            jit.append("\"tweetCount\" : \"").append(DropletUtil.getAllTweets(droplet).size()).append("\",");
-            jit.append("\"peepCount\" : \"").append(DropletUtil.getAllPeeps(droplet)).append("\",");
-            jit.append("\"terms\" : \"").append(DropletUtil.getKeyTerms(droplet)).append("\"");
+            jit.append("\"tweetCount\" : \"").append(GetAllTweets.run(droplet).size()).append("\",");
+            jit.append("\"peepCount\" : \"").append(GetAllPeeps.run(droplet)).append("\",");
+            jit.append("\"terms\" : \"").append(GetKeyTerms.run(droplet)).append("\"");
             jit.append("},");
         }
         String formattedText = SwapAllForLinks.run(droplet.getSeed().getText());

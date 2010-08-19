@@ -4,9 +4,6 @@
  */
 package com.dropletweet.command.text;
 
-import com.dropletweet.log.DLog;
-import org.springframework.util.StringUtils;
-
 /**
  *
  * @author Siriquelle
@@ -20,7 +17,6 @@ public class EncodeHTML {
         {
 
             Character c = s.charAt(i);
-            DLog.log(String.valueOf(Integer.valueOf(c)) +" : " + String.valueOf(c));
             if (c.toString().matches("[\"'\\‘’\\[\\]\\(\\)\\{\\}\\<\\>-\\?–]") ||
                     c > 255 || c < 32)
             {

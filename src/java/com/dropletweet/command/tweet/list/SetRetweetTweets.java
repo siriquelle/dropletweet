@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Tweet;
+import com.dropletweet.log.DLog;
 import java.util.List;
 
 /**
@@ -13,7 +13,8 @@ import java.util.List;
  * @author Siriquelle
  */
 public class SetRetweetTweets {
- public static List<Tweet> run(List<Tweet> tweetList, List<Tweet> retweetList)
+
+    public static List<Tweet> run(List<Tweet> tweetList, List<Tweet> retweetList)
     {
 
         if (retweetList != null)
@@ -22,7 +23,7 @@ public class SetRetweetTweets {
             {
                 for (Tweet ret : retweetList)
                 {
-                    if (ret.getId().equals(tweet.getId()))
+                    if ((ret.getRetweetTweet().getId()).equals(tweet.getId()))
                     {
                         tweet.setRetweet(Boolean.TRUE);
                     }

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Tweet;
@@ -13,7 +12,8 @@ import java.util.List;
  * @author Siriquelle
  */
 public class SetFavouriteTweets {
- public static List<Tweet> run(List<Tweet> tweetList, List<Tweet> favouritesList)
+
+    public static List<Tweet> run(List<Tweet> tweetList, List<Tweet> favouritesList)
     {
 
         if (favouritesList != null)

@@ -7,7 +7,7 @@ package com.dropletweet.command.text.test;
 import com.dropletweet.command.text.RemovePunctuation;
 import org.junit.Test;
 import com.dropletweet.log.DLog;
-import com.dropletweet.command.text.WordArray;
+import com.dropletweet.constants.WordArrays;
 import com.dropletweet.command.text.test.TestPhrase;
 
 /**
