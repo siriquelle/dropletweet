@@ -22,4 +22,7 @@ public class TestPhrase {
     public static final String LINK_WITH_PARAMETERS_TEST_PHRASE = "http://www.youtube.com/watch?v=qRuNxHqwazs";
     public static final String PUNCTUATION_TWITTER_CANNOT_HANDLE_TEST_PHRASE = "Lisa SNOW will be REUNITED at the DELAND 1985 reunion. http://bit.ly/fb-123.: Important reunion links: http://bit... http://bit.ly/bhCqE5";
     public static final String ODD_PUNCTUATION_TEST_PHASE = "Lisa SNOW will be REUNITED at the DELAND 1985 reunion. http://bit.ly/fb-123.:";
+    public static final String LEO_TEST_PHASE = "Guests at the TWiT Cottage feign attention. (@ TWiT Cottage) http://picplz.com/2C1.jpg";
+    public static final String ANGLE_BRACKETS_TEST_PHRASE = "[http://www.google.com]";
+    public static final String TOPGOLD_SOUTH_TIPP_CO_CO = "@harrisireland we're going to miss @southtippcoco's Summer Book Bus in Clogheen today.";
 }

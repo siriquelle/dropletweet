@@ -69,6 +69,7 @@ public class SwapForAnchors {
                             }
 
                             value = EncodeHTML.run(value);
+                            ass = EncodeHTML.run(ass);
                             //value = value.replaceAll("\\?", "\\\\?");
                             //
                             String link = (String.valueOf(value.charAt(0)).equals("@")) ? (href + value.substring(1, value.length())) : (href + value);

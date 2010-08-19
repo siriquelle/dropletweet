@@ -575,6 +575,7 @@ function reloadConversation(seedURL){
 function afterCompute(){
     $(".node").draggable();
     tweetHooks();
+    statFilterSetup($);
 }
 
 //**                                                                        **//
