@@ -20,7 +20,7 @@ public class DestroyCookie {
         {
             if (c.getName().equals(key))
             {
-                c.setMaxAge(-1);
+                c.setMaxAge(0);
                 c.setValue(AppValues.COOKIE_KEY_ACCESS_TOKEN);
                 cookie = c;
                 break;

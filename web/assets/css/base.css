@@ -101,7 +101,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .infovis_stat_text{}
 .infovis_stat_filter{color:#0F4853;text-decoration: none;}
 .infovis_stat_filter:hover{text-decoration: underline;}
-.infovis_stat_filter_node_highlight{border :5px solid #7A819B}
+.infovis_stat_filter_node_highlight{border :5px solid #7A819B; opacity:.9!important}
 .infovis_stat_filter_term_highlight{background-color: #C2CBE7;}
 /* END INFOVIS STATS*/
 

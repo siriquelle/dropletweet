@@ -132,21 +132,21 @@ function setup(){
                 style.opacity = "0.6";
                 style.zIndex = "1000";
                 style.marginTop = "-20px";
-                domElement.innerHTML = node.name;
+                domElement.innerHTML = getFarConversationElement(node);
             }
             else if(node._depth == 3){
                 style.fontSize = "0.2em";
                 style.opacity = "0.4";
                 style.zIndex = "1000";
                 style.marginTop = "0";
-                domElement.innerHTML = node.name;
+                domElement.innerHTML = getFarConversationElement(node);
             }
             else {
                 style.fontSize = "0.2em";
                 style.opacity = ".2";
                 style.zIndex = "500";
                 style.marginTop = "0";
-                domElement.innerHTML = node.name;
+                domElement.innerHTML = getFarConversationElement(node);
             }
 
             var left = parseInt(style.left);
@@ -162,17 +162,22 @@ function setup(){
 }
 
 /*****************************************************************************/
+var updateConversationAjax;
 function updateConversation(seedURL){
     startLoading();
-    $.ajax({
+    startConversationLogging();
+    abortAjax(updateConversationAjax);
+    updateConversationAjax = $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
+            stopConversationLogging();
             stopLoading();
             currentConversation = $.parseJSON(data);
             initialp(currentConversation);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
+            stopConversationLogging();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -204,15 +209,19 @@ function calculateStatistics(){
     var terms = currentConversation.data.stats.terms.split(" ");
     $("#terms_out").empty();
     for(var j=0; j < terms.length; j++){
-        $("#terms_out").append(terms[j]);
+        var termElement = getTermsElement(terms[j]);
+        $("#terms_out").append(termElement);
         $("#terms_out").append("<br />");
     }
+   
     $("#infovis_stats").fadeIn(350);
 }
 
+var initializeAjax;
 function initialize($){
     startLoading();
-    $.ajax({
+    abortAjax(initializeAjax);
+    initializeAjax = $.ajax({
         url: "./util.ajax?action=get_latest_url",
         success: function(data) {
             stopLoading();
@@ -242,4 +251,103 @@ function resetLoading(){
 
 String.prototype.replaceAll=function(s1, s2) {
     return this.replace(new RegExp(s1,"g"), s2);
+}
+
+function getTermsElement(term){
+    var termLink = document.createElement("a");
+    termLink.setAttribute("href", "##");
+    termLink.setAttribute("class", "infovis_stat_filter");
+    termLink.setAttribute("id", term);
+    termLink.textContent = term;
+    return termLink;
+}
+
+function statFilterSetup($){
+    $(".infovis_stat_filter").unbind();
+    $(".infovis_stat_filter").click(function(){
+        var term = $(this).attr("id").toString();
+        var termContainer = $(this);
+        termContainer.toggleClass("infovis_stat_filter_term_highlight");
+        $(".node").each(function(){
+            var nodeText = $(this).attr("id").toString();
+
+            nodeText = $("#" + nodeText + " > .node_tweet_container > .tweet_text:first");
+            if(nodeText.length>0){
+                var tweet_text = nodeText.get(0).innerHTML;
+
+                if(tweet_text.toString().toLowerCase().match(term)){
+                    if(termContainer.hasClass("infovis_stat_filter_term_highlight")){
+                        $(this).addClass("infovis_stat_filter_node_highlight");
+                    }else if (!termContainer.hasClass("infovis_stat_filter_term_highlight")){
+                        $(this).removeClass("infovis_stat_filter_node_highlight");
+                    }
+                }
+            }
+        });
+        
+    });
+   
+}
+
+function getFarConversationElement(node){
+
+    var domElement = "\
+                        <div class=\"node_tweet_container\">\
+                                "+ node.data.from_user +"\
+                            <div class=\"tweet_text\" style=\"display:none\">\
+                                "+ node.data.text +"\
+                            </div>\
+                        </div>";
+    return domElement;
+}
+
+var loggingIntervalID;
+
+function startConversationLogging(){
+    loggingIntervalID = setInterval("conversationLoadingLogger()", 500);
+}
+
+var conversationAjaxLoadingLogger;
+function conversationLoadingLogger(){
+    abortAjax(conversationAjaxLoadingLogger);
+    conversationAjaxLoadingLogger = $.ajax({
+        url: "./util.ajax?action=get_loading_status",
+        success: function(data) {
+            if(data.toString().length >0){
+                $("#message_out").empty().append(getMessageElement(data));
+            }else if(data.toString().trim().equals("Complete")){
+                $("#message_out").empty();
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            stopConversationLogging();
+            $("#message_out").empty().append(dropletCommonError);
+        }
+    });
+}
+
+function stopConversationLogging(){
+    if(loggingIntervalID!= null){
+        $("#message_out").empty();
+        clearInterval(loggingIntervalID);
+    }
+}
+
+function abortAjax(ajax){
+    if(ajax!= null){
+        ajax.abort();
+    }
+}
+
+//**                                                                        **//
+function createMessageElement(){
+    messageElement = document.createElement("div");
+    messageElement.setAttribute("class", "simple_message");
+
+}
+
+//**                                                                        **//
+function getMessageElement(message){
+    messageElement.textContent = message;
+    return messageElement;
 }

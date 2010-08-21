@@ -5,7 +5,6 @@
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Tweet;
-import com.dropletweet.log.DLog;
 import java.util.List;
 
 /**
@@ -23,9 +22,10 @@ public class SetRetweetTweets {
             {
                 for (Tweet ret : retweetList)
                 {
-                    if ((ret.getRetweetTweet().getId()).equals(tweet.getId()))
+                    if (ret.getRetweetTweet() != null && (ret.getRetweetTweet().getId()).equals(tweet.getId()))
                     {
                         tweet.setRetweet(Boolean.TRUE);
+                        break;
                     }
                 }
             }

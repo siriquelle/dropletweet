@@ -54,7 +54,7 @@ function startAutoUpdate(){
     searchRepliesIntervalId = setInterval("getNewReplyCount()", 185000);
 }
 //**                                                                        **//
-
+var tweetStreamAjaxHooks;
 function tweetStreamHooks(){
     /************************************************************************/
     /************************************************************************/
@@ -120,8 +120,10 @@ function tweetStreamHooks(){
         var tweet_text = $("#new_tweet_text_txt").val();
         tweet_text = encodeURIComponent(tweet_text);
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
+        
+        abortAjax(tweetStreamAjaxHooks);
 
-        $.ajax({
+        tweetStreamAjaxHooks = $.ajax({
             url: "./tweet.ajax?action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
             success: function(data) {
                 stopLoading();
@@ -167,12 +169,14 @@ function resetTweetInput(){
     startAutoUpdate();
 }
 
+var ajaxActionAjax;
 //**                                                                        **//
 function ajaxAction(action){
     $("#"+action).children("a").addClass("loading_small");
     startLoading();
     stopAutoUpdate();
-    $.ajax({
+    abortAjax(ajaxActionAjax);
+    ajaxActionAjax = $.ajax({
         url: "./statuslist.ajax?action=" + action,
         success: function(data) {
             stopLoading();
@@ -190,10 +194,12 @@ function ajaxAction(action){
     });
 }
 
+var searchAjaxActionAjax;
 //**                                                                        **//
 function searchAjaxAction(query){
     startLoading();
-    $.ajax({
+    abortAjax(searchAjaxActionAjax);
+    searchAjaxActionAjax = $.ajax({
         url: "./statuslist.ajax?action=search&q=" + encodeURIComponent(query),
         success: function(data) {
             stopLoading();
@@ -279,6 +285,7 @@ function spamHook(){
     });
 }
 
+var trackHookAjax;
 //**                                                                        **//
 function trackHook(){
     $(".track").unbind();
@@ -294,7 +301,8 @@ function trackHook(){
         //
         seedURL = "http://twitter.com/" + from_user +"/status/" + tweetId;        
         //
-        $.ajax({
+        abortAjax(trackHookAjax);
+        trackHookAjax = $.ajax({
             url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&listType=" +listType,
             success: function(data) {
                 $("#message_out").empty().append(data).append(loadingImage);
@@ -371,6 +379,7 @@ function searchForFromUser(){
 }
 
 //**                                                                        **//
+var moreTweetsHookAjax;
 function moreTweetsHook(){
     $("#more_tweet_submit_btn").unbind();
     $("#more_tweet_submit_btn").mousedown(function(){
@@ -386,7 +395,9 @@ function moreTweetsHook(){
         var hrpoint = $("#more_tweet_submit_btn").attr("name");
         hrpoint = hrpoint.toString().substring(1, hrpoint.length);
         $(this).removeClass("more_tweet_submit_active");
-        $.ajax({
+
+        abortAjax(moreTweetsHookAjax);
+        moreTweetsHookAjax =  $.ajax({
             url: ".statuslist.ajax?action=more&listType="+listType,
             success: function(data) {
                 stopLoading();
@@ -417,9 +428,11 @@ function replyTweet(tweetId, from_user){
 }
 
 //**                                                                        **//
+var retweetTweetAjax;
 function retweetTweet(tweetId){
     startLoading();
-    $.ajax({
+    abortAjax(retweetTweetAjax);
+    retweetTweetAjax = $.ajax({
         url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
         success: function(data) {
             stopLoading();
@@ -434,9 +447,11 @@ function retweetTweet(tweetId){
 }
 
 //**                                                                        **//
+var favouriteTweetAjax;
 function favouriteTweet(tweetId){
     startLoading();
-    $.ajax({
+    abortAjax(favouriteTweetAjax);
+    favouriteTweetAjax = $.ajax({
         url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
         success: function(data) {
             stopLoading();
@@ -452,9 +467,11 @@ function favouriteTweet(tweetId){
 }
 
 //**                                                                        **//
+var deleteTweetAjax;
 function deleteTweet(tweetId){
     startLoading();
-    $.ajax({
+    abortAjax(deleteTweetAjax);
+    deleteTweetAjax = $.ajax({
         url: "./tweet.ajax?action=delete&tweetId=" + tweetId,
         success: function(data) {
             stopLoading();
@@ -473,9 +490,11 @@ function deleteTweet(tweetId){
 }
 
 //**                                                                        **//
+var spamTweetAjax;
 function spamTweet(userId){
     startLoading();
-    $.ajax({
+    abortAjax(spamTweetAjax);
+    spamTweetAjax = $.ajax({
         url: "./tweet.ajax?action=spam&userId=" + userId,
         success: function(data) {
             stopLoading();
@@ -489,9 +508,11 @@ function spamTweet(userId){
 }
 
 //**                                                                        **//
+var followUserAjax;
 function followUser(screen_name){
     startLoading();
-    $.ajax({
+    abortAjax(followUserAjax);
+    followUserAjax = $.ajax({
         url: "./tweet.ajax?action=follow&screen_name=" + screen_name,
         success: function(data) {
             stopLoading();
@@ -551,20 +572,23 @@ function getCharCountElement(){
 }
 
 //**                                                                        **//
+var reloadConversationAjax;
 function reloadConversation(seedURL){
     startLoading();
-    $.ajax({
+    startConversationLogging();
+    abortAjax(reloadConversationAjax);
+    reloadConversationAjax = $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
+            stopConversationLogging();
             stopLoading();
             $("#infovis0 .node").remove();
             currentConversation = $.parseJSON(data);
             initialp($.parseJSON(data));
-        //perform morphing animation.
-            
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
+            stopConversationLogging();
             $("#message_out").empty().append(dropletCommonError);
         }
     });
@@ -579,9 +603,11 @@ function afterCompute(){
 }
 
 //**                                                                        **//
+var showUserDetailsAjax;
 function showUserDetails(user){
     startLoading();
-    $.ajax({
+    abortAjax(showUserDetailsAjax);
+    showUserDetailsAjax = $.ajax({
         url: "./user.ajax?action=get_user_info&screen_name=" + user,
         success: function(data) {
             stopLoading();
@@ -637,8 +663,10 @@ function createLoadingImageSmall(){
 }
 
 //**                                                                        **//
+var getNewReplyCountAjax;
 function getNewReplyCount(){
-    $.ajax({
+    abortAjax(getNewReplyCountAjax);
+    getNewReplyCountAjax = $.ajax({
         url: "./statuslist.ajax?action=replyList",
         success: function(data) {
             var initial = data.toString().trim().length;
@@ -674,18 +702,7 @@ function createAudioElement(){
     $("body").append(audioElement);
 }
 
-//**                                                                        **//
-function createMessageElement(){
-    messageElement = document.createElement("div");
-    messageElement.setAttribute("class", "simple_message");
-    
-}
 
-//**                                                                        **//
-function getMessageElement(message){
-    messageElement.textContent = message;
-    return messageElement;
-}
 
 //**                                                                        **//
 function setScreenNameFromDocument(){

@@ -1,8 +1,8 @@
 /**********************************************************************/
-
 //
 $(document).ready(function() {
     createLoadingImage();
+    createMessageElement();
     $("#message_out").append(loadingImage);
     setup();
     initialize($);
@@ -41,5 +41,6 @@ function getDomElement(node){
 
 function afterCompute(){
     $(".node").draggable();
+    statFilterSetup($);
 }
 

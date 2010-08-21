@@ -68,6 +68,7 @@ public class AppValues {
     public static final String LIST_NAME_FRIENDS_LIST = "friendsList";
     public static final String LIST_NAME_REPLY_LIST = "replyList";
     public static final String LIST_NAME_DM_LIST = "dmList";
+    public static final String LIST_NAME_DM_SENT_LIST = "dmSentList";
     public static final String LIST_NAME_FAVOURITES_LIST = "favouritesList";
     public static final String LIST_NAME_SENT_LIST = "sentList";
     public static final String LIST_NAME_CONVERSATION_LIST = "conversationList";
@@ -85,6 +86,7 @@ public class AppValues {
     public static final String TWEET_ACTION_VALUE_FOLLOW = "follow";
     //
     public static final String UTIL_ACTION_VALUE_GET_LATEST_URL = "get_latest_url";
+    public static final String UTIL_ACTION_VALUE_GET_LOADING_STATUS = "get_loading_status";
     //
     public static final String USER_ACTION_VALUE_GET_USER_INFO = "get_user_info";
     //

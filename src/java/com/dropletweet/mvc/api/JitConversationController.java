@@ -4,12 +4,12 @@
  */
 package com.dropletweet.mvc.api;
 
+import com.dropletweet.command.modelmap.GetModelMap;
+import com.dropletweet.command.modelmap.SaveModelMap;
 import com.dropletweet.service.ConversationService;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -22,8 +22,10 @@ public class JitConversationController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
-        Map modelMap = getModelMap(request);
+        Map modelMap = GetModelMap.run(request);
+        
         String seedURL = request.getParameter("q");
+
         if (seedURL != null)
         {
             if (request.getSession().getAttribute("jit") == null || !request.getParameter("q").equals(request.getSession().getAttribute("url")))
@@ -38,7 +40,7 @@ public class JitConversationController extends AbstractController {
                 modelMap.put("url", seedURL);
             }
         }
-        modelMap.putAll(saveModelMap(request, modelMap));
+        modelMap.putAll(SaveModelMap.run(request, modelMap));
         return new ModelAndView("ajax/jit", "modelMap", modelMap);
     }
     private ConversationService conversationService;
@@ -52,23 +54,4 @@ public class JitConversationController extends AbstractController {
     {
         this.conversationService = conversationService;
     }
-
-    private Map getModelMap(HttpServletRequest request)
-    {
-        HttpSession session = request.getSession();
-
-        if (session.getAttribute("modelMap") == null)
-        {
-            session.setAttribute("modelMap", new HashMap(0));
-        }
-        return (Map) session.getAttribute("modelMap");
-    }
-
-    private Map saveModelMap(HttpServletRequest request, Map modelMap)
-    {
-        HttpSession session = request.getSession();
-        session.setAttribute("modelMap", modelMap);
-        return modelMap;
-    }
-   
 }

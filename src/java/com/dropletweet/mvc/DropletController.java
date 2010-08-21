@@ -36,7 +36,8 @@ import com.dropletweet.command.twitter.conversation.GetDropletTweetListFromTwitt
 import com.dropletweet.command.twitter.conversation.GetFormattedDropletTweetListFromTwitter4jStatusList;
 import com.dropletweet.command.tweet.list.GetFormattedDropletTweetListFromDropletTweetList;
 import com.dropletweet.constants.AppValues;
-
+import com.dropletweet.log.DConsole;
+import com.dropletweet.model.bean.DropletLoadingBean;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -63,8 +64,10 @@ import twitter4j.http.RequestToken;
  * @author Siriquelle
  */
 public class DropletController extends AbstractController {
-    // <editor-fold defaultstate="collapsed" desc="HANDLE REQUEST INTERNAL - DOCS">
 
+    public static DropletLoadingBean dropletLoadingBean;
+
+    // <editor-fold defaultstate="collapsed" desc="HANDLE REQUEST INTERNAL - DOCS">
     /**
      *
      * @param request
@@ -77,6 +80,7 @@ public class DropletController extends AbstractController {
     // <editor-fold defaultstate="collapsed" desc="HANDLE REQUEST INTERNAL - Performs delegation of requests process">
     {
         request.setCharacterEncoding("UTF-8");
+        dropletLoadingBean = DropletLoadingBean.getInstance(request.getSession());
 //**                                                                        **//
         DLog.log("START GETTING USERS SESSION");
         Map modelMap = GetModelMap.run(request);
@@ -172,7 +176,7 @@ public class DropletController extends AbstractController {
         if (request.getParameter(AppValues.REQUEST_KEY_LOGOUT) == null)
         {
 
-            accessToken = GetCookieValue.run(cookies, accessToken);
+            accessToken = GetCookieValue.run(cookies, AppValues.COOKIE_KEY_ACCESS_TOKEN);
             accessToken = (accessToken == null) ? AppValues.COOKIE_KEY_ACCESS_TOKEN : accessToken;
             if (!accessToken.equals(AppValues.COOKIE_KEY_ACCESS_TOKEN))
             {
@@ -198,7 +202,7 @@ public class DropletController extends AbstractController {
             session.invalidate();
             SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
 
-            response.addCookie(DestroyCookie.run(cookies, accessToken));
+            response.addCookie(DestroyCookie.run(cookies, AppValues.COOKIE_KEY_ACCESS_TOKEN));
 
             modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_INDEX);
         }
@@ -475,7 +479,7 @@ public class DropletController extends AbstractController {
             {
                 String tweetId = request.getParameter(AppValues.REQUEST_KEY_TWEET_ID);
                 DLog.log(Long.valueOf(tweetId).toString());
-                tweet = new Tweet(twitter.retweetStatus(Long.valueOf(tweetId)).getRetweetedStatus());
+                tweet = new Tweet(twitter.retweetStatus(Long.valueOf(tweetId)));
 
                 List<Tweet> retweetList = (List<Tweet>) modelMap.get(AppValues.LIST_NAME_RETWEET_LIST);
                 retweetList.add(tweet);
@@ -686,6 +690,10 @@ public class DropletController extends AbstractController {
                 }
             }
             ajaxUtilBean.setMessage(url);
+        } else if (action.equals(AppValues.UTIL_ACTION_VALUE_GET_LOADING_STATUS))
+        {
+            ajaxUtilBean.setMessage(DConsole.read());
+            DLog.log(DConsole.read());
         }
 
         modelMap.put(AppValues.MODELMAP_KEY_AJAX_UTIL_BEAN, ajaxUtilBean);

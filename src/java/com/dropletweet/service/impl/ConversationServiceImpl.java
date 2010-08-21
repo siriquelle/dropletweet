@@ -10,9 +10,11 @@ import com.dropletweet.command.droplet.GetKeyTerms;
 import com.dropletweet.command.tweet.EncodeTweetTextQuotes;
 import com.dropletweet.command.tweet.GetDateAsPrettyTime;
 import com.dropletweet.command.tweet.SwapAllForLinks;
+import com.dropletweet.constants.DurationValues;
 import com.dropletweet.service.ConversationService;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
+import com.dropletweet.log.DConsole;
 import com.dropletweet.model.Search;
 import com.dropletweet.model.Single;
 import com.dropletweet.model.Droplet;
@@ -45,8 +47,6 @@ public class ConversationServiceImpl implements ConversationService {
 
     private Gson gson = new Gson();
     private HtmlCleaner cleaner = new HtmlCleaner();
-    private final Integer TWENTY_MINUTES_IN_MILLISECONDS = 1200000;
-    private final Integer SIX_HOURS_IN_MILLISECONDS = 64800000;
     private DropletService dropletService;
 
     /**
@@ -92,6 +92,7 @@ public class ConversationServiceImpl implements ConversationService {
      */
     @Override
     public String getJITConversation(String url)
+    // <editor-fold defaultstate="collapsed" desc="Return a JSON Formatted twitter conversaiton in JIT format for Infovis">
     {
         DLog.log("START GET JIT");
         Droplet droplet = getDropletConversation(url);
@@ -105,15 +106,17 @@ public class ConversationServiceImpl implements ConversationService {
         {
             jcon = jcon.replace("}{", "},{");
         }
+        DConsole.log("Complete");
         DLog.log("END GET JIT");
         return jcon.trim();
 
-    }
+    }// </editor-fold>
 
     private String fillJIT(Droplet droplet, Boolean showStats)
+    // <editor-fold defaultstate="collapsed" desc="Created the structure of the JIT JSON object">
     {
         DLog.log("START FILL JIT");
-
+        DConsole.log("Building");
         StringBuilder jit = new StringBuilder();
         Tweet tweet = droplet.getSeed();
         jit.append("{");
@@ -151,10 +154,11 @@ public class ConversationServiceImpl implements ConversationService {
         }
         jit.append("]");
         jit.append("}");
+        DConsole.log("Complete");
         DLog.log("END FILL JIT");
         return jit.toString();
 
-    }
+    }// </editor-fold>
 
     /**
      *
@@ -167,6 +171,7 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Gets the seed tweet in this conversation">
     {
         DLog.log("START GET SEED TWEET");
+        DConsole.log("Getting Seed");
         Long id = this.getSeedIDFromURL(seedURL);
         Tweet seedTweet = dropletService.getTweetById(id);
         User seedUser = null;
@@ -194,6 +199,7 @@ public class ConversationServiceImpl implements ConversationService {
         }
 
         DLog.log("SEED UPDATED: " + seedTweet.getUpdated());
+        DConsole.log("Seed Found @" + seedTweet.getFrom_user());
         DLog.log("END GET SEED TWEET");
         return seedTweet;
     }// </editor-fold>
@@ -209,7 +215,7 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Gets the Seed id for this conversation from the given url">
     {
         DLog.log("START GET SEED ID FROM URL");
-
+        DConsole.log("Getting Seed Id");
         String name = new File(seedURL).getName();
         Long id = Long.valueOf(name);
         Tweet tweet = dropletService.getTweetById(id);
@@ -218,6 +224,7 @@ public class ConversationServiceImpl implements ConversationService {
         if (tweet != null)
         {
             DLog.log("START CHECK LOCAL DATABASE FOR SEED TWEET");
+            DConsole.log("Checking locally for seed tweet");
             do
             {
                 if (tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0)
@@ -249,12 +256,14 @@ public class ConversationServiceImpl implements ConversationService {
 
             } while (tweetReply != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > 0);
             id = tweet.getId();
+            DConsole.log("Seed Id: " + String.valueOf(id));
             DLog.log("END CHECK LOCAL DATABASE FOR SEED TWEET");
         } else
         {
             try
             {
                 DLog.log("START CHECK TWITTER FOR SEED TWEET");
+                DConsole.log("Checking Twitter for seed tweet");
                 //Queries twitter for the seed tweet in this conversation
                 String fromUser = seedURL.substring(seedURL.indexOf("com/") + 4, seedURL.indexOf("/status"));
                 TagNode node = cleaner.clean(new URL("http://twitter.com/" + fromUser + "/status/" + id));
@@ -267,12 +276,14 @@ public class ConversationServiceImpl implements ConversationService {
                         return id;
                     }
                 }
+                DConsole.log("Seed Id: " + String.valueOf(id));
                 DLog.log("END CHECK TWITTER FOR SEED TWEET");
             } catch (IOException ex)
             {
                 Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        DConsole.log("Seed Id: " + String.valueOf(id));
         DLog.log("END GET SEED ID FROM URL");
         return id;
     }// </editor-fold>
@@ -289,9 +300,10 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Searches local database for latest tweet recorded and queries twitter for any tweets after it.">
     {
         DLog.log("START GET SEARCH RESULTS FROM TWITTER");
-        DLog.log("CURRENT TIME : " + String.valueOf(Calendar.getInstance().getTimeInMillis() - TWENTY_MINUTES_IN_MILLISECONDS));
+        DConsole.log("Picking Up @" + seedTweet.getFrom_user());
+        DLog.log("CURRENT TIME : " + String.valueOf(Calendar.getInstance().getTimeInMillis() - DurationValues.TWENTY_MINUTES_IN_MILLISECONDS));
         Search search = null;
-        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (Calendar.getInstance().getTimeInMillis() - TWENTY_MINUTES_IN_MILLISECONDS)))
+        if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (Calendar.getInstance().getTimeInMillis() - DurationValues.TWENTY_MINUTES_IN_MILLISECONDS)))
         {
             Long since_id = null;
             User seedUser = dropletService.getUserByScreen_Name(seedTweet.getFrom_user());
@@ -316,6 +328,7 @@ public class ConversationServiceImpl implements ConversationService {
                         Tweet tweet = iter.next();
                         dropletService.persistTweet(tweet);
                         seedUser.setLatest_tweet_id(tweet.getId());
+                        DConsole.log("Surfing Around @" + tweet.getFrom_user());
                     }
                 }
                 seedTweet.setUpdated(Calendar.getInstance().getTime());
@@ -335,7 +348,7 @@ public class ConversationServiceImpl implements ConversationService {
                 DLog.log(ioe.getMessage());
             }
         }
-
+        DConsole.log("Cleaning up @" + seedTweet.getFrom_user());
         DLog.log("END GET SEARCH RESULTS FROM TWITTER");
         return search;
 
@@ -354,13 +367,14 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Returns a JSON object with all the replies to the given seed attached">
     {
         DLog.log("START GET ALL REPLIES TO THE SEED TWEET");
-
+        DConsole.log("Getting Replies @" + seed.getFrom_user());
         LinkedList<Droplet> wave = new LinkedList<Droplet>();
         wave.addAll(this.getLocalReplies(seed));
         if (results != null)
         {
             wave.addAll(this.getRemoteReplies(seed, results));
         }
+        DConsole.log("Found replies @" + seed.getFrom_user());
         DLog.log("END GET ALL REPLIES TO THE SEED TWEET");
 
         return wave;
@@ -376,6 +390,7 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="Returns a json object of all the replies to the seedId">
     {
         DLog.log("START GET REPLIES STORED LOCALLY TO THE SEED TWEET");
+        DConsole.log("Rooting Up @" + seed.getFrom_user());
         LinkedList<Droplet> dropletList = new LinkedList<Droplet>();
 
         if (!dropletService.getAllTweetsByToTweetId(seed.getId()).isEmpty())
@@ -384,6 +399,7 @@ public class ConversationServiceImpl implements ConversationService {
 
             for (Tweet tweet : replyList)
             {
+                DConsole.log("Found you @" + seed.getFrom_user());
                 Droplet droplet = new Droplet();
                 droplet.setSeed(tweet);
 
@@ -391,6 +407,7 @@ public class ConversationServiceImpl implements ConversationService {
 
                 droplet.setWave(getAllDropletReplies(tweet, checkReplyResults));
                 dropletList.add(droplet);
+
             }
 
         }
@@ -410,13 +427,14 @@ public class ConversationServiceImpl implements ConversationService {
     // <editor-fold defaultstate="collapsed" desc="returns a JSON object containing all remote replies to this seed">
     {
         DLog.log("START GET REPLIES TO THE SEED TWEET FROM TWITTER");
+        DConsole.log("Tracking Down @" + seed.getFrom_user());
         LinkedList<Droplet> dropletList = new LinkedList<Droplet>();
         if (results != null)
         {
             for (Tweet reply : results.getResults())
             {
                 Long in_reply_to_id = getIn_reply_to_id(reply);
-
+                DConsole.log("Surfing Around @" + reply.getFrom_user());
                 if (in_reply_to_id != null && in_reply_to_id.equals(seed.getId()))
                 {
 
@@ -434,7 +452,7 @@ public class ConversationServiceImpl implements ConversationService {
         {
             DLog.log("RESULTS OBJECT IS NULL");
         }
-
+        DConsole.log("Completed @" + seed.getFrom_user());
         DLog.log("END GET REPLIES TO THE SEED TWEET FROM TWITTER");
         return dropletList;
     }// </editor-fold>

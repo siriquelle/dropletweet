@@ -5,6 +5,7 @@
 package com.dropletweet.command.modelmap;
 
 import com.dropletweet.command.twitter.conversation.GetFormattedDropletTweetListFromTwitter4jStatusList;
+import com.dropletweet.constants.AppValues;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
 import com.dropletweet.log.DLog;
@@ -48,21 +49,21 @@ public class UpdateModelMap {
             List<Tweet> favouritesList = new LinkedList<Tweet>();
             List<Tweet> retweetList = GetFormattedDropletTweetListFromTwitter4jStatusList.run(statusListRetweets);
             List<Tweet> discussionList = new LinkedList<Tweet>();
-            
-            modelMap.put("tweetList", friendsList);
-            modelMap.put("friendsList", friendsList);
-            modelMap.put("discussionList", discussionList);
-            modelMap.put("replyList", replyList);
-            modelMap.put("dmList", dmList);
-            modelMap.put("dmSentList", dmSentList);
-            modelMap.put("sentList", sentList);
-            modelMap.put("favouritesList", favouritesList);
-            modelMap.put("retweetList", retweetList);
+
+            modelMap.put(AppValues.LIST_NAME_TWEET_LIST, friendsList);
+            modelMap.put(AppValues.LIST_NAME_FRIENDS_LIST, friendsList);
+            modelMap.put(AppValues.LIST_NAME_DISCUSSION_LIST, discussionList);
+            modelMap.put(AppValues.LIST_NAME_REPLY_LIST, replyList);
+            modelMap.put(AppValues.LIST_NAME_DM_LIST, dmList);
+            modelMap.put(AppValues.LIST_NAME_DM_SENT_LIST, dmSentList);
+            modelMap.put(AppValues.LIST_NAME_SENT_LIST, sentList);
+            modelMap.put(AppValues.LIST_NAME_FAVOURITES_LIST, favouritesList);
+            modelMap.put(AppValues.LIST_NAME_RETWEET_LIST, retweetList);
 
             User user = new User(twitter.verifyCredentials());
             user.setLatest_tweet_id(friendsList.get(0).getId());
             dropletService.persistUser(user);
-            modelMap.put("user", user);
+            modelMap.put(AppValues.MODELMAP_KEY_USER, user);
 
         } catch (TwitterException ex)
         {
