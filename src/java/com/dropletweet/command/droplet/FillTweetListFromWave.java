@@ -9,8 +9,6 @@ import com.dropletweet.domain.Tweet;
 import java.util.LinkedList;
 import java.util.List;
 
-
-
 /**
  *
  * @author Siriquelle
@@ -21,10 +19,9 @@ public class FillTweetListFromWave {
     {
         for (int i = 0; i < wave.size(); i++)
         {
-
             tweetList.add(wave.get(i).getSeed());
 
-            if (wave.get(i).getWave().size() > 0)
+            if (wave != null && wave.get(i) != null && wave.get(i).getWave() != null && wave.get(i).getWave().size() > 0)
             {
                 FillTweetListFromWave.run(wave.get(i).getWave(), tweetList);
             }

@@ -23,14 +23,14 @@ public final class WordArrays {
         "asking", "at", "auth", "available", "away", "awfully", "b", "back", "be", "became", "because", "become",
         "becomes", "becoming", "been", "before", "beforehand", "begin", "beginning", "beginnings", "begins", "behind",
         "being", "believe", "below", "beside", "besides", "between", "beyond", "biol", "both", "brief", "briefly", "but",
-        "by", "c", "ca", "came", "can", "cannot", "can't", "cause", "causes", "certain", "certainly", "co", "com",
+        "by", "c", "ca", "came", "can", "cannot", "can't", "cant", "cause", "causes", "certain", "certainly", "co", "com",
         "come", "comes", "contain", "containing", "contains", "could", "couldnt", "d", "date", "did", "didn't",
         "different", "do", "does", "doesn't", "doing", "done", "don't", "down", "downwards", "due", "during", "e",
         "each", "ed", "edu", "effect", "eg", "eight", "eighty", "either", "else", "elsewhere", "end", "ending", "enough",
         "especially", "et", "et-al", "etc", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere",
         "ex", "except", "f", "far", "few", "ff", "fifth", "first", "five", "fix", "followed", "following", "follows",
         "for", "former", "formerly", "forth", "found", "four", "from", "further", "furthermore", "g", "gave", "get",
-        "gets", "getting", "give", "given", "gives", "giving", "go", "goes", "gone", "got", "gotten", "h", "had",
+        "gets", "getting", "give", "given", "gives", "giving", "go", "goes", "gone", "got", "gotta", "gotten", "h", "had",
         "happens", "hardly", "has", "hasn't", "have", "haven't", "having", "he", "hed", "hence", "her", "here",
         "hereafter", "hereby", "herein", "heres", "hereupon", "hers", "herself", "hes", "hi", "hid", "him", "himself",
         "his", "hither", "home", "how", "howbeit", "however", "hundred", "i", "id", "ie", "if", "i'll", "im",
@@ -77,7 +77,8 @@ public final class WordArrays {
     {
         "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
         "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
-        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro", "league"
+        "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro", "league",
+        "media", "chelsea", "vote", "pedro", "incentive", "stimulate", "bizzare", "nice", "future", "haggle", "easy"
     };
     public static final String[] COMMON_WORDS_EN = new String[]
     {

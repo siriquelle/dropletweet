@@ -12,7 +12,7 @@ public class RemovePunctuation {
 
     public static String run(String word)
     {
-        word = word.replaceAll("[^a-zA-Z0-9#@&;_]", "");
+        word = word.replaceAll("[^a-zA-Z0-9#@&;_-]", "");
         word = word.replaceAll("&#([a-zA-Z0-9]*);", "");
         return word;
     }

@@ -47,7 +47,7 @@ public class SwapForAnchors {
 
                     if (linkStart < linkEnd && linkStart >= 0)
                     {
-                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches("[\\s;:-]"))
+                        if (linkStart - 1 == -1 || tweet.substring(linkStart - 1, linkStart).matches("[\\s\\.;:-]"))
                         {
                             value = tweet.substring(linkStart, linkEnd);
                             value = StringEscapeUtils.unescapeHtml(value);

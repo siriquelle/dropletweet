@@ -38,6 +38,14 @@ public class RemoveCommonTerms {
                     {
                         iter.remove();
                         break;
+                    } else if (word.contains("http"))
+                    {
+                        iter.remove();
+                        break;
+                    } else if (word.matches("^\\d*[0-9](|.\\d*[0-9]|,\\d*[0-9])?$"))
+                    {
+                        iter.remove();
+                        break;
                     }
                 }
             }

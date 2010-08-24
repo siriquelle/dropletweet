@@ -127,12 +127,12 @@ function tweetStreamHooks(){
             url: "./tweet.ajax?action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
             success: function(data) {
                 stopLoading();
-                $("#message_out").empty().append(data);
                 resetTweetInput();
+                $("#message_out").empty().append(data);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 resetLoading();
-                $("#message_out").empty().append(dropletCommonError);
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
             }
         });
     });
@@ -188,7 +188,7 @@ function ajaxAction(action){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
             $("#"+action).children("a").removeClass("loading_small");
         }
     });
@@ -210,7 +210,7 @@ function searchAjaxAction(query){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
@@ -309,7 +309,7 @@ function trackHook(){
                 reloadConversation(seedURL);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
-                $("#message_out").empty().append(dropletCommonError);
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
                 resetLoading();
             }
         });
@@ -411,7 +411,7 @@ function moreTweetsHook(){
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 resetLoading();
                 $("#more_tweet_submit_btn").empty().append("more");
-                $("#message_out").empty().append(dropletCommonError);
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
                 
             }
         });
@@ -436,11 +436,11 @@ function retweetTweet(tweetId){
         url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
         success: function(data) {
             stopLoading();
-            $("#message_out").append(data);
+            $("#message_out").empty().append(getMessageElement(data));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
             
         }
     });
@@ -455,12 +455,12 @@ function favouriteTweet(tweetId){
         url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
         success: function(data) {
             stopLoading();
-            $("#message_out").append(data);
+            $("#message_out").empty().append(getMessageElement(data));
 
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
             
         }
     });
@@ -479,11 +479,11 @@ function deleteTweet(tweetId){
                 $("#dt"+tweetId).fadeOut("slow");
             }
             
-            $("#message_out").append(data);
+            $("#message_out").empty().append(getMessageElement(data));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
 
         }
     });
@@ -498,11 +498,11 @@ function spamTweet(userId){
         url: "./tweet.ajax?action=spam&userId=" + userId,
         success: function(data) {
             stopLoading();
-            $("#message_out").append(data);
+            $("#message_out").empty().append(getMessageElement(data));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
@@ -516,11 +516,11 @@ function followUser(screen_name){
         url: "./tweet.ajax?action=follow&screen_name=" + screen_name,
         success: function(data) {
             stopLoading();
-            $("#message_out").append(data);
+            $("#message_out").empty().append(getMessageElement(data));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
@@ -574,22 +574,22 @@ function getCharCountElement(){
 //**                                                                        **//
 var reloadConversationAjax;
 function reloadConversation(seedURL){
-    startLoading();
+    startInfoVisLoading();
     startConversationLogging();
     abortAjax(reloadConversationAjax);
     reloadConversationAjax = $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
             stopConversationLogging();
-            stopLoading();
+            stopInfoVisLoading();
             $("#infovis0 .node").remove();
             currentConversation = $.parseJSON(data);
             initialp($.parseJSON(data));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
             stopConversationLogging();
-            $("#message_out").empty().append(dropletCommonError);
+            stopInfoVisLoading();
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
     
@@ -638,7 +638,7 @@ function showUserDetails(user){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
@@ -688,7 +688,7 @@ function getNewReplyCount(){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }

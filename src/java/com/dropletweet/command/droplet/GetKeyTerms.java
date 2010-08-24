@@ -34,7 +34,6 @@ public class GetKeyTerms {
         wordList = RemoveConversationParticipants.run(wordList, GetAllPeeps.run(droplet));
 //
         hashTagList = ExtractHashTagsFromWordList.run(wordList);
-
 //
         DLog.log(wordList.toString());
         wordList = StemWords.run(wordList);
@@ -48,15 +47,7 @@ public class GetKeyTerms {
             if (!word.isEmpty())
             {
                 Integer tempCount = wordBag.getCount(word);
-
-                if (tempCount > keyTermCount)
-                {
-                    keyTermCount = tempCount;
-                    keyTerms = word;
-                } else if (tempCount == keyTermCount && tempCount > 1)
-                {
-                    keyTerms = (keyTerms + " " + word);
-                }
+                keyTerms = (word + "," + tempCount + "|") + keyTerms;
             }
         }
 

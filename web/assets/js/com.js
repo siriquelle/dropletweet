@@ -1,13 +1,18 @@
 var loadingImage;
+var infovisLoadElement;
+//
 var current = null;
 var infovis = null;
+//
 var w = null , h = null;
 var canvas = null;
 var ht = null;
+//
 var currentConversation;
 var nodeCurrentPositionLeft;
 var nodeCurrentPositionRight;
 var nodeCurrentId;
+//
 var firstLoad = true;
 var loadingComplete = 0;
 
@@ -20,7 +25,6 @@ function createLoadingImage(){
     loadingImage.setAttribute('id', 'img_loading');
 
 }
-
 var dropletCommonError = "dropletweet is error, boo!";
 
 var seedURL;// = "http://twitter.com/dropletweet/status/19821003664";
@@ -46,6 +50,7 @@ function addEvent(obj, type, fn) {
 //end
 /*****************************************************************************/
 function setup(){
+    createInfoVisLoadElement();
     current = "infovis0";
     infovis = document.getElementById(current);
     w = infovis.offsetWidth , h = infovis.offsetHeight;
@@ -127,7 +132,8 @@ function setup(){
                 style.zIndex = "2000";
                 style.marginTop = "-40px";
                 domElement.innerHTML = getDomElement(node);
-            } else if(node._depth == 2){
+            }
+            else if(node._depth == 2){
                 style.fontSize = "0.2em";
                 style.opacity = "0.6";
                 style.zIndex = "1000";
@@ -155,6 +161,7 @@ function setup(){
         },
         onAfterCompute:function(){
             stopLoading();
+            stopInfoVisLoading();
             afterCompute();
         }
 
@@ -164,21 +171,21 @@ function setup(){
 /*****************************************************************************/
 var updateConversationAjax;
 function updateConversation(seedURL){
-    startLoading();
+    startInfoVisLoading();
     startConversationLogging();
     abortAjax(updateConversationAjax);
     updateConversationAjax = $.ajax({
         url: "./jit.json?q=" + seedURL,
         success: function(data) {
+            stopInfoVisLoading();
             stopConversationLogging();
-            stopLoading();
             currentConversation = $.parseJSON(data);
             initialp(currentConversation);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
             stopConversationLogging();
-            $("#message_out").empty().append(dropletCommonError);
+            stopInfoVisLoading();
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 
@@ -206,12 +213,13 @@ function calculateStatistics(){
     peeps = peeps.substring(1, peeps.length-1).split(",");
     $("#peeps_out").empty().append(peeps.length);
     
-    var terms = currentConversation.data.stats.terms.split(" ");
+    var terms = currentConversation.data.stats.terms.split("|");
     $("#terms_out").empty();
     for(var j=0; j < terms.length; j++){
         var termElement = getTermsElement(terms[j]);
+
         $("#terms_out").append(termElement);
-        $("#terms_out").append("<br />");
+        $("#terms_out").append(" ");
     }
    
     $("#infovis_stats").fadeIn(350);
@@ -229,7 +237,7 @@ function initialize($){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
@@ -237,6 +245,7 @@ function startLoading(){
     $("#message_out").empty().append(loadingImage);
     loadingComplete++;
 }
+
 
 function stopLoading(){
     if(--loadingComplete == 0){
@@ -253,11 +262,24 @@ String.prototype.replaceAll=function(s1, s2) {
     return this.replace(new RegExp(s1,"g"), s2);
 }
 
-function getTermsElement(term){
+function getTermsElement(termString){
+    var termArray = termString.split(",");
+    var term = termArray[0];
+    var count = termArray[1];
+    var fontSize = 12;
+
+    if(count>1){
+        var add = ((24/(100-count))*10)+1;
+        fontSize = add+fontSize;
+    }
+    if(fontSize>24){
+        fontSize = 24;
+    }
     var termLink = document.createElement("a");
     termLink.setAttribute("href", "##");
     termLink.setAttribute("class", "infovis_stat_filter");
     termLink.setAttribute("id", term);
+    termLink.setAttribute("style", "font-size:"+fontSize+"px");
     termLink.textContent = term;
     return termLink;
 }
@@ -301,10 +323,8 @@ function getFarConversationElement(node){
     return domElement;
 }
 
-var loggingIntervalID;
-
 function startConversationLogging(){
-    loggingIntervalID = setInterval("conversationLoadingLogger()", 500);
+    loggingIntervalID = setInterval("conversationLoadingLogger()", 1200);
 }
 
 var conversationAjaxLoadingLogger;
@@ -314,22 +334,25 @@ function conversationLoadingLogger(){
         url: "./util.ajax?action=get_loading_status",
         success: function(data) {
             if(data.toString().length >0){
-                $("#message_out").empty().append(getMessageElement(data));
+                $("#infovis_message_out").empty().append(getMessageElement(data));
             }else if(data.toString().trim().equals("Complete")){
-                $("#message_out").empty();
+                $("#infovis_message_out").empty();
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             stopConversationLogging();
-            $("#message_out").empty().append(dropletCommonError);
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
 
+var loggingIntervalID;
+
 function stopConversationLogging(){
-    if(loggingIntervalID!= null){
+    while(loggingIntervalID!= null){
         $("#message_out").empty();
-        clearInterval(loggingIntervalID);
+        loggingIntervalID = clearInterval(loggingIntervalID);
+        
     }
 }
 
@@ -351,3 +374,24 @@ function getMessageElement(message){
     messageElement.textContent = message;
     return messageElement;
 }
+
+
+function startInfoVisLoading(){
+    $("#infovis0").append(infovisLoadElement);
+    $(".infovis_load").fadeIn("fast");
+
+}
+
+function stopInfoVisLoading(){
+    $(".infovis_load").fadeOut("fast", function(){
+        $(".infovis_load").remove();
+    });
+}
+
+function createInfoVisLoadElement(){
+    infovisLoadElement = document.createElement("div");
+    infovisLoadElement.setAttribute("class", "infovis_load");
+    infovisLoadElement.innerHTML = "<img src=\"./assets/img/load.gif\" />"
++"<div id=\"infovis_message_out\" class=\"infovis_simple_message\"><div class=\"simple_message\" />Charging..</div></div>";
+}
+

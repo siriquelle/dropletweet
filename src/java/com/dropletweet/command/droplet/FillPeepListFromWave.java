@@ -19,7 +19,7 @@ public class FillPeepListFromWave {
         for (int i = 0; i < wave.size(); i++)
         {
             peepList.add(wave.get(i).getSeed().getFrom_user().toLowerCase().trim());
-            if (wave.get(i).getWave().size() > 0)
+            if (wave != null && wave.get(i) != null && wave.get(i).getWave() != null && wave.get(i).getWave().size() > 0)
             {
                 FillPeepListFromWave.run(wave.get(i).getWave(), peepList);
             }

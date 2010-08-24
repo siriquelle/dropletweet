@@ -28,6 +28,9 @@ input,select{vertical-align:middle}
     background-color:transparent;
 }
 
+.infovis_load{ display:none; position:absolute; top:215px; left:145px; height:134px; width:260px; background-color:#AEF2FF; border:5px #87BBC5 solid; z-index:3500; opacity:1; text-align:center; -moz-border-radius:10px; -webkit-border-radius:10px;}
+.infovis_load img{position:relative; top:50%}
+.infovis_simple_message{background-color: #C1F5FF; text-align:center; font-size:.6em; font-weight: bold; padding:4px 0px 4px 0px; margin-bottom:4px;}
 .node{    color:#0F4853 !important;
           width:240px;
           padding:10px;
