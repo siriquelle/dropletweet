@@ -46,6 +46,7 @@ public class DropletController extends AbstractController {
     {
         request.setCharacterEncoding("UTF-8");
         dropletLoadingBean = DropletLoadingBean.getInstance(request.getSession());
+        request.getSession().setAttribute(AppValues.SESSION_KEY_DROPLET_LOADING, dropletLoadingBean);
 //**                                                                        **//
         DLog.log("START GETTING USERS SESSION");
         Map modelMap = GetModelMap.run(request);

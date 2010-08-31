@@ -13,7 +13,7 @@
         <c:out value="${modelMap.user.screen_name}" />
     </div>
     <div class="user_info_details_container">
-        <div class="user_info_details_item" id="description">
+        <div class="user_info_details_item" id="description" contentEditable="true">
             <c:out value="${modelMap.user.description}" />
         </div>
         <div class="user_info_details_item" id="location">
@@ -44,9 +44,14 @@
 
 <section class="actions">
 
-    <div class="action" id="friendsList"><a href="##" title="Tweets from People you Follow"></a></div>
-    <div class="action" id="replyList"><a href="##" title="Replies and Mentions"></a></div>
-    <div class="action" id="dmList"><a href="##" title="Direct Messages"></a></div>
+    <div class="action" id="friendsList"><a href="##" title="Tweets from People you Follow">
+        </a></div>
+    <div class="action" id="replyList"><a href="##" title="Replies and Mentions">
+            <span id="replyList_count_out"></span>
+        </a></div>
+    <div class="action" id="dmList"><a href="##" title="Direct Messages">
+            <span id="dmList_count_out"></span>
+        </a></div>
     <div class="action" id="favouritesList"><a href="##" title="Your Favourite Tweets"></a></div>
     <div class="action" id="sentList"><a href="##" title="Your Sent Tweets"></a></div>
     <div class="action" id="discussionList"><a href="##" title="Replies from People you Follow"></a></div>

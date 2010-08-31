@@ -33,6 +33,7 @@ public class Tweet implements Comparable<Tweet> {
     protected Boolean favourite = false;
     protected Boolean tracked = false;
     protected Boolean retweet = false;
+    protected Boolean following = false;
     protected Tweet retweetTweet;
 
     /**
@@ -458,6 +459,24 @@ public class Tweet implements Comparable<Tweet> {
     public void setFavourite(Boolean favourite)
     {
         this.favourite = favourite;
+    }
+
+    /**
+     * 
+     * @param following
+     */
+    public void setFollowing(Boolean following)
+    {
+        this.following = following;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Boolean getFollowing()
+    {
+        return following;
     }
 
     /**

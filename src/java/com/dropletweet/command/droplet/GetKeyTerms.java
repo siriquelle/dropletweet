@@ -25,7 +25,6 @@ public class GetKeyTerms {
         List<String> hashTagList = new LinkedList<String>();
         Bag wordBag = new HashBag();
         String keyTerms = "";
-        Integer keyTermCount = 0;
 //
         wordBag = FillWordBagFromTweetList.run(tweetList, wordBag);
         wordList.addAll(wordBag.uniqueSet());
@@ -47,15 +46,21 @@ public class GetKeyTerms {
             if (!word.isEmpty())
             {
                 Integer tempCount = wordBag.getCount(word);
-                keyTerms = (word + "," + tempCount + "|") + keyTerms;
+                if (tempCount > 1)
+                {
+                    keyTerms = (word + "," + tempCount + "|") + keyTerms;
+                }
             }
         }
 
         for (String hashTag : hashTagList)
         {
-            keyTerms = (keyTerms + " " + hashTag);
+            keyTerms += ("|" + hashTag);
         }
-
+        if (keyTerms.isEmpty())
+        {
+            keyTerms = wordList.get(0);
+        }
         return keyTerms;
     }
 }

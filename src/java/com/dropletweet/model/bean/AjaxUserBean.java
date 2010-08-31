@@ -21,6 +21,8 @@ public class AjaxUserBean {
     private Integer followers;
     private Integer tweets;
     private Integer hits;
+    private Integer dmCount;
+    private Integer mentionsCount;
 
     public AjaxUserBean()
     {
@@ -28,14 +30,14 @@ public class AjaxUserBean {
 
     public AjaxUserBean(User user)
     {
-        screenName = user.getScreenName().replaceAll("\\n*\\r*", "");
-        profileImageUrl = user.getProfileImageURL();
-        description = user.getDescription().replaceAll("\\n*\\r*", "");
-        location = user.getLocation().replaceAll("\\n*\\r*", "");
-        following = user.getFriendsCount();
-        followers = user.getFollowersCount();
-        tweets = user.getStatusesCount();
-        hits = user.getRateLimitStatus().getRemainingHits();
+        this.screenName = user.getScreenName().replaceAll("\\n*\\r*", "");
+        this.profileImageUrl = user.getProfileImageURL();
+        this.description = user.getDescription().replaceAll("\\n*\\r*", "");
+        this.location = user.getLocation().replaceAll("\\n*\\r*", "");
+        this.following = user.getFriendsCount();
+        this.followers = user.getFollowersCount();
+        this.tweets = user.getStatusesCount();
+        this.hits = user.getRateLimitStatus().getRemainingHits();
     }
 
     public Integer getTweets()
@@ -126,5 +128,57 @@ public class AjaxUserBean {
     public void setHits(Integer hits)
     {
         this.hits = hits;
+    }
+
+    /**
+     * Get the value of mentionsCount
+     *
+     * @return the value of mentionsCount
+     */
+    public Integer getMentionsCount()
+    {
+        return mentionsCount;
+    }
+
+    /**
+     * Set the value of mentionsCount
+     *
+     * @param mentionsCount new value of mentionsCount
+     */
+    public void setMentionsCount(Integer mentionsCount)
+    {
+        this.mentionsCount = mentionsCount;
+    }
+
+    /**
+     * Get the value of dmCount
+     *
+     * @return the value of dmCount
+     */
+    public Integer getDmCount()
+    {
+        return dmCount;
+    }
+
+    /**
+     * Set the value of dmCount
+     *
+     * @param dmCount new value of dmCount
+     */
+    public void setDmCount(Integer dmCount)
+    {
+        this.dmCount = dmCount;
+    }
+
+    public void setUser(twitter4j.User user)
+    {
+        this.screenName = user.getScreenName().replaceAll("\\n*\\r*", "");
+        this.profileImageUrl = user.getProfileImageURL();
+        this.description = user.getDescription().replaceAll("\\n*\\r*", "");
+        this.location = user.getLocation().replaceAll("\\n*\\r*", "");
+        this.following = user.getFriendsCount();
+        this.followers = user.getFollowersCount();
+        this.tweets = user.getStatusesCount();
+        this.hits = user.getRateLimitStatus().getRemainingHits();
     }
 }

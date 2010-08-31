@@ -157,6 +157,7 @@ public class DoAjaxTweetAction {
             {
                 String tweetId = request.getParameter(AppValues.REQUEST_KEY_TWEET_ID);
                 String listType = request.getParameter(AppValues.REQUEST_KEY_LIST_TYPE);
+
                 if (tweetId.length() > 0)
                 {
                     tweet = GetTweetFromSession.run(Long.valueOf(tweetId), listType, modelMap, dropletService);
@@ -197,12 +198,14 @@ public class DoAjaxTweetAction {
                 {
                     try
                     {
-                        twitter.createFriendship(screen_name);
+                        twitter4j.User u = twitter.createFriendship(screen_name);
+                        AddFriendToFollowingList(modelMap, u.getId());
                         ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.follow.complete"));
                     } catch (TwitterException twitterException)
                     {
                         DLog.log(twitterException.getMessage());
-                        twitter.destroyFriendship(screen_name);
+                        twitter4j.User u = twitter.destroyFriendship(screen_name);
+                        RemoveFriendFromFollowingList(modelMap, u.getId());
                         ajaxTweetActionBean.setText(dropletProperties.getProperty("droplet.ajax.action.unfollow.complete"));
                     }
                 } else
@@ -233,6 +236,30 @@ public class DoAjaxTweetAction {
         modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.AJAX_OUT_LOCATION_ACTIONS);
         return modelMap;
     }// </editor-fold>
+
+    private static Map AddFriendToFollowingList(Map modelMap, Integer id)
+    {
+        List<Integer> ids = (List<Integer>) modelMap.get(AppValues.LIST_NAME_FOLLOWING_LIST);
+        ids.add((int) id);
+        modelMap.put(AppValues.LIST_NAME_FOLLOWING_LIST, ids);
+        return modelMap;
+    }
+
+    private static Map RemoveFriendFromFollowingList(Map modelMap, Integer id)
+    {
+        List<Integer> ids = (List<Integer>) modelMap.get(AppValues.LIST_NAME_FOLLOWING_LIST);
+
+        for (Integer i : ids)
+        {
+            if (i.equals(id))
+            {
+                ids.remove(i);
+                break;
+            }
+        }
+        modelMap.put(AppValues.LIST_NAME_FOLLOWING_LIST, ids);
+        return modelMap;
+    }
     /*******************************************************************************/
     /*END AJAX TWEET ACTIONS*/
     /*******************************************************************************/

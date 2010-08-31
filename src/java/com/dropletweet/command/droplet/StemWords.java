@@ -40,7 +40,9 @@ public class StemWords {
         {
             if (stemmer != null && wordList.get(i) != null && wordList.get(i).length() > 0)
             {
-                wordList.set(i, stemmer.getWordStem(wordList.get(i)));
+                String word = wordList.get(i);
+                word = stemmer.getWordStem(wordList.get(i));
+                wordList.set(i, word);
             }
         }
 

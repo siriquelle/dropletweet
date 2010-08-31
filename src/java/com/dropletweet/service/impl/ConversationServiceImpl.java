@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -127,7 +128,6 @@ public class ConversationServiceImpl implements ConversationService {
         Tweet tweet = droplet.getSeed();
         if (tweet != null)
         {
-            DConsole.log("Charging...");
 
             jit.append("{");
             jit.append("\"id\": \"").append(tweet.getId()).append("\",");
@@ -208,8 +208,8 @@ public class ConversationServiceImpl implements ConversationService {
                 dropletService.persistUser(seedUser);
             } catch (IOException ex)
             {
-                Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                DConsole.log("Seed Deleted, Boo! :(");
+                DConsole.log("Road Block @" + seedURL.substring("http://twitter.com/".length(), seedURL.indexOf("/status/")));
+                DLog.sleepLong();
             }
         }
         if (seedTweet != null)
@@ -233,7 +233,7 @@ public class ConversationServiceImpl implements ConversationService {
     {
         DLog.log("START GET SEED ID FROM URL");
         String name = new File(seedURL).getName();
-        DConsole.log("Charging...");
+        DConsole.log("Drilling Up " + name);
         Long id = Long.valueOf(name);
         Tweet tweet = dropletService.getTweetById(id);
         Tweet tweetReply = null;
@@ -263,7 +263,10 @@ public class ConversationServiceImpl implements ConversationService {
                     } else
                     {
                         id = getSeedIDFromURL("http://twitter.com/" + tweet.getTo_user() + "/status/" + tweet.getIn_reply_to_id());
-                        return id;
+                        if (id != null)
+                        {
+                            return id;
+                        }
                     }
                 } else
                 {
@@ -304,8 +307,10 @@ public class ConversationServiceImpl implements ConversationService {
 
             if (seedTweet.getUpdated() == null || (seedTweet.getUpdated().getTime() < (Calendar.getInstance().getTimeInMillis() - DurationValues.SIX_MINUTES_IN_MILLISECONDS)))
             {
-                Long since_id = null;
                 User seedUser = dropletService.getUserByScreen_Name(seedTweet.getFrom_user());
+
+                Long since_id = null;
+
 
                 if (seedUser == null)
                 {
@@ -314,12 +319,33 @@ public class ConversationServiceImpl implements ConversationService {
                 {
                     since_id = seedUser.getLatest_tweet_id();
                 }
+                Tweet fisrtTweet = getFirstTweetByFromUserId(seedUser.getId());
+                Long first_id = null;
+                if (fisrtTweet != null)
+                {
+                    first_id = fisrtTweet.getId();
+                }
 
                 try
                 {
                     search = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&since_id=" + since_id + "&rpp=350").openStream())), Search.class);
-                    seedTweet.setUpdated(Calendar.getInstance().getTime());
+                    int size = search.getResults().size();
+                    while (!search.getResults().isEmpty() && seedTweet.getId() > search.getResults().getLast().getId())
+                    {
+                        search.getResults().addAll(gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&max_id=" + search.getResults().get(0) + "&since_id=" + first_id + " &rpp=350").openStream())), Search.class).getResults());
+                        Collections.sort(search.getResults());
+                        first_id = search.getResults().getLast().getId();
+                        if (size == search.getResults().size())
+                        {
+                            break;
+                        } else
+                        {
+                            size = search.getResults().size();
+                        }
+                    }
 
+                    Collections.sort(search.getResults());
+                    seedTweet.setUpdated(Calendar.getInstance().getTime());
                     dropletService.persistTweet(seedTweet);
                     dropletService.persistUser(seedUser);
 
@@ -327,9 +353,13 @@ public class ConversationServiceImpl implements ConversationService {
                 } catch (FileNotFoundException ex)
                 {
                     DLog.log(ex.getMessage());
+                    DConsole.log(ex.getMessage());
+                    DLog.sleepLong();
                 } catch (IOException ioe)
                 {
                     DLog.log(ioe.getMessage());
+                    DConsole.log(ioe.getMessage());
+                    DLog.sleepLong();
                 }
             }
             DConsole.log("Cleaning up @" + seedTweet.getFrom_user());
@@ -422,14 +452,15 @@ public class ConversationServiceImpl implements ConversationService {
         {
             for (Tweet reply : results.getResults())
             {
-                if (reply.getId() != null && reply.getId() < user.getLatest_tweet_id())
+                if (reply.getId() != null
+                        && (user.getLatest_tweet_id() == null || user.getLatest_tweet_id() < reply.getId())
+                        && (reply.getTo_user() != null && reply.getIn_reply_to_id() == null))
                 {
                     Long in_reply_to_id = getIn_reply_to_id(reply);
                     DConsole.log("Surfing Around @" + reply.getFrom_user());
 
                     if (in_reply_to_id != null && in_reply_to_id.equals(seed.getId()))
                     {
-                        dropletService.persistTweet(reply);
                         Search checkReplyResults = this.getSearchResults(reply);
                         Droplet droplet = new Droplet();
                         droplet.setSeed(reply);
@@ -484,11 +515,15 @@ public class ConversationServiceImpl implements ConversationService {
                         reply.setIn_reply_to_id(id);
                         dropletService.persistTweet(reply);
                         DLog.log("END UPDATE TWEET WITH REPLY ID");
+                        break;
                     }
                 }
             }
         } catch (IOException ex)
         {
+            DLog.log(ex.getMessage());
+            DConsole.log("Brick Wall @" + reply.getFrom_user());
+            DLog.sleepLong();
             Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             dropletService.deleteTweet(reply);
         }
@@ -522,9 +557,29 @@ public class ConversationServiceImpl implements ConversationService {
 
         } catch (IOException ex)
         {
+            id = null;
+            DConsole.log("Road Block @" + fromUser);
+            DLog.sleepLong();
             Logger.getLogger(ConversationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return id;
+    }
+
+    private Tweet getFirstTweetByFromUserId(Integer userId)
+    {
+        Tweet tweet = null;
+        List<Tweet> tweetList = dropletService.getAllTweetsByToUserId(userId);
+        if (!tweetList.isEmpty())
+        {
+            Collections.sort(tweetList);
+            Collections.reverse(tweetList);
+
+            if (tweetList.get(0) != null)
+            {
+                tweet = tweetList.get(0);
+            }
+        }
+        return tweet;
     }
 
     //DI DROPLET SERVICE

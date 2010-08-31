@@ -48,7 +48,7 @@ public class DoAjaxUtil {
             if ((User) modelMap.get(AppValues.MODELMAP_KEY_USER) != null)
             {
                 User user = (User) modelMap.get(AppValues.MODELMAP_KEY_USER);
-                Conversation latestConversation = (dropletService.getAllConversationsByUserId(user.getId()).size() > 0)
+                Conversation latestConversation = (dropletService.getAllConversationsByUserId(user.getId())!= null && dropletService.getAllConversationsByUserId(user.getId()).size() > 0)
                         ? dropletService.getAllConversationsByUserId(user.getId()).get(dropletService.getAllConversationsByUserId(user.getId()).size() - 1)
                         : null;
 

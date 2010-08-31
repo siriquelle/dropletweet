@@ -23,22 +23,15 @@ public class JitConversationController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception
     {
         Map modelMap = GetModelMap.run(request);
-        
+
         String seedURL = request.getParameter("q");
 
         if (seedURL != null)
         {
-            if (request.getSession().getAttribute("jit") == null || !request.getParameter("q").equals(request.getSession().getAttribute("url")))
-            {
-
-                String jit = conversationService.getJITConversation(seedURL);
-                modelMap.put("jit", jit);
-                request.getSession().setAttribute("jit", jit);
-                request.getSession().setAttribute("url", seedURL);
-                this.getServletContext().setAttribute("latest_url", seedURL);
-                modelMap.put("jit", request.getSession().getAttribute("jit"));
-                modelMap.put("url", seedURL);
-            }
+            String jit = conversationService.getJITConversation(seedURL);
+            modelMap.put("jit", jit);
+            modelMap.put("url", seedURL);
+            this.getServletContext().setAttribute("latest_url", seedURL);
         }
         modelMap.putAll(SaveModelMap.run(request, modelMap));
         return new ModelAndView("ajax/jit", "modelMap", modelMap);
@@ -54,4 +47,7 @@ public class JitConversationController extends AbstractController {
     {
         this.conversationService = conversationService;
     }
+
+
+
 }

@@ -19,12 +19,14 @@ public class FillWordBagFromTweetList {
     {
         for (Tweet tweet : tweetList)
         {
-            String[] words = tweet.getText().split("\\s");
+            String tweetText = tweet.getText();
+            tweetText = RemovePunctuation.run(tweetText);
+            String[] words = tweetText.split("\\s");
             for (String word : words)
             {
-                if (!word.isEmpty())
+                if (!word.isEmpty() && word.length() > 1)
                 {
-                    wordBag.add(RemovePunctuation.run(word).toLowerCase().trim());
+                    wordBag.add(word.toLowerCase().trim());
                 }
             }
         }

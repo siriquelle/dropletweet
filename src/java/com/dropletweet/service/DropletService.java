@@ -11,7 +11,9 @@ public interface DropletService {
 //TWEET SERVICE
     public List<Tweet> retieveAllTweets();
 
-    public List<Tweet> getAllTweetsByUserId(Integer id);
+    public List<Tweet> getAllTweetsByFromUserId(Integer id);
+
+    public List<Tweet> getAllTweetsByToUserId(Integer id);
 
     public List<Tweet> getAllTweetsByToTweetId(Long id);
 

@@ -34,7 +34,13 @@ public class DropletServiceImpl implements DropletService {
     }
 
     @Override
-    public List<Tweet> getAllTweetsByUserId(Integer id)
+    public List<Tweet> getAllTweetsByFromUserId(Integer id)
+    {
+        return tweetDao.getAllByFromUserID(id);
+    }
+
+    @Override
+    public List<Tweet> getAllTweetsByToUserId(Integer id)
     {
         return tweetDao.getAllByFromUserID(id);
     }
@@ -68,7 +74,7 @@ public class DropletServiceImpl implements DropletService {
     {
         for (Tweet tweet : tweetList)
         {
-            if (tweet != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() >-1)
+            if (tweet != null && tweet.getIn_reply_to_id() != null && tweet.getIn_reply_to_id() > -1)
             {
                 tweetDao.save(tweet);
             }

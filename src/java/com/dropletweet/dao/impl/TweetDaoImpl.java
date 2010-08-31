@@ -46,6 +46,12 @@ public class TweetDaoImpl extends HibernateDaoSupport implements TweetDao {
     }
 
     @Override
+    public List<Tweet> getAllByToUserID(Integer id)
+    {
+        return (List<Tweet>) getHibernateTemplate().find("from Tweet where to_user_id = ?", id);
+    }
+
+    @Override
     public List<Tweet> getAllByToTweetID(Long id)
     {
         return (List<Tweet>) getHibernateTemplate().find("from Tweet where in_reply_to_id = ?", id);

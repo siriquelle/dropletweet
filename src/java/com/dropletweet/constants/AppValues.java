@@ -50,6 +50,7 @@ public class AppValues {
     public static final String SESSION_KEY_REQUEST_TOKEN = "requestToken";
     public static final String SESSION_KEY_MODELMAP = "modelMap";
     public static final String SESSION_KEY_TWITTER = "twitter";
+    public static final String SESSION_KEY_DROPLET_LOADING = "dropletLoading";
     //
     public static final String REQUEST_KEY_LOGOUT = "logout";
     public static final String REQUEST_KEY_ACTION = "action";
@@ -60,12 +61,14 @@ public class AppValues {
     public static final String REQUEST_KEY_IN_REPLY_TO_ID = "in_reply_to_id";
     public static final String REQUEST_KEY_USER_ID = "userId";
     public static final String REQUEST_KEY_SCREEN_NAME = "screen_name";
+    public static final String REQUEST_KEY_DESCRIPTION = "description";
     //
     public static final String Q_VALUE_FROM = "from:";
     //
     public static final String ACTION_VALUE_MORE = "more";
     //
     public static final String LIST_NAME_FRIENDS_LIST = "friendsList";
+    public static final String LIST_NAME_FOLLOWING_LIST = "followingList";
     public static final String LIST_NAME_REPLY_LIST = "replyList";
     public static final String LIST_NAME_DM_LIST = "dmList";
     public static final String LIST_NAME_DM_SENT_LIST = "dmSentList";
@@ -87,8 +90,11 @@ public class AppValues {
     //
     public static final String UTIL_ACTION_VALUE_GET_LATEST_URL = "get_latest_url";
     public static final String UTIL_ACTION_VALUE_GET_LOADING_STATUS = "get_loading_status";
+    public static final String USER_ACTION_VALUE_SET_USER_DESCRIPTION = "set_user_description";
     //
     public static final String USER_ACTION_VALUE_GET_USER_INFO = "get_user_info";
+    public static final String USER_ACTION_VALUE_GET_DM_COUNT = "get_dm_count";
+    public static final String USER_ACTION_VALUE_GET_MENTIONS_COUNT = "get_mentions_count";
     //
     public static final String SERVLET_CONTEXT_KEY_LATEST_URL = "latest_url";
 }

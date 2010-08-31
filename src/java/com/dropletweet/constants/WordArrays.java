@@ -78,10 +78,12 @@ public final class WordArrays {
         "iphone", "imovie", "microsoft", "twitter", "dropletweet", "chicago", "price", "miami", "love",
         "hate", "ugly", "joe", "james", "minute", "gate", "video", "taboo", "hope", "underwear", "meego",
         "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro", "league",
-        "media", "chelsea", "vote", "pedro", "incentive", "stimulate", "bizzare", "nice", "future", "haggle", "easy"
+        "media", "chelsea", "vote", "pedro", "incentive", "stimulate", "bizzare", "nice", "future", "haggle", "easy",
+        "free", "save", "apostrophe", "imagine", "movie", "boobie", "cake", "silence", "wife", "susane", "chocolate",
+        "tunes", "turtle", "finance", "Ballina", "fuji"
     };
     public static final String[] COMMON_WORDS_EN = new String[]
     {
-        "tweet", "de"
+        "tweet", "de", "don", "wasn", "ya", "doesn", "ve"
     };
 }

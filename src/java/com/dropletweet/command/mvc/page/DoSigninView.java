@@ -54,7 +54,14 @@ public class DoSigninView {
                 String tokenKey = accessToken.substring(0, accessToken.indexOf(AppValues.VALUE_SEPARATOR_UNDERSCORE));
                 String tokenSecret = accessToken.substring(accessToken.indexOf(AppValues.VALUE_SEPARATOR_UNDERSCORE) + 1, accessToken.length());
                 modelMap.putAll(UpdateModelMap.run(GetAuthorizedTwitterFromKeySecret.run(request, tokenKey, tokenSecret, dropletProperties), request, dropletService));
-                modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_DROPLET);
+                if (modelMap.get(AppValues.MODELMAP_KEY_USER) != null)
+                {
+                    modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_DROPLET);
+                } else
+                {
+                    destroySession(session, response, cookies, modelMap);
+                }
+
             } else if ((RequestToken) session.getAttribute(AppValues.SESSION_KEY_REQUEST_TOKEN) == null)
             {
                 String authorizationURL = GetAuthorizationURL.run(session, dropletProperties).toExternalForm();
@@ -70,13 +77,16 @@ public class DoSigninView {
 
         } else
         {
-            session.invalidate();
-            SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
-
-            response.addCookie(DestroyCookie.run(cookies, AppValues.COOKIE_KEY_ACCESS_TOKEN));
-
-            modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_INDEX);
+            destroySession(session, response, cookies, modelMap);
         }
         return modelMap;
     }// </editor-fold>
+
+    private static void destroySession(HttpSession session, HttpServletResponse response, Cookie[] cookies, Map modelMap) throws IllegalArgumentException
+    {
+        session.invalidate();
+        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+        response.addCookie(DestroyCookie.run(cookies, AppValues.COOKIE_KEY_ACCESS_TOKEN));
+        modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_INDEX);
+    }
 }

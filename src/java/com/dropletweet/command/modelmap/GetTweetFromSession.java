@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.dropletweet.command.modelmap;
 
+import com.dropletweet.constants.AppValues;
 import com.dropletweet.domain.Conversation;
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.domain.User;
@@ -17,13 +17,14 @@ import java.util.Map;
  * @author Siriquelle
  */
 public class GetTweetFromSession {
- public static Tweet run(Long tweetId, String listType, Map modelMap, DropletService dropletService)
+
+    public static Tweet run(Long tweetId, String listType, Map modelMap, DropletService dropletService)
     {
         Tweet trackTweet = null;
 
-        if (listType.equals("conversationList"))
+        if (listType.equals(AppValues.LIST_NAME_CONVERSATION_LIST))
         {
-            List<Conversation> conversationList = dropletService.getAllConversationsByUserId(((User) modelMap.get("user")).getId());
+            List<Conversation> conversationList = dropletService.getAllConversationsByUserId(((User) modelMap.get(AppValues.MODELMAP_KEY_USER)).getId());
             if (conversationList != null)
             {
                 for (Conversation con : conversationList)
@@ -38,6 +39,10 @@ public class GetTweetFromSession {
             }
         } else
         {
+            if (listType.contains(AppValues.LIST_NAME_SEARCH))
+            {
+                listType = AppValues.LIST_NAME_SEARCH;
+            }
             List<Tweet> tweetList = (List<Tweet>) modelMap.get(listType);
             if (tweetList != null)
             {

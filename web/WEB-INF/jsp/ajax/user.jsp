@@ -9,5 +9,7 @@
 "following" :"<c:out value="${modelMap.ajaxUserBean.following}" />",
 "followers" :"<c:out value="${modelMap.ajaxUserBean.followers}" />",
 "tweets" :"<c:out value="${modelMap.ajaxUserBean.tweets}" />",
-"hits" :"<c:out value="${modelMap.ajaxUserBean.hits}" />"
+"hits" :"<c:out value="${modelMap.ajaxUserBean.hits}" />",
+"dm_count" :"<c:out value="${modelMap.ajaxUserBean.dmCount}" />",
+"mentions_count" : "<c:out value="${modelMap.ajaxUserBean.mentionsCount}" />"
 }

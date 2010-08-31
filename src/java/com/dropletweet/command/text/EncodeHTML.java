@@ -17,8 +17,8 @@ public class EncodeHTML {
         {
 
             Character c = s.charAt(i);
-            if (c.toString().matches("[\"'\\‘’\\[\\]\\(\\)\\{\\}\\<\\>-\\?–]") ||
-                    c > 255 || c < 32)
+            if (c.toString().matches("[\"'\\‘’\\[\\]\\(\\)\\{\\}\\<\\>-\\?–\\\\]")
+                    || c > 192 || c < 32)
             {
                 out.append("&#").append((int) c).append(";");
             } else

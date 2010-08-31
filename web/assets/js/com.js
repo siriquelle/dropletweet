@@ -15,9 +15,9 @@ var nodeCurrentId;
 //
 var firstLoad = true;
 var loadingComplete = 0;
-
+var doc = document;
 function createLoadingImage(){
-    loadingImage =document.createElement("img");
+    loadingImage =doc.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
     loadingImage.setAttribute('alt', 'Loading Conversation');
     loadingImage.setAttribute('height', '15px');
@@ -206,6 +206,8 @@ function initialp(json){
     afterCompute();
 
 }
+
+
 function calculateStatistics(){
     $("#tweets_out").empty().append(currentConversation.data.stats.tweetCount);
     
@@ -214,8 +216,10 @@ function calculateStatistics(){
     $("#peeps_out").empty().append(peeps.length);
     
     var terms = currentConversation.data.stats.terms.split("|");
+    doMaxMinDist(terms);
     $("#terms_out").empty();
     for(var j=0; j < terms.length; j++){
+
         var termElement = getTermsElement(terms[j]);
 
         $("#terms_out").append(termElement);
@@ -223,6 +227,31 @@ function calculateStatistics(){
     }
    
     $("#infovis_stats").fadeIn(350);
+}
+
+var min = 0;
+var max = 0;
+var distribution = 0;
+function doMaxMinDist(terms){
+    var count = new Array();
+    for(var i = 0; i<terms.length; i++){
+        var term = terms[i].split(",");
+        count[i] = term[1];
+    }
+
+    min = count[0];
+    max = count[0];
+    for(var j = 0; j<count.length; j++){
+        if(count[j]<=min){
+            min = count[j];
+        }
+        
+        if(count[j]>=max){
+            max = count[j];
+        }
+    }
+    distribution = (max-min)/3;
+
 }
 
 var initializeAjax;
@@ -266,20 +295,24 @@ function getTermsElement(termString){
     var termArray = termString.split(",");
     var term = termArray[0];
     var count = termArray[1];
-    var fontSize = 12;
-
-    if(count>1){
-        var add = ((24/(100-count))*10)+1;
-        fontSize = add+fontSize;
-    }
-    if(fontSize>24){
-        fontSize = 24;
+    var infovis_stat_text_size = "infovis_stat_text_medium";
+    if(term.toString().match("#")){
+        infovis_stat_text_size ="infovis_stat_text_medium";
+    }else if(count == max){
+        infovis_stat_text_size ="infovis_stat_text_largest";
+    } else if(count == min){
+        infovis_stat_text_size ="infovis_stat_text_smallest";
+    }else if(count > (min + (distribution*2))){
+        infovis_stat_text_size ="infovis_stat_text_large";
+    }else if(count > (min + distribution)){
+        infovis_stat_text_size ="infovis_stat_text_medium";
+    }else{
+        infovis_stat_text_size ="infovis_stat_text_medium";
     }
     var termLink = document.createElement("a");
     termLink.setAttribute("href", "##");
-    termLink.setAttribute("class", "infovis_stat_filter");
+    termLink.setAttribute("class", "infovis_stat_filter " + infovis_stat_text_size);
     termLink.setAttribute("id", term);
-    termLink.setAttribute("style", "font-size:"+fontSize+"px");
     termLink.textContent = term;
     return termLink;
 }
@@ -292,12 +325,12 @@ function statFilterSetup($){
         termContainer.toggleClass("infovis_stat_filter_term_highlight");
         $(".node").each(function(){
             var nodeText = $(this).attr("id").toString();
-
             nodeText = $("#" + nodeText + " > .node_tweet_container > .tweet_text:first");
             if(nodeText.length>0){
                 var tweet_text = nodeText.get(0).innerHTML;
-
-                if(tweet_text.toString().toLowerCase().match(term)){
+                var t = term.trim().toString();
+                tweet_text = tweet_text.toLowerCase();
+                if(tweet_text.match("[^@#]("+t+")")){
                     if(termContainer.hasClass("infovis_stat_filter_term_highlight")){
                         $(this).addClass("infovis_stat_filter_node_highlight");
                     }else if (!termContainer.hasClass("infovis_stat_filter_term_highlight")){
@@ -334,8 +367,9 @@ function conversationLoadingLogger(){
         url: "./util.ajax?action=get_loading_status",
         success: function(data) {
             if(data.toString().length >0){
+                data = data.toString().replaceAll("\\|", "<br />")
                 $("#infovis_message_out").empty().append(getMessageElement(data));
-            }else if(data.toString().trim().equals("Complete")){
+            }else if(data.toString().trim() == ("Complete")){
                 $("#infovis_message_out").empty();
             }
         },
@@ -364,14 +398,13 @@ function abortAjax(ajax){
 
 //**                                                                        **//
 function createMessageElement(){
-    messageElement = document.createElement("div");
+    messageElement = doc.createElement("div");
     messageElement.setAttribute("class", "simple_message");
-
 }
 
 //**                                                                        **//
 function getMessageElement(message){
-    messageElement.textContent = message;
+    messageElement.innerHTML = message;
     return messageElement;
 }
 

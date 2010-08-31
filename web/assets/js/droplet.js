@@ -2,7 +2,6 @@
 var listType = "friendsList";
 //
 var ajaxActionIntervalId;
-var searchRepliesIntervalId;
 //
 var tempHeight;
 var screenName;
@@ -11,11 +10,11 @@ var pageTitle;
 var loadingImageSmall;
 var audioElement;
 var messageElement;
+var charCountElement;
 //
 var charCount = 0;
 //
-var mentionsCount = -1;
-var newMentionsCount = 0;
+
 
 //
 $(document).ready(function() {
@@ -23,35 +22,42 @@ $(document).ready(function() {
     createLoadingImageSmall();
     createAudioElement();
     createMessageElement();
-    
+    createCharCountElement();
     //
     setup();
     initialize($);
     //
+    ajaxAction(listType);
+    //
     tweetStreamHooks();
     tweetHooks();
+    userHooks();
     //
     startAutoUpdate();
     setScreenNameFromDocument();
     setPageTitleFromDocument();
     doc = document;
+    //
+    getNewMentionsCount();
+    setInterval("getNewMentionsCount()", 300000);
+    //
+    getNewDmCount();
+    setInterval("getNewDmCount()", 400000);
+    //
+    setInterval("showUserDetails('"+screenName+"')", 3600000);
 });
 
 //**                                                                        **//
 
 
 function stopAutoUpdate(){
-    if(ajaxActionIntervalId != null || searchRepliesIntervalId != null){
-        clearInterval(ajaxActionIntervalId);
-        clearInterval(searchRepliesIntervalId);
+    if(ajaxActionIntervalId != null){
+        ajaxActionIntervalId = clearInterval(ajaxActionIntervalId);
     }
 }
 function startAutoUpdate(){
-
     stopAutoUpdate();
-    
-    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 175000);
-    searchRepliesIntervalId = setInterval("getNewReplyCount()", 185000);
+    ajaxActionIntervalId = setInterval("ajaxAction('"+ listType +"')", 200000);
 }
 //**                                                                        **//
 var tweetStreamAjaxHooks;
@@ -64,17 +70,24 @@ function tweetStreamHooks(){
         ajaxAction(action);
         resetTweetInput();
         resetPageTitle();
+    });
+    
+    $("#dmList").click(function(){
+        resetNewDmCount();
+    });
+    $("#replyList").click(function(){
         resetNewMentionsCount();
     });
+    
     /************************************************************************/
     /************************************************************************/
     $("#search").click(function(){
-        stopAutoUpdate();
         $("#search_a").toggleClass("search_a_toggle");
         $("#action_search_container_outer").toggle();
         $("#search_txt").val("");
         $("#search_txt").focus();
         $("#search_btn").click(function(){
+            stopAutoUpdate();
             searchAjaxAction($("#search_txt").val());
         });
     });
@@ -87,21 +100,11 @@ function tweetStreamHooks(){
     /************************************************************************/
     /************************************************************************/
     $("#new_tweet_text_txt").focus(function(){
-        stopAutoUpdate();
-        var charCount = getCharCountElement();
-        charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
-        $("#message_out").empty().append(charCount);
+        $("#message_out").empty().append(getCharCountElement());
     });
     
-    $("#new_tweet_text_txt").blur(function(){
-        startAutoUpdate();
-    });
-
     $("#new_tweet_text_txt").keyup(function(){
-        stopAutoUpdate();
-        var charCount = getCharCountElement();
-        charCount.textContent = (140 - $("#new_tweet_text_txt").val().length);
-        $("#message_out").empty().append(charCount);
+        $("#message_out").empty().append(getCharCountElement());
     });
     /************************************************************************/
     /************************************************************************/
@@ -114,7 +117,6 @@ function tweetStreamHooks(){
     });
     $("#new_tweet_submit_btn").mouseup(function(){
         startLoading();
-        stopAutoUpdate();
         $(this).removeClass("new_tweet_submit_active");
         $("#message_out").empty().append(loadingImage);
         var tweet_text = $("#new_tweet_text_txt").val();
@@ -122,9 +124,10 @@ function tweetStreamHooks(){
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
         
         abortAjax(tweetStreamAjaxHooks);
-
         tweetStreamAjaxHooks = $.ajax({
-            url: "./tweet.ajax?action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
+            url: "./tweet.ajax",
+            data: "action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
+            type: "POST",
             success: function(data) {
                 stopLoading();
                 resetTweetInput();
@@ -137,27 +140,8 @@ function tweetStreamHooks(){
         });
     });
     
-    /************************************************************************/
-    $("#user_info_action_hide_show").click(function(){
-        $(this).toggleClass("user_info_show");
-        $(this).toggleClass("user_info_hide");
-        var height = $("#user_info_container").height();
-        if(height != 0){
-            $("#user_info_container").animate({
-                height:0
-            }, 250, "linear", function(){
-                tempHeight = height;
-            });
-        } else{
-            $("#user_info_container").animate({
-                height:tempHeight
-            }, 250, "linear");
-        }
-    });
-    $("#user_info_action_reset").click(function(){
-        showUserDetails(screenName);
-    });
-
+/************************************************************************/
+  
 /************************************************************************/
 /************************************************************************/
 }
@@ -166,18 +150,22 @@ function tweetStreamHooks(){
 function resetTweetInput(){
     $("#new_tweet_in_reply_to_id").val("");
     $("#new_tweet_text_txt").val("");
-    startAutoUpdate();
 }
 
 var ajaxActionAjax;
 //**                                                                        **//
 function ajaxAction(action){
+
     $("#"+action).children("a").addClass("loading_small");
     startLoading();
     stopAutoUpdate();
     abortAjax(ajaxActionAjax);
     ajaxActionAjax = $.ajax({
-        url: "./statuslist.ajax?action=" + action,
+        url: "./statuslist.ajax",
+        type: "GET",
+        dataType: "HTML",
+        data: "action="+action,
+        cache: false,
         success: function(data) {
             stopLoading();
             $("#tweetUpdatePanel").empty().append(data);
@@ -188,6 +176,7 @@ function ajaxAction(action){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
+            startAutoUpdate();
             $("#message_out").empty().append(getMessageElement(dropletCommonError));
             $("#"+action).children("a").removeClass("loading_small");
         }
@@ -200,7 +189,10 @@ function searchAjaxAction(query){
     startLoading();
     abortAjax(searchAjaxActionAjax);
     searchAjaxActionAjax = $.ajax({
-        url: "./statuslist.ajax?action=search&q=" + encodeURIComponent(query),
+        url: "./statuslist.ajax",
+        data: "action=search&q=" + encodeURIComponent(query),
+        type: "GET",
+        dataType: "HTML",
         success: function(data) {
             stopLoading();
             listType = "search_" + query;
@@ -290,7 +282,6 @@ var trackHookAjax;
 function trackHook(){
     $(".track").unbind();
     $(".track").click(function(){
-        stopAutoUpdate();
         $(this).children("a").toggleClass("isTracked");
         
         var id = $(this).attr("id").toString();
@@ -303,7 +294,9 @@ function trackHook(){
         //
         abortAjax(trackHookAjax);
         trackHookAjax = $.ajax({
-            url: "./tweet.ajax?action=track&tweetId=" + tweetId +"&listType=" +listType,
+            url: "./tweet.ajax",
+            data: "action=track&tweetId=" + tweetId +"&listType=" +listType,
+            type: "POST",
             success: function(data) {
                 $("#message_out").empty().append(data).append(loadingImage);
                 reloadConversation(seedURL);
@@ -320,8 +313,7 @@ function trackHook(){
 function reloadHook(){
     $(".reload").unbind();
     $(".reload").click(function(){
-        stopAutoUpdate();
-
+        
         $(this).children("a").toggleClass("isTracked");
         var id = $(this).attr("id").toString();
         id = id.substr("reload".length, id.length);
@@ -342,7 +334,6 @@ function reloadHook(){
 function followHook(){
     $(".follow").unbind();
     $(".follow").click(function(){
-        stopAutoUpdate();
 
         var id = $(this).attr("id").toString();
         var screen_name = id.substr("follow".length, id.length);
@@ -391,21 +382,21 @@ function moreTweetsHook(){
     $("#more_tweet_submit_btn").mouseup(function(){
         $("#more_tweet_submit_btn").empty().append(loadingImageSmall);
         startLoading();
-        stopAutoUpdate();
+
         var hrpoint = $("#more_tweet_submit_btn").attr("name");
         hrpoint = hrpoint.toString().substring(1, hrpoint.length);
         $(this).removeClass("more_tweet_submit_active");
 
         abortAjax(moreTweetsHookAjax);
         moreTweetsHookAjax =  $.ajax({
-            url: ".statuslist.ajax?action=more&listType="+listType,
+            url: ".statuslist.ajax",
+            data: "action=more&listType="+listType,
+            type: "GET",
             success: function(data) {
                 stopLoading();
-                $("#tweetUpdatePanel").empty().append(data);
-                
+                $("#tweetUpdatePanel").empty().append(data);  
                 $("#"+hrpoint).after("<hr class=\"page_break\"/>");
                 tweetHooks();
-                startAutoUpdate();
                 $("#more_tweet_submit_btn").empty().append("more");
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -418,102 +409,124 @@ function moreTweetsHook(){
     });
 }
 
+
+
 //**                                                                        **//
 function replyTweet(tweetId, from_user){
     startLoading();
+    var pre = "@";
+    if(listType == "dmList"){
+        if($("#dt"+tweetId).hasClass("tweet_container")){
+            pre = "d ";
+        }
+    }
     $("#new_tweet_in_reply_to_id").val(tweetId);
-    $("#new_tweet_text_txt").val("@" +from_user + " ");
+    $("#new_tweet_text_txt").val(pre + from_user + " ");
     $("#new_tweet_text_txt").focus();
     stopLoading();
 }
 
 //**                                                                        **//
-var retweetTweetAjax;
+
 function retweetTweet(tweetId){
-    startLoading();
-    abortAjax(retweetTweetAjax);
-    retweetTweetAjax = $.ajax({
-        url: "./tweet.ajax?action=retweet&tweetId=" + tweetId,
-        success: function(data) {
-            stopLoading();
-            $("#message_out").empty().append(getMessageElement(data));
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
-            $("#message_out").empty().append(getMessageElement(dropletCommonError));
+    if(confirm("Retweet this tweet to your followers?")){
+        startLoading();
+        $.ajax({
+            url: "./tweet.ajax",
+            data: "action=retweet&tweetId=" + tweetId,
+            type: "POST",
+            success: function(data) {
+                stopLoading();
+                $("#message_out").empty().append(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                resetLoading();
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
             
-        }
-    });
-}
-
-//**                                                                        **//
-var favouriteTweetAjax;
-function favouriteTweet(tweetId){
-    startLoading();
-    abortAjax(favouriteTweetAjax);
-    favouriteTweetAjax = $.ajax({
-        url: "./tweet.ajax?action=favourite&tweetId=" + tweetId,
-        success: function(data) {
-            stopLoading();
-            $("#message_out").empty().append(getMessageElement(data));
-
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
-            $("#message_out").empty().append(getMessageElement(dropletCommonError));
-            
-        }
-    });
-}
-
-//**                                                                        **//
-var deleteTweetAjax;
-function deleteTweet(tweetId){
-    startLoading();
-    abortAjax(deleteTweetAjax);
-    deleteTweetAjax = $.ajax({
-        url: "./tweet.ajax?action=delete&tweetId=" + tweetId,
-        success: function(data) {
-            stopLoading();
-            if(!data.toString().match("Error")){
-                $("#dt"+tweetId).fadeOut("slow");
             }
-            
-            $("#message_out").empty().append(getMessageElement(data));
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
-            $("#message_out").empty().append(getMessageElement(dropletCommonError));
-
-        }
-    });
+        });
+    }
 }
 
 //**                                                                        **//
-var spamTweetAjax;
-function spamTweet(userId){
-    startLoading();
-    abortAjax(spamTweetAjax);
-    spamTweetAjax = $.ajax({
-        url: "./tweet.ajax?action=spam&userId=" + userId,
+
+function favouriteTweet(tweetId){
+    startLoading();    
+    $.ajax({
+        url: "./tweet.ajax",
+        data: "action=favourite&tweetId=" + tweetId,
+        type: "POST",
         success: function(data) {
             stopLoading();
-            $("#message_out").empty().append(getMessageElement(data));
+            $("#message_out").empty().append(data);
+
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
             $("#message_out").empty().append(getMessageElement(dropletCommonError));
+            
         }
     });
 }
 
 //**                                                                        **//
-var followUserAjax;
+
+function deleteTweet(tweetId){
+    
+    if(confirm("Are you sure you want to delete this tweet?")){
+        startLoading();
+        $.ajax({
+            url: "./tweet.ajax",
+            data: "action=delete&tweetId=" + tweetId,
+            type: "POST",
+            success: function(data) {
+                stopLoading();
+                if(!data.toString().match("Error")){
+                    $("#dt"+tweetId).fadeOut("slow");
+                }
+            
+                $("#message_out").empty().append(getMessageElement(data));
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                resetLoading();
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
+
+            }
+        });
+    }
+}
+
+//**                                                                        **//
+
+function spamTweet(userId){
+    
+    if(confirm("Are you sure you want to report this user for spamming?")){
+        startLoading();
+        $.ajax({
+            url: "./tweet.ajax",
+            data: "action=spam&userId=" + userId,
+            type: "POST",
+            success: function(data) {
+                stopLoading();
+                $("#message_out").empty().append(getMessageElement(data));
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                resetLoading();
+                $("#message_out").empty().append(getMessageElement(dropletCommonError));
+            }
+        });
+    }
+}
+
+//**                                                                        **//
+
 function followUser(screen_name){
     startLoading();
-    abortAjax(followUserAjax);
-    followUserAjax = $.ajax({
-        url: "./tweet.ajax?action=follow&screen_name=" + screen_name,
+    
+    $.ajax({
+        url: "./tweet.ajax",
+        data: "action=follow&screen_name=" + screen_name,
+        type: "POST",
         success: function(data) {
             stopLoading();
             $("#message_out").empty().append(getMessageElement(data));
@@ -564,11 +577,16 @@ function getDomElement(node){
 }
 
 //**                                                                        **//
+
 function getCharCountElement(){
-    var charCount = document.createElement("div");
-    charCount.setAttribute('id', 'char_count');
-    charCount.setAttribute('class', 'simple_message');
-    return charCount;
+    charCountElement.textContent = (140 - $("#new_tweet_text_txt").val().length);
+    return charCountElement;
+}
+
+function createCharCountElement(){
+    charCountElement = doc.createElement("div");
+    charCountElement.setAttribute('id', 'char_count');
+    charCountElement.setAttribute('class', 'simple_message');
 }
 
 //**                                                                        **//
@@ -578,7 +596,9 @@ function reloadConversation(seedURL){
     startConversationLogging();
     abortAjax(reloadConversationAjax);
     reloadConversationAjax = $.ajax({
-        url: "./jit.json?q=" + seedURL,
+        url: "./jit.json",
+        data: "q=" + seedURL,
+        type: "GET",
         success: function(data) {
             stopConversationLogging();
             stopInfoVisLoading();
@@ -602,13 +622,58 @@ function afterCompute(){
     statFilterSetup($);
 }
 
+//****************************************************************************//
+//**                                                                        **//
+function userHooks(){
+    descriptionHook();
+    userInfoActionResetHook();
+    userInfoActionHideShowHook();
+}
+//**                                                                        **//
+function descriptionHook(){
+    var description;
+    $("#description").focus(function(){
+        description = $("#description").text();
+        $("#description").addClass("user_info_details_editing");
+    });
+
+    $("#description").blur(function(){
+        $("#description").removeClass("user_info_details_editing");
+        if(description.trim() != $("#description").text().trim()){
+            description = $("#description").text().trim();
+            setUserDescription(description);
+        }
+    });
+}
+//**                                                                        **//
+var setUserDescriptionAjax;
+function setUserDescription(description){
+    startLoading();
+    abortAjax(setUserDescriptionAjax);
+    setUserDescriptionAjax = $.ajax({
+        url: "./user.ajax",
+        data: "action=set_user_description&description=" + description,
+        type: "POST",
+        success: function(data) {
+            stopLoading();
+           
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
+        }
+    });
+}
 //**                                                                        **//
 var showUserDetailsAjax;
 function showUserDetails(user){
     startLoading();
     abortAjax(showUserDetailsAjax);
+    $("#description").attr("contentEditable", "false");
     showUserDetailsAjax = $.ajax({
-        url: "./user.ajax?action=get_user_info&screen_name=" + user,
+        url: "./user.ajax",
+        data: "action=get_user_info&screen_name=" + user,
+        type: "GET",
         success: function(data) {
             stopLoading();
             if(tempHeight>0){
@@ -642,19 +707,43 @@ function showUserDetails(user){
         }
     });
 }
+//**                                                                        **//
+function userInfoActionHideShowHook(){
+    $("#user_info_action_hide_show").click(function(){
+        $(this).toggleClass("user_info_show");
+        $(this).toggleClass("user_info_hide");
+        var height = $("#user_info_container").height();
+        if(height != 0){
+            $("#user_info_container").animate({
+                height:0
+            }, 250, "linear", function(){
+                tempHeight = height;
+            });
+        } else{
+            $("#user_info_container").animate({
+                height:tempHeight
+            }, 250, "linear");
+        }
+    });
+}
+
+function userInfoActionResetHook(){
+    $("#user_info_action_reset").click(function(){
+        showUserDetails(screenName);
+        $("#description").attr("contentEditable", "true");
+    });
+}
 
 //**                                                                        **//
+//****************************************************************************//
 function decrementHitsCounter(){
     hitsCount = $("#hits_count").text().trim();
     $("#hits_count").text(--hitsCount);
-    if(hitsCount<2){
-        showUserDetails(screenName);
-    }
 }
 
 //**                                                                        **//
 function createLoadingImageSmall(){
-    loadingImageSmall =document.createElement("img");
+    loadingImageSmall =doc.createElement("img");
     loadingImageSmall.setAttribute('src', './assets/img/load_small.gif');
     loadingImageSmall.setAttribute('alt', 'Loading Conversation');
     loadingImageSmall.setAttribute('height', '20px');
@@ -662,42 +751,100 @@ function createLoadingImageSmall(){
     loadingImageSmall.setAttribute('id', 'img_loading_small');
 }
 
+//****************************************************************************//
 //**                                                                        **//
-var getNewReplyCountAjax;
-function getNewReplyCount(){
-    abortAjax(getNewReplyCountAjax);
-    getNewReplyCountAjax = $.ajax({
-        url: "./statuslist.ajax?action=replyList",
+//****************************************************************************//
+//****************************************************************************//
+//** START GET_NEW_MENTIONS_COUNT                                           **//
+//****************************************************************************//
+var mentionsCount = -1;
+var newMentionsCount = 0;
+var getNewMentionsCountAjax;
+
+function getNewMentionsCount(){
+    abortAjax(getNewMentionsCountAjax);
+    getNewMentionsCountAjax = $.ajax({
+        url: "./user.ajax",
+        data: "action=get_mentions_count",
+        type: "GET",
         success: function(data) {
-            var initial = data.toString().trim().length;
-            var post = data.toString().replaceAll("tweet_container", "").trim().length;
-            var tweet = initial - post;
-            var eventual = (tweet/("tweet_container".length));
-            if(eventual!= null && eventual > mentionsCount){
-                var count = eventual - mentionsCount;
+            var user = $.parseJSON(data);
+            var latest = user.mentions_count;
+
+            if(latest!= null && latest > mentionsCount){
                 if(mentionsCount > -1){
-                    newMentionsCount += count;
-                    var replyText = (newMentionsCount>1)? "replies": "reply";
-                    $("#message_out").empty().append(getMessageElement(newMentionsCount + " new " + replyText));
+                    newMentionsCount += (latest - mentionsCount);
+                    $("#replyList_count_out").empty().append(newMentionsCount);
                     document.getElementById("audio_sound").play();
-                    $("title").empty().append("("+newMentionsCount+") " + pageTitle);
+                    $("title").empty().append("("+ (newMentionsCount + newDmCount) +") " + pageTitle);
                 }
-                mentionsCount = eventual;
+                mentionsCount = latest;
             }
+            
             decrementHitsCounter();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
-            $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
 }
 
+function resetNewMentionsCount(){
+    newMentionsCount = 0;
+    $("#replyList_count_out").empty();
+}
+//****************************************************************************//
+//** END GET_NEW_MENTIONS_COUNT                                             **//
+//****************************************************************************//
+//****************************************************************************//
+//** START GET_NEW_DM_COUNT                                                 **//
+//****************************************************************************//
+var dmCount = -1;
+var newDmCount = 0;
+var getNewDmCountAjax;
+
+function getNewDmCount(){
+    abortAjax(getNewDmCountAjax);
+    getNewDmCountAjax = $.ajax({
+        url: "./user.ajax",
+        data: "action=get_dm_count",
+        type: "GET",
+        success: function(data) {
+        
+            var user = $.parseJSON(data);
+            var latest = user.dm_count;
+
+            if(latest!= null && latest > dmCount){
+                if(dmCount > -1){
+                    newDmCount += (latest - dmCount);
+                    $("#dmList_count_out").empty().append(newDmCount);
+                    document.getElementById("audio_sound").play();
+                    $("title").empty().append("("+ (newDmCount + newMentionsCount) + ") " + pageTitle);
+                }
+                dmCount = latest;
+            }
+            
+            decrementHitsCounter();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            resetLoading();
+        }
+    });
+}
+
+function resetNewDmCount(){
+    newDmCount = 0;
+    $("#dmList_count_out").empty();
+}
+//****************************************************************************//
 //**                                                                        **//
+//****************************************************************************//
+//**                                                                        **//
+//****************************************************************************//
 function createAudioElement(){
-    audioElement = document.createElement("audio");
+    audioElement = doc.createElement("audio");
     audioElement.setAttribute('id', 'audio_sound');
-    audioElement.setAttribute('src', './assets/aud/action/action_reply_found.wav');
+    audioElement.setAttribute('src', './assets/aud/action/action_reply_found.ogg');
     audioElement.setAttribute('autobuffer', 'autobuffer');
     $("body").append(audioElement);
 }
@@ -719,7 +866,5 @@ function resetPageTitle(){
     document.title = pageTitle;
 }
 
-function resetNewMentionsCount(){
-    newMentionsCount = 0;
-}
+
 

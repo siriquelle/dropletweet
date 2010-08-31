@@ -35,4 +35,15 @@ public class DLog {
             Logger.getLogger(DLog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public static void sleepLong()
+    {
+        try
+        {
+            Thread.sleep(new Long(3000));
+        } catch (InterruptedException ex)
+        {
+            Logger.getLogger(DLog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

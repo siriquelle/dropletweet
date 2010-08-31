@@ -14,5 +14,5 @@
 
 
 <c:if test="${modelMap.ajaxTweetActionBean.error != null}">
-    Error: <c:out value="${modelMap.ajaxTweetActionBean.error}" />
+    <c:out value="${modelMap.ajaxTweetActionBean.error}" />
 </c:if>

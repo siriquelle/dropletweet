@@ -41,6 +41,7 @@ public class DoDropletView {
             modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.MODELMAP_VIEW_VALUE_REDIRECT_INDEX);
         } else
         {
+            modelMap.put(AppValues.LIST_NAME_TWEET_LIST, modelMap.get(AppValues.LIST_NAME_FRIENDS_LIST));
             modelMap.put(AppValues.MODELMAP_KEY_VIEW, AppValues.VIEW_VALUE_DROPLET);
         }
 

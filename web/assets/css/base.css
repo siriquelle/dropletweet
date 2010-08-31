@@ -101,10 +101,16 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .infovis_stats_container{color:#0F4853; font-size:.8em; width:100px; text-align: center;position:relative; top:-240px; background-color:#AEF2FF; -moz-border-radius:5px; -webkit-border-radius:5px; display:none; z-index:2000;}
 .infovis_stat{background-color: #C1F5FF; display:inline-block; width:80px; padding:3px; margin:5px; -moz-border-radius:3px; -webkit-border-radius:3px;}
 .infovis_stat_head{font-weight:bold;}
-.infovis_stat_text{}
-.infovis_stat_filter{color:#0F4853;text-decoration: none;}
+/**/
+.infovis_stat_text_smallest{font-size: xx-small;}
+.infovis_stat_text_small{font-size: small;}
+.infovis_stat_text_medium{font-size: medium;}
+.infovis_stat_text_large{font-size: large;}
+.infovis_stat_text_largest{font-size: xx-large;}
+/**/
+.infovis_stat_filter{color:#0F4853;text-decoration: none;background-color: #C1F5FF; display:inline-block; margin-bottom: 1px !important;}
 .infovis_stat_filter:hover{text-decoration: underline;}
-.infovis_stat_filter_node_highlight{border :5px solid #7A819B; opacity:.9!important}
+.infovis_stat_filter_node_highlight{border :5px solid #7A819B; opacity:.9!important; z-index: 2500 !important;}
 .infovis_stat_filter_term_highlight{background-color: #C2CBE7;}
 /* END INFOVIS STATS*/
 
@@ -131,6 +137,7 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /**/
 .user_info_details_container{font-size:.8em;}
 .user_info_details_item{padding-bottom: 3px;}
+.user_info_details_editing{background-color: #ffffff; border:1px outset #ccc; padding-top:4px;}
 /**/
 .user_info_count_container{font-size: .8em; clear:both;}
 .user_info_count{display:inline-block; padding:3px; background-color: #C1F5FF;}
@@ -148,14 +155,19 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 /*END SIGNIN*/
 
 /*START STREAM ACTIONS*/
-.action, .action_search, .action_conversations{display:inline-block; margin:0px auto; }
-.action a, .action_search a, .action_conversations a{display:block; width: 20px; height:20px; margin:5px;}
+.action, .action_search, .action_conversations{display:inline-block; margin:0px auto; text-align: center;}
+.action a, .action_search a, .action_conversations a{display:block; width: 20px; height:20px; margin:5px; text-decoration:none; }
 .action a:hover, .action_search a:hover, .action_conversations a:hover{position:relative; top:-2px; margin-bottom:3px; padding-bottom:2px;}
+/**/
 .actions #friendsList a{background:url("../img/actions/action_friends_timeline.png") no-repeat scroll 0 0 transparent;}
 .actions #discussionList a{background:url("../img/actions/action_active_tweet.png") no-repeat scroll 0 0 transparent;}
 .actions #replyList a{background:url("../img/actions/action_replies.png") no-repeat scroll 0 0 transparent;}
 .actions #dmList a{background:url("../img/actions/action_dms.png") no-repeat scroll 0 0 transparent;}
 .actions #search a{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0 0 transparent;}
+/**/
+.action #replyList_count_out, .action #dmList_count_out {width:20px; height:20px; display:inline-block; position:absolute; color:#fff; font-weight:bold; margin-top:-2px; margin-left:0px; opacity:.7; font-size:1.4em}
+.action #replyList_count_out:hover, .action #dmList_count_out:hover {opacity:.4; top:2px;}
+/**/
 .search_a_toggle{background:url("../img/actions/action_search_sprite.png") no-repeat scroll 0px -23px transparent !important;}
 /**/
 #action_search_container_outer{display: none; position:absolute;}
@@ -259,3 +271,9 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 #rightColumn, .node, .infovis_stats_container,.footer, .link_twitter_sign_in a:hover{-moz-box-shadow:0 0 3px #9DC5CC; -webkit-box-shadow:0 0 5px #333333;}
 .link_twitter_sign_in a:active{-moz-box-shadow:0 0 0px #000;-webkit-box-shadow:0 0 0px #000;}
 /* END BOX SHADOW*/
+/* START GRADIENT*/
+body{
+        -moz-linear-gradient(center top 270deg, #25DAFF 5%, #97EDFF 30%) repeat-x scroll 0 0 #97EDFF;
+        -webkit-gradient(linear,left top,left bottom,color-stop(0.05, rgb(37,219,255)),color-stop(0.3, rgb(151,238,255)))
+}
+/* END GRADIENT*/

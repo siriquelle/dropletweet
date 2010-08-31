@@ -18,7 +18,9 @@
                     </a>
 
                     <div class="tweet_profile_action_container" >
-                        <div class="tweet_profile_action follow fl" id="follow<c:out value="${tweet.from_user}" />" ><a href="##" title="Follow @<c:out value="${tweet.from_user}" />"></a></div>
+
+                        <div class="tweet_profile_action follow fl" id="follow<c:out value="${tweet.from_user}" />" ><a href="##" title="<c:if test="${!tweet.following}">Follow </c:if><c:if test="${tweet.following}">Unfollow </c:if>@<c:out value="${tweet.from_user}" />"></a></div>
+
                     </div>
                 </div>
 
@@ -63,7 +65,7 @@
                 </c:if>
 
                 <c:if test="${modelMap.user.screen_name != tweet.from_user}">
-                    <div class="tweet_action spam" id="spam<c:out value="${tweet.id}" />"><a href="##" title="Report this tweet for spam"></a></div>
+                    <div class="tweet_action spam" id="spam<c:out value="${tweet.from_user_id}" />"><a href="##" title="Report this tweet for spam"></a></div>
                 </c:if>
 
 
@@ -89,7 +91,7 @@
         </div>
         <c:set var="lastId" value="${tweet.id}"/>
     </c:forEach>
-    <c:if test="${listLength >= 20}" >
+    <c:if test="${listLength >= 15}" >
         <button id="more_tweet_submit_btn" name="ldt<c:out value="${lastId}" />"class="more_tweet_submit">more</button>
     </c:if>
 

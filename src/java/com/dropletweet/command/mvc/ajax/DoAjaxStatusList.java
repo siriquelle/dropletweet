@@ -4,6 +4,7 @@
  */
 package com.dropletweet.command.mvc.ajax;
 
+import com.dropletweet.command.tweet.list.SetFollowingTweets;
 import com.dropletweet.command.modelmap.GetModelMap;
 import com.dropletweet.command.tweet.list.GetDiscussionTweets;
 import com.dropletweet.command.tweet.list.GetFormattedDropletTweetListFromDropletTweetList;
@@ -195,7 +196,7 @@ public class DoAjaxStatusList {
                             String q = listType.substring(AppValues.LIST_NAME_SEARCH.concat(AppValues.VALUE_SEPARATOR_UNDERSCORE).length());
                             if (q != null)
                             {
-                                List<twitter4j.Tweet> tl = twitter.search(new Query(q).rpp(20).maxId(oldList.get(oldList.size() - 1).getId() - 1)).getTweets();
+                                List<twitter4j.Tweet> tl = twitter.search(new Query(q).rpp(30).maxId(oldList.get(oldList.size() - 1).getId() - 1)).getTweets();
                                 if (tl != null)
                                 {
                                     tweetList = GetDropletTweetListFromTwitter4jListOfTweets.run(tl);
@@ -226,7 +227,7 @@ public class DoAjaxStatusList {
             {
                 tweetList = SetTrackedTweets.run(tweetList, dropletService.getAllConversationsByUserId(user.getId()));
                 tweetList = SetFavouriteTweets.run(tweetList, (List<Tweet>) modelMap.get(AppValues.LIST_NAME_FAVOURITES_LIST));
-
+                tweetList = SetFollowingTweets.run(tweetList, (List<Integer>) modelMap.get(AppValues.LIST_NAME_FOLLOWING_LIST));
                 tweetList = SetRetweetTweets.run(tweetList, (List<Tweet>) modelMap.get(AppValues.LIST_NAME_RETWEET_LIST));
                 tweetList = SetPrettyTime.run(tweetList);
                 Collections.sort(tweetList);
