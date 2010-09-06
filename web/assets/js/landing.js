@@ -1,13 +1,12 @@
 /**********************************************************************/
-//
 $(document).ready(function() {
     createLoadingImage();
     createMessageElement();
-    $("#message_out").append(loadingImage);
+    createInfoVisLoadElement();
+    //
     setup();
     initialize($);
 });
-
 /**********************************************************************/
 
 function getDomElement(node){

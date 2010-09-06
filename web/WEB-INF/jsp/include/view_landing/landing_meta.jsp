@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/tld/struts-tiles.tld" prefix="tiles" %>
 
-<script language="javascript" type="text/javascript" src="./assets/js/landing.js?v=2.12"></script>
+<script language="javascript" type="text/javascript" src="./assets/js/landing.js?v=2.3"></script>
 <script type="text/javascript">
 
     var _gaq = _gaq || [];

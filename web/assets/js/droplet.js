@@ -14,15 +14,13 @@ var charCountElement;
 //
 var charCount = 0;
 //
-
-
-//
 $(document).ready(function() {
     createLoadingImage();
     createLoadingImageSmall();
     createAudioElement();
     createMessageElement();
     createCharCountElement();
+    createInfoVisLoadElement();
     //
     setup();
     initialize($);
@@ -38,11 +36,11 @@ $(document).ready(function() {
     setPageTitleFromDocument();
     doc = document;
     //
-    getNewMentionsCount();
-    setInterval("getNewMentionsCount()", 300000);
+    //getNewMentionsCount();
+    setInterval("getNewMentionsCount()", 30000);
     //
-    getNewDmCount();
-    setInterval("getNewDmCount()", 400000);
+    //getNewDmCount();
+    setInterval("getNewDmCount()", 40000);
     //
     setInterval("showUserDetails('"+screenName+"')", 3600000);
 });
@@ -118,7 +116,6 @@ function tweetStreamHooks(){
     $("#new_tweet_submit_btn").mouseup(function(){
         startLoading();
         $(this).removeClass("new_tweet_submit_active");
-        $("#message_out").empty().append(loadingImage);
         var tweet_text = $("#new_tweet_text_txt").val();
         tweet_text = encodeURIComponent(tweet_text);
         var in_reply_to_id = $("#new_tweet_in_reply_to_id").val();
@@ -128,6 +125,7 @@ function tweetStreamHooks(){
             url: "./tweet.ajax",
             data: "action=post&in_reply_to_id=" + in_reply_to_id +"&tweet_text=" + tweet_text,
             type: "POST",
+            timeout: 60000,
             success: function(data) {
                 stopLoading();
                 resetTweetInput();
@@ -166,6 +164,7 @@ function ajaxAction(action){
         dataType: "HTML",
         data: "action="+action,
         cache: false,
+        timeout: 60000,
         success: function(data) {
             stopLoading();
             $("#tweetUpdatePanel").empty().append(data);
@@ -193,6 +192,7 @@ function searchAjaxAction(query){
         data: "action=search&q=" + encodeURIComponent(query),
         type: "GET",
         dataType: "HTML",
+        timeout: 60000,
         success: function(data) {
             stopLoading();
             listType = "search_" + query;
@@ -297,8 +297,9 @@ function trackHook(){
             url: "./tweet.ajax",
             data: "action=track&tweetId=" + tweetId +"&listType=" +listType,
             type: "POST",
+            timeout: 60000,
             success: function(data) {
-                $("#message_out").empty().append(data).append(loadingImage);
+                $("#message_out").empty().append(data);
                 reloadConversation(seedURL);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -392,6 +393,7 @@ function moreTweetsHook(){
             url: ".statuslist.ajax",
             data: "action=more&listType="+listType,
             type: "GET",
+            timeout: 60000,
             success: function(data) {
                 stopLoading();
                 $("#tweetUpdatePanel").empty().append(data);  
@@ -435,6 +437,7 @@ function retweetTweet(tweetId){
             url: "./tweet.ajax",
             data: "action=retweet&tweetId=" + tweetId,
             type: "POST",
+            timeout: 60000,
             success: function(data) {
                 stopLoading();
                 $("#message_out").empty().append(data);
@@ -456,6 +459,7 @@ function favouriteTweet(tweetId){
         url: "./tweet.ajax",
         data: "action=favourite&tweetId=" + tweetId,
         type: "POST",
+        timeout: 60000,
         success: function(data) {
             stopLoading();
             $("#message_out").empty().append(data);
@@ -479,6 +483,7 @@ function deleteTweet(tweetId){
             url: "./tweet.ajax",
             data: "action=delete&tweetId=" + tweetId,
             type: "POST",
+            timeout: 60000,
             success: function(data) {
                 stopLoading();
                 if(!data.toString().match("Error")){
@@ -506,6 +511,7 @@ function spamTweet(userId){
             url: "./tweet.ajax",
             data: "action=spam&userId=" + userId,
             type: "POST",
+            timeout: 60000,
             success: function(data) {
                 stopLoading();
                 $("#message_out").empty().append(getMessageElement(data));
@@ -527,6 +533,7 @@ function followUser(screen_name){
         url: "./tweet.ajax",
         data: "action=follow&screen_name=" + screen_name,
         type: "POST",
+        timeout: 60000,
         success: function(data) {
             stopLoading();
             $("#message_out").empty().append(getMessageElement(data));
@@ -599,6 +606,7 @@ function reloadConversation(seedURL){
         url: "./jit.json",
         data: "q=" + seedURL,
         type: "GET",
+        timeout: 60000,
         success: function(data) {
             stopConversationLogging();
             stopInfoVisLoading();
@@ -654,6 +662,7 @@ function setUserDescription(description){
         url: "./user.ajax",
         data: "action=set_user_description&description=" + description,
         type: "POST",
+        timeout: 60000,
         success: function(data) {
             stopLoading();
            
@@ -674,6 +683,7 @@ function showUserDetails(user){
         url: "./user.ajax",
         data: "action=get_user_info&screen_name=" + user,
         type: "GET",
+        timeout: 60000,
         success: function(data) {
             stopLoading();
             if(tempHeight>0){
@@ -767,21 +777,22 @@ function getNewMentionsCount(){
         url: "./user.ajax",
         data: "action=get_mentions_count",
         type: "GET",
+        timeout: 60000,
         success: function(data) {
             var user = $.parseJSON(data);
-            var latest = user.mentions_count;
-
-            if(latest!= null && latest > mentionsCount){
-                if(mentionsCount > -1){
-                    newMentionsCount += (latest - mentionsCount);
-                    $("#replyList_count_out").empty().append(newMentionsCount);
-                    document.getElementById("audio_sound").play();
-                    $("title").empty().append("("+ (newMentionsCount + newDmCount) +") " + pageTitle);
+            if(user!=null){
+                var latest = user.mentions_count;
+                if(latest!= null && latest > mentionsCount){
+                    if(mentionsCount > -1){
+                        newMentionsCount += (latest - mentionsCount);
+                        $("#replyList_count_out").empty().append(newMentionsCount);
+                        document.getElementById("audio_sound").play();
+                        $("title").empty().append("("+ (newMentionsCount + newDmCount) +") " + pageTitle);
+                    }
+                    mentionsCount = latest;
                 }
-                mentionsCount = latest;
+                decrementHitsCounter();
             }
-            
-            decrementHitsCounter();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();
@@ -809,22 +820,25 @@ function getNewDmCount(){
         url: "./user.ajax",
         data: "action=get_dm_count",
         type: "GET",
+        timeout: 60000,
         success: function(data) {
         
             var user = $.parseJSON(data);
-            var latest = user.dm_count;
+            if(user != null){
+                var latest = user.dm_count;
 
-            if(latest!= null && latest > dmCount){
-                if(dmCount > -1){
-                    newDmCount += (latest - dmCount);
-                    $("#dmList_count_out").empty().append(newDmCount);
-                    document.getElementById("audio_sound").play();
-                    $("title").empty().append("("+ (newDmCount + newMentionsCount) + ") " + pageTitle);
+                if(latest!= null && latest > dmCount){
+                    if(dmCount > -1){
+                        newDmCount += (latest - dmCount);
+                        $("#dmList_count_out").empty().append(newDmCount);
+                        document.getElementById("audio_sound").play();
+                        $("title").empty().append("("+ (newDmCount + newMentionsCount) + ") " + pageTitle);
+                    }
+                    dmCount = latest;
                 }
-                dmCount = latest;
-            }
             
-            decrementHitsCounter();
+                decrementHitsCounter();
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             resetLoading();

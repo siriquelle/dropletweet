@@ -25,4 +25,5 @@ public class TestPhrase {
     public static final String LEO_TEST_PHASE = "Guests at the TWiT Cottage feign attention. (@ TWiT Cottage) http://picplz.com/2C1.jpg";
     public static final String ANGLE_BRACKETS_TEST_PHRASE = "[http://www.google.com]";
     public static final String TOPGOLD_SOUTH_TIPP_CO_CO = "@harrisireland we're going to miss @southtippcoco's Summer Book Bus in Clogheen today.";
+    public static final String LINK_EQUALS = "@twentymajor  http://www.buseireann.ie/news.php?id=889&amp;month=Aug";
 }

@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Tweet;
 import com.dropletweet.log.DLog;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,16 +19,15 @@ public class GetDiscussionTweets {
     public static List<Tweet> run(List<Tweet> tweetList)
     {
         //
-        Iterator iter = tweetList.listIterator();
-        while (iter.hasNext())
+        List<Tweet> tl = new LinkedList<Tweet>();
+        //
+        for (Tweet t : tweetList)
         {
-            Tweet t = (Tweet) iter.next();
-            DLog.log(t.getIn_reply_to_id().toString());
-            if (t.getIn_reply_to_id() == null || t.getIn_reply_to_id() <= 0)
+            if (t.getIn_reply_to_id() != null || t.getIn_reply_to_id() > 0)
             {
-                iter.remove();
+                tl.add(t);
             }
         }
-        return tweetList;
+        return tl;
     }
 }

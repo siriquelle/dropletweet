@@ -30,5 +30,7 @@
 
         </div>
 
+        <tiles:insert attribute="addition" ignore="true" />
+
     </aside>
 </div>

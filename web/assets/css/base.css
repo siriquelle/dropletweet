@@ -136,8 +136,8 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .user_info_screen_name {font-size:1.5em; text-shadow:1px -1px 1px #666; padding-bottom:3px; font-weight:bold;}
 /**/
 .user_info_details_container{font-size:.8em;}
-.user_info_details_item{padding-bottom: 3px;}
-.user_info_details_editing{background-color: #ffffff; border:1px outset #ccc; padding-top:4px;}
+.user_info_details_item{padding-bottom: 3px; display:inline-block; width:234px; float:right}
+.user_info_details_editing{background-color: #ffffff; border-bottom:1px solid #ccc; padding:2px;}
 /**/
 .user_info_count_container{font-size: .8em; clear:both;}
 .user_info_count{display:inline-block; padding:3px; background-color: #C1F5FF;}

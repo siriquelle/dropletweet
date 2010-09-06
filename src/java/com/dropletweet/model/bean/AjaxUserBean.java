@@ -172,10 +172,10 @@ public class AjaxUserBean {
 
     public void setUser(twitter4j.User user)
     {
-        this.screenName = user.getScreenName().replaceAll("\\n*\\r*", "");
+        this.screenName = (user.getScreenName() != null) ? user.getScreenName().replaceAll("\\n*\\r*", "") : null;
         this.profileImageUrl = user.getProfileImageURL();
-        this.description = user.getDescription().replaceAll("\\n*\\r*", "");
-        this.location = user.getLocation().replaceAll("\\n*\\r*", "");
+        this.description = (user.getDescription() != null) ? user.getDescription().replaceAll("\\n*\\r*", "") : null;
+        this.location = (user.getLocation() != null) ? user.getLocation().replaceAll("\\n*\\r*", "") : null;
         this.following = user.getFriendsCount();
         this.followers = user.getFollowersCount();
         this.tweets = user.getStatusesCount();

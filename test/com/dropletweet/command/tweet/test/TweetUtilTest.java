@@ -21,7 +21,7 @@ public class TweetUtilTest {
     {
     }
     //
-    String random = TestPhrase.ODD_PUNCTUATION_TEST_PHASE;
+    String random = TestPhrase.LINK_EQUALS;
 
     /**
      *

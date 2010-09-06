@@ -31,12 +31,14 @@
             </div>
             <div class="tweet_info">
                 <a href="http://twitter.com/<c:out value="${tweet.from_user}" />/status/<c:out value="${tweet.id}" />" target="_blank"><c:out value="${tweet.prettyTime}" /></a>
-                via
-                <c:out value="${tweet.source}" escapeXml="false"/>
-                <c:if test="${tweet.in_reply_to_id > -1}">
-                    <a href="http://twitter.com/<c:out value="${tweet.to_user}" />/status/<c:out value="${tweet.in_reply_to_id}" />" target="_blank" >in reply to
-                        <c:out value="${tweet.to_user}" />
-                    </a>
+                <c:if test="${tweet.source != null}">
+                    via
+                    <c:out value="${tweet.source}" escapeXml="false"/>
+                    <c:if test="${tweet.in_reply_to_id > -1}">
+                        <a href="http://twitter.com/<c:out value="${tweet.to_user}" />/status/<c:out value="${tweet.in_reply_to_id}" />" target="_blank" >in reply to
+                            <c:out value="${tweet.to_user}" />
+                        </a>
+                    </c:if>
                 </c:if>
             </div>
             <div class="tweet_actions">

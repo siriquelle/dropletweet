@@ -42,7 +42,7 @@ public final class WordArrays {
         "maybe", "me", "mean", "means", "meantime", "meanwhile", "merely", "mg", "might", "million", "miss", "ml",
         "more", "moreover", "most", "mostly", "mr", "mrs", "much", "mug", "must", "my", "myself", "n", "na", "name",
         "namely", "nay", "nd", "near", "nearly", "necessarily", "necessary", "need", "needs", "neither", "never",
-        "nevertheless", "new", "next", "nine", "ninety", "no", "nobody", "non", "none", "nonetheless", "noone", "nor",
+        "nevertheless", "new", "next", "nine", "ninety", "nobody", "non", "none", "nonetheless", "noone", "nor",
         "normally", "nos", "not", "noted", "nothing", "now", "nowhere", "o", "obtain", "obtained", "obviously", "of",
         "off", "often", "oh", "ok", "okay", "old", "omitted", "on", "once", "one", "ones", "only", "onto", "or", "ord",
         "other", "others", "otherwise", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall",
@@ -70,7 +70,7 @@ public final class WordArrays {
         "we've", "what", "whatever", "what'll", "whats", "when", "whence", "whenever", "where", "whereafter", "whereas",
         "whereby", "wherein", "wheres", "whereupon", "wherever", "whether", "which", "while", "whim", "whither", "who",
         "whod", "whoever", "whole", "who'll", "whom", "whomever", "whos", "whose", "why", "widely", "will", "willing",
-        "wish", "with", "within", "without", "won't", "words", "world", "would", "wouldn't", "www", "x", "y", "yes",
+        "wish", "with", "within", "without", "won't", "words", "world", "would", "wouldn't", "www", "x", "y",
         "yet", "you", "youd", "you'll", "your", "youre", "yours", "yourself", "yourselves", "you've", "z", "zero"
     };
     public static final String[] IGNORE_WORDS_EN = new String[]
@@ -80,7 +80,7 @@ public final class WordArrays {
         "better", "remember", "capable", "attitude", "george", "license", "radio", "recieve", "euro", "league",
         "media", "chelsea", "vote", "pedro", "incentive", "stimulate", "bizzare", "nice", "future", "haggle", "easy",
         "free", "save", "apostrophe", "imagine", "movie", "boobie", "cake", "silence", "wife", "susane", "chocolate",
-        "tunes", "turtle", "finance", "Ballina", "fuji"
+        "tunes", "turtle", "finance", "Ballina", "fuji", "people"
     };
     public static final String[] COMMON_WORDS_EN = new String[]
     {

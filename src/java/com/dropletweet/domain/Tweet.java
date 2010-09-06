@@ -107,12 +107,15 @@ public class Tweet implements Comparable<Tweet> {
     public Tweet(DirectMessage directMessage)
     {
         this.id = new Long(directMessage.getId());
-        this.from_user = directMessage.getSenderScreenName();
+        this.from_user = directMessage.getSender().getScreenName();
         this.from_user_id = directMessage.getSenderId();
-        this.to_user = directMessage.getRecipientScreenName();
+        this.to_user = directMessage.getRecipient().getScreenName();
         this.to_user_id = directMessage.getRecipientId();
+        this.profile_image_url = directMessage.getSender().getProfileImageURL().toString();
         this.text = directMessage.getText();
         this.created_at = directMessage.getCreatedAt().toString();
+        this.iso_language_code = directMessage.getSender().getLang();
+        this.location = directMessage.getSender().getLocation();
     }
 
     /**

@@ -16,6 +16,7 @@ var nodeCurrentId;
 var firstLoad = true;
 var loadingComplete = 0;
 var doc = document;
+//
 function createLoadingImage(){
     loadingImage =doc.createElement("img");
     loadingImage.setAttribute('src', './assets/img/load.gif');
@@ -50,7 +51,6 @@ function addEvent(obj, type, fn) {
 //end
 /*****************************************************************************/
 function setup(){
-    createInfoVisLoadElement();
     current = "infovis0";
     infovis = document.getElementById(current);
     w = infovis.offsetWidth , h = infovis.offsetHeight;
@@ -87,7 +87,7 @@ function setup(){
         clearCanvas: true,
         transition: Trans.Expo.easeInOut,
         onBeforeCompute: function(node){
-            startLoading();
+            
         },
         //Attach event handlers and add text to the
         //labels. This method is only triggered on label
@@ -160,8 +160,6 @@ function setup(){
             style.left = (left - w / 2) + 'px';
         },
         onAfterCompute:function(){
-            stopLoading();
-            stopInfoVisLoading();
             afterCompute();
         }
 
@@ -171,11 +169,13 @@ function setup(){
 /*****************************************************************************/
 var updateConversationAjax;
 function updateConversation(seedURL){
+    abortAjax(updateConversationAjax);
     startInfoVisLoading();
     startConversationLogging();
-    abortAjax(updateConversationAjax);
     updateConversationAjax = $.ajax({
-        url: "./jit.json?q=" + seedURL,
+        url: "./jit.json",
+        data: "q=" + seedURL,
+        method: "GET",
         success: function(data) {
             stopInfoVisLoading();
             stopConversationLogging();
@@ -256,16 +256,16 @@ function doMaxMinDist(terms){
 
 var initializeAjax;
 function initialize($){
-    startLoading();
     abortAjax(initializeAjax);
     initializeAjax = $.ajax({
-        url: "./util.ajax?action=get_latest_url",
+        url: "./util.ajax",
+        data: "action=get_latest_url",
+        method: "GET",
+        timeout: 60000,
         success: function(data) {
-            stopLoading();
             updateConversation(data);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
-            resetLoading();
             $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
@@ -360,13 +360,16 @@ function startConversationLogging(){
     loggingIntervalID = setInterval("conversationLoadingLogger()", 1200);
 }
 
-var conversationAjaxLoadingLogger;
+var conversationAjaxLoadingLoggerAjax;
 function conversationLoadingLogger(){
-    abortAjax(conversationAjaxLoadingLogger);
-    conversationAjaxLoadingLogger = $.ajax({
-        url: "./util.ajax?action=get_loading_status",
+    abortAjax(conversationAjaxLoadingLoggerAjax);
+    conversationAjaxLoadingLoggerAjax = $.ajax({
+        url: "./util.ajax",
+        data: "action=get_loading_status",
+        method: "GET",
+        timeout: 60000,
         success: function(data) {
-            if(data.toString().length >0){
+            if(data.toString().length > 0){
                 data = data.toString().replaceAll("\\|", "<br />")
                 $("#infovis_message_out").empty().append(getMessageElement(data));
             }else if(data.toString().trim() == ("Complete")){
@@ -412,7 +415,6 @@ function getMessageElement(message){
 function startInfoVisLoading(){
     $("#infovis0").append(infovisLoadElement);
     $(".infovis_load").fadeIn("fast");
-
 }
 
 function stopInfoVisLoading(){

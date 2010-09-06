@@ -353,12 +353,12 @@ public class ConversationServiceImpl implements ConversationService {
                 } catch (FileNotFoundException ex)
                 {
                     DLog.log(ex.getMessage());
-                    DConsole.log(ex.getMessage());
+                    DConsole.log("Road Block @" + seedTweet.getFrom_user());
                     DLog.sleepLong();
                 } catch (IOException ioe)
                 {
                     DLog.log(ioe.getMessage());
-                    DConsole.log(ioe.getMessage());
+                    DConsole.log("Road Block @" + seedTweet.getFrom_user());
                     DLog.sleepLong();
                 }
             }
