@@ -5,8 +5,6 @@
 package com.dropletweet.command.tweet.list;
 
 import com.dropletweet.domain.Tweet;
-import com.dropletweet.log.DLog;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class GetDiscussionTweets {
         //
         for (Tweet t : tweetList)
         {
-            if (t.getIn_reply_to_id() != null || t.getIn_reply_to_id() > 0)
+            if (t.getIn_reply_to_id() == null || t.getIn_reply_to_id() > 0)
             {
                 tl.add(t);
             }

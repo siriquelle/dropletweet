@@ -9,6 +9,7 @@ var canvas = null;
 var ht = null;
 //
 var currentConversation;
+var currentConversationURL;
 var nodeCurrentPositionLeft;
 var nodeCurrentPositionRight;
 var nodeCurrentId;
@@ -165,7 +166,7 @@ function setup(){
 
     });
 }
-
+/*****************************************************************************/
 /*****************************************************************************/
 var updateConversationAjax;
 function updateConversation(seedURL){
@@ -180,6 +181,7 @@ function updateConversation(seedURL){
             stopInfoVisLoading();
             stopConversationLogging();
             currentConversation = $.parseJSON(data);
+            currentConversationURL = seedURL;
             initialp(currentConversation);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -190,6 +192,34 @@ function updateConversation(seedURL){
     });
 
 }
+/*****************************************************************************/
+var reloadConversationAjax;
+function reloadConversation(seedURL){
+    startInfoVisLoading();
+    startConversationLogging();
+    abortAjax(reloadConversationAjax);
+    reloadConversationAjax = $.ajax({
+        url: "./jit.json",
+        data: "q=" + seedURL,
+        type: "GET",
+        timeout: 60000,
+        success: function(data) {
+            stopConversationLogging();
+            stopInfoVisLoading();
+            $("#infovis0 .node").remove();
+            currentConversation = $.parseJSON(data);
+            currentConversationURL = seedURL;
+            initialp($.parseJSON(data));
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            stopConversationLogging();
+            stopInfoVisLoading();
+            $("#message_out").empty().append(getMessageElement(dropletCommonError));
+        }
+    });
+
+}
+/*****************************************************************************/
 /*****************************************************************************/
 function initialp(json){
     $("#infovis_stats").fadeOut(350);
@@ -269,6 +299,21 @@ function initialize($){
             $("#message_out").empty().append(getMessageElement(dropletCommonError));
         }
     });
+
+
+    $("#infovis_stat_update_btn").mousedown(function(){
+        $(this).addClass("infovis_stat_update_active");
+    });
+    $("#infovis_stat_update_btn").mouseup(function(){
+        $(this).removeClass("infovis_stat_update_active");
+    });
+    $("#infovis_stat_update_btn").blur(function(){
+        $(this).removeClass("infovis_stat_update_active");
+    });
+    $("#infovis_stat_update_btn").click(function(){
+        reloadConversation(currentConversationURL);
+    });
+
 }
 function startLoading(){
     $("#message_out").empty().append(loadingImage);
@@ -299,15 +344,15 @@ function getTermsElement(termString){
     if(term.toString().match("#")){
         infovis_stat_text_size ="infovis_stat_text_medium";
     }else if(count == max){
-        infovis_stat_text_size ="infovis_stat_text_largest";
-    } else if(count == min){
         infovis_stat_text_size ="infovis_stat_text_smallest";
+    } else if(count == min){
+        infovis_stat_text_size ="infovis_stat_text_largest";
     }else if(count > (min + (distribution*2))){
         infovis_stat_text_size ="infovis_stat_text_large";
     }else if(count > (min + distribution)){
         infovis_stat_text_size ="infovis_stat_text_medium";
     }else{
-        infovis_stat_text_size ="infovis_stat_text_medium";
+        infovis_stat_text_size ="infovis_stat_text_small";
     }
     var termLink = document.createElement("a");
     termLink.setAttribute("href", "##");
@@ -341,14 +386,14 @@ function statFilterSetup($){
         });
         
     });
-   
+
 }
 
 function getFarConversationElement(node){
 
     var domElement = "\
                         <div class=\"node_tweet_container\">\
-                                "+ node.data.from_user +"\
+                            <span class=\"node_tweet_container_far_user\">"+ node.data.from_user + "</span>\
                             <div class=\"tweet_text\" style=\"display:none\">\
                                 "+ node.data.text +"\
                             </div>\
@@ -360,10 +405,10 @@ function startConversationLogging(){
     loggingIntervalID = setInterval("conversationLoadingLogger()", 1200);
 }
 
-var conversationAjaxLoadingLoggerAjax;
+var conversationLoadingLoggerAjax;
 function conversationLoadingLogger(){
-    abortAjax(conversationAjaxLoadingLoggerAjax);
-    conversationAjaxLoadingLoggerAjax = $.ajax({
+    abortAjax(conversationLoadingLoggerAjax);
+    conversationLoadingLoggerAjax = $.ajax({
         url: "./util.ajax",
         data: "action=get_loading_status",
         method: "GET",

@@ -597,31 +597,7 @@ function createCharCountElement(){
 }
 
 //**                                                                        **//
-var reloadConversationAjax;
-function reloadConversation(seedURL){
-    startInfoVisLoading();
-    startConversationLogging();
-    abortAjax(reloadConversationAjax);
-    reloadConversationAjax = $.ajax({
-        url: "./jit.json",
-        data: "q=" + seedURL,
-        type: "GET",
-        timeout: 60000,
-        success: function(data) {
-            stopConversationLogging();
-            stopInfoVisLoading();
-            $("#infovis0 .node").remove();
-            currentConversation = $.parseJSON(data);
-            initialp($.parseJSON(data));
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown){
-            stopConversationLogging();
-            stopInfoVisLoading();
-            $("#message_out").empty().append(getMessageElement(dropletCommonError));
-        }
-    });
-    
-}
+
 
 //**                                                                        **//
 function afterCompute(){

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -328,19 +329,23 @@ public class ConversationServiceImpl implements ConversationService {
 
                 try
                 {
-                    search = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&since_id=" + since_id + "&rpp=350").openStream())), Search.class);
+
+                    URLConnection con = new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&since_id=" + since_id + "&rpp=350").openConnection();
+                    con.setRequestProperty("User-agent", "dropletweet.com");
+                    search = gson.fromJson((Reader) new BufferedReader(new InputStreamReader(con.getInputStream())), Search.class);
+
                     int size = search.getResults().size();
                     while (!search.getResults().isEmpty() && seedTweet.getId() > search.getResults().getLast().getId())
                     {
                         search.getResults().addAll(gson.fromJson((Reader) new BufferedReader(new InputStreamReader(new URL("http://search.twitter.com/search.json?q=to:" + seedTweet.getFrom_user() + "&max_id=" + search.getResults().get(0) + "&since_id=" + first_id + " &rpp=350").openStream())), Search.class).getResults());
                         Collections.sort(search.getResults());
                         first_id = search.getResults().getLast().getId();
-                        if (size == search.getResults().size())
-                        {
-                            break;
-                        } else
+                        if (size != search.getResults().size())
                         {
                             size = search.getResults().size();
+                        } else
+                        {
+                            break;
                         }
                     }
 

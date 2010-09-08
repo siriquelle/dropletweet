@@ -19,9 +19,12 @@
                 <div class="infovis_stat_head">Key Terms</div>
                 <div class="infovis_stat_text" id="terms_out">0</div>
             </div>
+            <div class="infovis_stat">
+                <div class="infovis_stat_text" ><button class="infovis_stat_update" id="infovis_stat_update_btn">Update</button></div>
+            </div>
         </details>
-
     </div>
+
     <aside id="rightColumn">
 
         <div class="rightPanel">
