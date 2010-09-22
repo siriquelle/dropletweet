@@ -84,7 +84,7 @@ function setup(){
             color: "#088"
         },
         duration: 600,
-        fps: 50,
+        fps: 24,
         clearCanvas: true,
         transition: Trans.Expo.easeInOut,
         onBeforeCompute: function(node){
@@ -94,14 +94,11 @@ function setup(){
         //labels. This method is only triggered on label
         //creation
         onCreateLabel: function(domElement, node){
-            
-
             $("#"+node.id).mousedown(function(){
                 nodeCurrentPositionLeft = $("#"+node.id).css("left");
                 nodeCurrentPositionRight = $("#"+node.id).css("right");
                 
             });
-
             $("#"+node.id).mouseup(function(){
                 if(nodeCurrentPositionLeft == $("#"+node.id).css("left") && nodeCurrentPositionRight == $("#"+node.id).css("right") && nodeCurrentId != node.id){
                     ht.onClick(node.id);
@@ -109,8 +106,6 @@ function setup(){
                 }
 
             });
-
-  
         },
         //Change node styles when labels are placed
         //or moved.
@@ -195,6 +190,7 @@ function updateConversation(seedURL){
 /*****************************************************************************/
 var reloadConversationAjax;
 function reloadConversation(seedURL){
+
     startInfoVisLoading();
     startConversationLogging();
     abortAjax(reloadConversationAjax);
@@ -210,6 +206,7 @@ function reloadConversation(seedURL){
             currentConversation = $.parseJSON(data);
             currentConversationURL = seedURL;
             initialp($.parseJSON(data));
+  
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
             stopConversationLogging();
@@ -227,14 +224,16 @@ function initialp(json){
     ht.fx.clearLabels(true);
     //load JSON data.
     ht.loadJSON(json);
-    nodeCurrentId = json.id;
+    
     //compute positions and plot.
     ht.refresh();
     //
     calculateStatistics();
     //end
     afterCompute();
-
+    //
+    ht.onClick(nodeCurrentId);
+    //
 }
 
 
@@ -272,11 +271,11 @@ function doMaxMinDist(terms){
     min = count[0];
     max = count[0];
     for(var j = 0; j<count.length; j++){
-        if(count[j]<=min){
+        if(count[j]<min){
             min = count[j];
         }
         
-        if(count[j]>=max){
+        if(count[j]>max){
             max = count[j];
         }
     }
@@ -344,9 +343,9 @@ function getTermsElement(termString){
     if(term.toString().match("#")){
         infovis_stat_text_size ="infovis_stat_text_medium";
     }else if(count == max){
-        infovis_stat_text_size ="infovis_stat_text_smallest";
-    } else if(count == min){
         infovis_stat_text_size ="infovis_stat_text_largest";
+    } else if(count == min){
+        infovis_stat_text_size ="infovis_stat_text_smallest";
     }else if(count > (min + (distribution*2))){
         infovis_stat_text_size ="infovis_stat_text_large";
     }else if(count > (min + distribution)){
@@ -386,7 +385,6 @@ function statFilterSetup($){
         });
         
     });
-
 }
 
 function getFarConversationElement(node){
@@ -402,6 +400,7 @@ function getFarConversationElement(node){
 }
 
 function startConversationLogging(){
+    stopConversationLogging();
     loggingIntervalID = setInterval("conversationLoadingLogger()", 1200);
 }
 
@@ -458,6 +457,7 @@ function getMessageElement(message){
 
 
 function startInfoVisLoading(){
+    stopInfoVisLoading();
     $("#infovis0").append(infovisLoadElement);
     $(".infovis_load").fadeIn("fast");
 }

@@ -103,11 +103,11 @@ body{background:url("../img/_background.png") repeat-x scroll 0 0 #97EDFF;}
 .infovis_stat{background-color: #C1F5FF; display:inline-block; width:80px; padding:3px; margin:5px; -moz-border-radius:3px; -webkit-border-radius:3px;}
 .infovis_stat_head{font-weight:bold;}
 /**/
-.infovis_stat_text_smallest{font-size: xx-small;}
-.infovis_stat_text_small{font-size: small;}
-.infovis_stat_text_medium{font-size: medium;}
-.infovis_stat_text_large{font-size: large;}
-.infovis_stat_text_largest{font-size: xx-large;}
+.infovis_stat_text_smallest{font-size: .8em;}
+.infovis_stat_text_small{font-size: 1.1em;}
+.infovis_stat_text_medium{font-size: 1.4em;}
+.infovis_stat_text_large{font-size: 1.7em;}
+.infovis_stat_text_largest{font-size: 2em;}
 /**/
 .infovis_stat_filter{color:#0F4853;text-decoration: none;background-color: #C1F5FF; display:inline-block; margin-bottom: 1px !important;}
 .infovis_stat_filter:hover{text-decoration: underline;}

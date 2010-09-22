@@ -26,6 +26,5 @@ public class StartUp {
                     "web/WEB-INF/config/spring-services.xml",
                     "web/WEB-INF/config/spring-hibernate.xml"
                 });
-
     }
 }
